@@ -35,6 +35,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -78,7 +79,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
 
     // Accept some socket
     public void accept(final Socket socket) {
-        // Make new client thread 
+        // Make new client thread
         final StickmanMaryttsHandler client = new StickmanMaryttsHandler(socket, this);
         // Add the client to list
         // TODO: Get some reasonable name for references here!
@@ -179,7 +180,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     public void scheduleSpeech(String id){
-        System.out.println("Scheduled speech");
         SpeechActivity activity = (SpeechActivity) speechActivities.remove(id);
         WordTimeMarkSequence wts = wtsMap.remove(id);
         final String actor = activity.getActor();
@@ -191,11 +191,10 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         String voice = agent.getProperty(langVoince);
         VoiceName voiceName = new VoiceName(voice);
         MouthSpeech(actor, langVoince, voiceName, activity, wts);
-        System.out.println("End mouth");
     }
 
     private void MouthSpeech(String actor, String langVoince, VoiceName voiceName, SpeechActivity sa, WordTimeMarkSequence wts) {
-       // WordTimeMarkSequence wts = new WordTimeMarkSequence(sa.getTextOnly("$"));
+        // WordTimeMarkSequence wts = new WordTimeMarkSequence(sa.getTextOnly("$"));
         System.out.println("Entered mouth");
         LinkedList blocks = sa.getBlocks();
         HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<>();
@@ -209,8 +208,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         for (final Object item : blocks) {
             if (!item.toString().contains("$")) {
                 Word w = new Word(item.toString());
-                //wts.add(w);
-                //maryTTs.addWord(item.toString());
                 LinkedList<Phoneme> wordPhonemes = phonemes.get(index);
                 for (Phoneme p : wordPhonemes) {
                     if (p.getLipPosition() == null) {
@@ -232,7 +229,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     protected void executeAnimation(Animation stickmanAnimation) {
-        // executeAnimation command to platform 
+        // executeAnimation command to platform
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOSIndentWriter iosw = new IOSIndentWriter(out);
         boolean r = XMLUtilities.writeToXMLWriter(stickmanAnimation, iosw);
@@ -280,9 +277,9 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     private void executeAnimationAndWait(AbstractActivity activity, Animation stickmanAnimation, String animId) {
-        // executeAnimation command to platform 
+        // executeAnimation command to platform
         synchronized (mActivityWorkerMap) {
-            // executeAnimation command to platform 
+            // executeAnimation command to platform
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             IOSIndentWriter iosw = new IOSIndentWriter(out);
             boolean r = XMLUtilities.writeToXMLWriter(stickmanAnimation, iosw);
@@ -319,54 +316,44 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         mListener = new StickmanMaryttsListener(8000, this);
         // Start the connection
         mListener.start();
+        launchMaryTTSWithWindowInfo();
+        // Get the plugin configuration
+        for (ConfigFeature cf : mConfig.getEntryList()) {
+            mLogger.message("Stickman Plugin Config: " + cf.getKey() + " = " + cf.getValue());
+        }
+        final String host = mConfig.getProperty("smhost");
+        final String port = mConfig.getProperty("smport");
 
+        // Start the StickmanStage client application
+        mLogger.message("Starting StickmanStage Client Application ...");
+        mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
+        addStickmansToStage();
+        // wait for stickman stage
+        while (mClientMap.isEmpty()) {
+            mLogger.message("Waiting for StickmanStage");
+            try {
+                Thread.sleep(1000);
+            } catch (final InterruptedException exc) {
+                mLogger.failure("Error while waiting ...");
+            }
+        }
+    }
+
+    private void launchMaryTTSWithWindowInfo(){
         //Starting MaryTTS Server
-        final String maryttsBaseDir = mConfig.getProperty("mary.base");
-
-        // Create the plugin's processes
-        String cmd = "";
-        String cmdName = "";
-        ProcessBuilder pb = null;
-        cmd = maryttsBaseDir + File.separator + "bin" + File.separator + "marytts-server";
-        //Check for existence
-        File f = new File(cmd);
-        boolean exists  = false;
-        String message = "";
-        if(f.exists() && !f.isDirectory()) {
-            // do something
-            exists = true;
-            message = "Loading MaryTTS ...";
-        }else{
-            message = "The MaryTTS server could not be found. Please edit the project.xml";
-        }
-        if (isUnix() || isMac()) {
-            cmdName = "marytts.server.Mary";
-            pb = new ProcessBuilder("/bin/bash", cmd);
-        } else if (isWindows()) {
-            cmdName = "marytts.server.Mary";
-            cmd = cmd + ".bat";
-            String[] command = {"CMD", "/C", cmd};
-            pb = new ProcessBuilder(command);
-        }
-
-        final JDialog info = new JDialog();
-        info.setTitle("Info");
-        JPanel messagePane = new JPanel();
-        messagePane.add(new JLabel(message));
-        info.add(messagePane);
-        info.pack();
-        info.setLocationRelativeTo(null);
-
-        final ProcessBuilder processB = pb;
-        final String command = cmdName;
-        final boolean MaryTTSExists = exists;
+        final String cmdName = "marytts.server.Mary";
+        final JLabel label  = new JLabel();
+        final JDialog info = getInfoDialog(label);
+        final String []command = buildMaryTTSCmd();
+        final ProcessBuilder processB = new ProcessBuilder(command);
+        final boolean MaryTTSExists = isMaryTTSInstalled();
         Thread tDialog = new Thread() {
             public void run() {
                 if(MaryTTSExists) {
                     try {
                         processB.redirectErrorStream(true);
                         Process p = processB.start();
-                        mProcessMap.put(command, p);
+                        mProcessMap.put(cmdName, p);
                         InputStream is = p.getInputStream();
                         InputStreamReader isr = new InputStreamReader(is);
                         BufferedReader br = new BufferedReader(isr);
@@ -381,10 +368,11 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                                 is.close();
                                 isr.close();
                             }
-                            System.out.println(line);
                         }
                     } catch (final Exception exc) {
                         mLogger.failure(exc.toString());
+                        exc.printStackTrace();
+                        label.setText(exc.toString());
                     }
                 }else{
                     try {
@@ -396,43 +384,67 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                 }
             }
         };
-
-
-
         tDialog.start();
         info.setModal(true);
         info.setVisible(true);
-
-
-        // Get the plugin configuration
-        for (ConfigFeature cf : mConfig.getEntryList()) {
-            mLogger.message("Stickman Plugin Config: " + cf.getKey() + " = " + cf.getValue());
-        }
-
-        final String host = mConfig.getProperty("smhost");
-        final String port = mConfig.getProperty("smport");
-
-        // Start the StickmanStage client application
-        mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
-        addStickmansToStage();
-
-
-        // wait for stickman stage
-        while (mClientMap.isEmpty()) {
-            mLogger.message("Waiting for StickmanStage");
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException exc) {
-                mLogger.failure("Error while waiting ...");
-            }
-        }
     }
 
+
+    private JDialog getInfoDialog(JLabel label){
+        String message = getMaryTTSMessageStatus();
+        final JDialog info = new JDialog();
+        info.setTitle("Info");
+        JPanel messagePane = new JPanel();
+        label.setText(message);
+        messagePane.add(label);
+        info.add(messagePane);
+        info.pack();
+        info.setLocationRelativeTo(null);
+        return info;
+    }
+
+    private String[] buildMaryTTSCmd(){
+        String cmd = getMaryTTSExecPath();
+        List<String> command = new LinkedList<>();
+        if (isUnix() || isMac()) {
+            command.add("/bin/bash");
+            command.add(cmd);
+        } else if (isWindows()) {
+            cmd = cmd + ".bat";
+            command.add("CMD");
+            command.add("/C");
+            command.add(cmd);
+        }
+        return (String[]) command.toArray(new String[command.size()]);
+    }
+
+    private String getMaryTTSExecPath(){
+        final String maryttsBaseDir = mConfig.getProperty("mary.base");
+        String cmd = maryttsBaseDir + File.separator + "bin" + File.separator + "marytts-server";
+        return cmd;
+    }
+
+    private String getMaryTTSMessageStatus(){
+        String message = "";
+        if(isMaryTTSInstalled()){
+            message = "Loading MaryTTS ...";
+        }else{
+            message = "The MaryTTS server could not be found. Please edit the project.xml";
+        }
+        return message;
+    }
+
+    private boolean isMaryTTSInstalled(){
+        String cmd = getMaryTTSExecPath();
+        File f = new File(cmd);
+        if(f.exists() && !f.isDirectory()) {
+            return  true;
+        }
+        return false;
+    }
     private void addStickmansToStage( ){
         for (AgentConfig agent:mProject.getProjectConfig().getAgentConfigList()) {
             if(agent.getDeviceName().equalsIgnoreCase("stickmanmarytts") || agent.getDeviceName().equalsIgnoreCase("stickman")){
-                // TODO - read config
                 StickmanStage.addStickman(agent.getAgentName());
             }
         }
@@ -450,11 +462,11 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                 client.join();
             } catch (final Exception exc) {
                 mLogger.failure(exc.toString());
-                // Print some information 
+                // Print some information
                 mLogger.message("Joining client thread");
             }
         }
-        // Clear the map of clients 
+        // Clear the map of clients
         mClientMap.clear();
         languageAgentMap.clear();
         wtsMap.clear();
@@ -464,7 +476,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             mListener.abort();
             // Join the client thread
             mListener.join();
-            // Print some information 
+            // Print some information
             mLogger.message("Joining server thread");
         } catch (final Exception exc) {
             mLogger.failure(exc.toString());
@@ -484,9 +496,9 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                 if (isUnix() || isMac()) {
                     killCmd = "ps aux | grep '" + name + "' | awk '{print $2}' | xargs kill";
                     String[] cmd = {
-                        "/bin/sh",
-                        "-c",
-                        killCmd
+                            "/bin/sh",
+                            "-c",
+                            killCmd
                     };
                     killer = Runtime.getRuntime().exec(cmd);
                 } else if (isWindows()) {
@@ -513,9 +525,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     // Handle some message
     public void handle(final String message, final StickmanMaryttsHandler client) {
         mLogger.message("Handling " + message + "");
-
         synchronized (mActivityWorkerMap) {
-
             if (message.contains("#ANIM#end#")) {
                 int start = message.lastIndexOf("#") + 1;
                 String animId = message.substring(start);
@@ -528,10 +538,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             } else if (message.contains("$")) {
                 // wake me up ..
                 mActivityWorkerMap.notifyAll();
-                // identify the related activity
-                //AbstractActivity activity = mProject.getRunTimePlayer().getActivityScheduler().getMarkerActivity(message);
-                // play the activity
-                //mProject.getRunTimePlayer().getActivityScheduler().handle(new MarkerFeedback(activity, message));
                 mProject.getRunTimePlayer().getActivityScheduler().handle(message);
             } else if (message.contains("#AUDIO#end#")) {
                 int start = message.lastIndexOf("#") + 1;
@@ -544,7 +550,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         }
     }
 
-// Broadcast some message
+    // Broadcast some message
     private void broadcast(final String message) {
         for (final StickmanMaryttsHandler client : mClientMap.values()) {
             client.send(message);

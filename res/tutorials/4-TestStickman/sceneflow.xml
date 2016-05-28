@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SceneFlow id="" name="HelloWorld" comment="" hideLocalVar="false" hideGlobalVar="false" modifDate="Mo, 2 Mai 2016 12:51:50" start="N4;N7;" context="" package="" xmlns="xml.sceneflow.dfki.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de res/xsd/sceneflow.xsd">
+<SceneFlow id="" name="HelloWorld" comment="" hideLocalVar="false" hideGlobalVar="false" modifDate="Thu, 19 May 2016 23:34:22" start="N4;N7;" context="" package="" xmlns="xml.sceneflow.dfki.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de res/xsd/sceneflow.xsd">
   <Define>
     <StructType name="UserInfo">
       <Member type="String" name ="name"/>
@@ -24,6 +24,12 @@
     <Variable type="UserInfo" name ="userdata">
       <Struct>
       </Struct>
+    </Variable>
+    <Variable type="String" name ="test2">
+      <String><![CDATA[Hello]]></String>
+    </Variable>
+    <Variable type="String" name ="test">
+      <Int value="13"/>
     </Variable>
   </Declare>
   <Commands>

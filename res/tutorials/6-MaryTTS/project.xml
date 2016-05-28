@@ -10,11 +10,12 @@
   </Plugins>
   <Agents>
     <Agent name="susanne" device="stickmanmarytts">
-      <Feature key="default-voice" val="en"/>
+      <Feature key="default-voice" val="de"/>
       <Feature key="en" val="dfki-poppy"/>
+      <Feature key="de" val="bits1-hsmm"/>
     </Agent>
     <Agent name="patrick" device="stickmanmarytts">
-      <Feature key="default-voice" val="en"/>
+      <Feature key="default-voice" val="de"/>
       <Feature key="en" val="dfki-spike"/>
       <Feature key="de" val="bits3"/>
     </Agent>

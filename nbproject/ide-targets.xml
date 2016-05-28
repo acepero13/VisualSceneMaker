@@ -14,6 +14,8 @@
     </target>
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
    
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
@@ -22,8 +24,8 @@
             <classpath refid="clspath"/>
         </nbjpdastart>
         <java classname="de.dfki.vsm.SceneMaker3" fork="true">
-            <!-- <arg line="runtime res/prj/test"/> -->
-            <!-- <arg line="editor res/prj/test"/> -->
+            <!-- <arg line="runtime res/prj/testing"/> -->
+            <!-- <arg line="editor res/prj/testing"/> -->
             <classpath refid="clspath"/>
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>

@@ -45,7 +45,9 @@
     <!-- Define Scenes Scanner File -->
     <property name="sflscnfile" value="${sflgendir}${file.separator}ChartLexxer.java"/>
     <!-- Define Scenes Token File -->
-    <property name="sfltknfile" value="${sflgendir}${file.separator}ChartFields.java"/>    
+    <property name="sfltknfile" value="${sflgendir}${file.separator}ChartFields.java"/>
+
+    <property name="mockito"           value="/home/alvaro/mockito-master"/>
     <!-- Define Library Path -->
     <path id="libpath">
         <fileset dir="${libdir}">
@@ -57,12 +59,26 @@
         <fileset dir="${blddir}">
             <include name="*.jar"/>
         </fileset>
-    </path>    
+    </path>
+
+    <path id="junitpath">
+        <fileset dir="/usr/share/java">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="mockito">
+        <fileset dir="/home/alvaro/mockito-master/build/libs">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
     <!-- Define Classpath -->
     <path id="clspath">
         <path refid="libpath"/>
         <path refid="bldpath"/>
-    </path>    
+        <path refid="mockito"/>
+        <path refid="junitpath"/>
+    </path>
     <!-- Info Target -->
     <target name="infos">
         <echo message="================= System Info ===================================="/>
@@ -99,6 +115,8 @@
         <javac srcdir="${srcdir}" destdir="${tmpdir}" debug="on" includes="de/**/*.java" encoding="utf-8" includeantruntime="false" fork="true">
             <classpath refid="clspath"/>
         </javac>
+
+
         <!-- Copy JavaDocs -->
         <copy todir="${tmpdir}/doc">
             <fileset dir="doc">
@@ -143,27 +161,29 @@
         </java>
     </target>
     <!-- Execute to Welcome Screen -->
-    <target name="exec">
+
+    <target name="debug">
+
         <java classname="de.dfki.vsm.SceneMaker3" fork="true">
-            <!-- <arg line="runtime res/prj/test"/> -->
-            <!-- <arg line="editor res/prj/test"/> -->
+            <!-- <arg line="runtime res/prj/testing"/>-->
+            <jvmarg line="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" />
             <classpath refid="clspath"/>
         </java>
     </target>
-    
-     <!-- Execute to Welcome Screen -->
-    <target name="test">
-        <java classname="de.dfki.vsm.xtesting.TestSSIPlugin" fork="true">
-            <!-- <arg line="runtime res/prj/test"/> -->
-            <!-- <arg line="editor res/prj/test"/> -->
+
+
+    <target name="exec">
+        <java classname="de.dfki.vsm.SceneMaker3" fork="true">
+            <!-- <arg line="runtime res/prj/testing"/> -->
+            <!-- <arg line="editor res/prj/testing"/> -->
             <classpath refid="clspath"/>
         </java>
     </target>
          <!-- Execute Property Manager-->
     <target name="testPropertyManager">
         <java classname="de.dfki.vsm.xtesting.TestFXGui" fork="true">
-            <!-- <arg line="runtime res/prj/test"/> -->
-            <!-- <arg line="editor res/prj/test"/> -->
+            <!-- <arg line="runtime res/prj/testing"/> -->
+            <!-- <arg line="editor res/prj/testing"/> -->
             <classpath refid="clspath"/>
         </java>
     </target>
@@ -177,9 +197,9 @@
     </target>-->
     <!-- Execute Project -->
     <!--
-    <target name="test">
-        <java classname="de.dfki.vsm.test.TestVSMAPI" fork="true">
-            <arg line="res/prj/test"/>
+    <target name="testing">
+        <java classname="de.dfki.vsm.testinging.TestVSMAPI" fork="true">
+            <arg line="res/prj/testing"/>
             <classpath refid="clspath"/>
         </java>
     </target>   

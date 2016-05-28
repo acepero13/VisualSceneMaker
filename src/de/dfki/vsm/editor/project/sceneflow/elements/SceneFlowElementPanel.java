@@ -422,7 +422,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
 
                 // System.out.println(pathCount);
                 // TODO: why do we check the pathCount?
-                // test if the user clicked on the Functions entry
+                // testing if the user clicked on the Functions entry
                 if (pathCount == 2) {
                     if (path.getLastPathComponent().equals(mFunctionsEntry)) {
                         if (e.isPopupTrigger()) {
@@ -434,7 +434,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
                     if (path.getLastPathComponent() instanceof TreeEntry) {
                         launchTreeEntrySelectedEvent((TreeEntry) path.getLastPathComponent());
                     }
-                } // test if the user clicked on exact function
+                } // testing if the user clicked on exact function
                 else if (pathCount == 3) {
                     TreePath parentPath = path.getParentPath();
 

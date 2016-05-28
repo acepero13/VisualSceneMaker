@@ -325,7 +325,7 @@ public class SImageView extends ImageView implements ImageObserver, MouseListene
      */
     private void waitForImage() throws InterruptedException {
 
-        // AK041014 added null-test for fImage
+        // AK041014 added null-testing for fImage
         if (fImage != null) {
             int w;
             int h;
