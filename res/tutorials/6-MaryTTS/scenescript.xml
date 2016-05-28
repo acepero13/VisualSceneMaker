@@ -71,23 +71,23 @@
       </SceneUttr>
     </SceneTurn>
   </SceneObject>
-  <SceneObject lower="347" upper="401" language="en" identifier="Blink">
-    <SceneTurn lower="363" upper="380" speaker="patrick">
-      <SceneUttr lower="372" upper="380" punct=".">
-        <ActionObject lower="372" upper="379" actor="" mode="" name="Blink" >
+  <SceneObject lower="345" upper="399" language="en" identifier="Blink">
+    <SceneTurn lower="361" upper="378" speaker="patrick">
+      <SceneUttr lower="370" upper="378" punct=".">
+        <ActionObject lower="370" upper="377" actor="" mode="" name="Blink" >
         </ActionObject>
       </SceneUttr>
-    </SceneTurn><SceneTurn lower="381" upper="401" speaker="patrick">
-      <SceneUttr lower="390" upper="401" punct=".">
-        <ActionObject lower="390" upper="400" actor="" mode="" name="TiltLeft" >
+    </SceneTurn><SceneTurn lower="379" upper="399" speaker="patrick">
+      <SceneUttr lower="388" upper="399" punct=".">
+        <ActionObject lower="388" upper="398" actor="" mode="" name="TiltLeft" >
         </ActionObject>
       </SceneUttr>
     </SceneTurn>
   </SceneObject>
-  <SceneObject lower="403" upper="444" language="en" identifier="Normal">
-    <SceneTurn lower="420" upper="444" speaker="patrick">
-      <SceneUttr lower="429" upper="444" punct=".">
-        <ActionObject lower="429" upper="443" actor="" mode="" name="TiltLeftBack" >
+  <SceneObject lower="401" upper="442" language="en" identifier="Normal">
+    <SceneTurn lower="418" upper="442" speaker="patrick">
+      <SceneUttr lower="427" upper="442" punct=".">
+        <ActionObject lower="427" upper="441" actor="" mode="" name="TiltLeftBack" >
         </ActionObject>
       </SceneUttr>
     </SceneTurn>

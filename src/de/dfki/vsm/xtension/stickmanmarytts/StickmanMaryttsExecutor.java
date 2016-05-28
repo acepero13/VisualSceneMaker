@@ -11,6 +11,7 @@ import de.dfki.stickman.animationlogic.Animation;
 import de.dfki.stickman.animationlogic.AnimationLoader;
 import de.dfki.util.xml.XMLUtilities;
 import de.dfki.util.ios.IOSIndentWriter;
+import de.dfki.vsm.editor.dialog.WaitingDialog;
 import de.dfki.vsm.model.config.ConfigFeature;
 import de.dfki.vsm.model.project.AgentConfig;
 import de.dfki.vsm.model.project.PluginConfig;
@@ -201,7 +202,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     @Override
     public void launch() {
         try {
-            marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
+            launchMaryTTSAndDialog();
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -227,19 +228,26 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             }
         }
     }
+    private void launchMaryTTSAndDialog() throws Exception {
 
-    /*private JDialog getInfoDialog(JLabel label){
-        String message = getMaryTTSMessageStatus();
-        final JDialog info = new JDialog();
-        info.setTitle("Info");
-        JPanel messagePane = new JPanel();
-        label.setText(message);
-        messagePane.add(label);
-        info.add(messagePane);
-        info.pack();
-        info.setLocationRelativeTo(null);
-        return info;
-    }*/
+        WaitingDialog InfoDialog  = new WaitingDialog("Loading MaryTTS...");
+        marySelfServer.registerObserver(InfoDialog);
+        Thread tDialog = new Thread() {
+            public void run(){
+                try {
+                    marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        tDialog.start();
+        InfoDialog.setModal(true);
+        InfoDialog.setVisible(true);
+
+
+    }
+
 
     private void addStickmansToStage( ){
         for (AgentConfig agent:mProject.getProjectConfig().getAgentConfigList()) {
@@ -268,10 +276,11 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         mActivityWorkerMap.clear();
         // Abort the server thread
         try {
+            marySelfServer.stopMaryServer();
             mListener.abort();
             mListener.join();
             mLogger.message("Joining server thread");
-            marySelfServer.stopMaryServer();
+
         } catch (final Exception exc) {
             mLogger.failure(exc.toString());
         }
