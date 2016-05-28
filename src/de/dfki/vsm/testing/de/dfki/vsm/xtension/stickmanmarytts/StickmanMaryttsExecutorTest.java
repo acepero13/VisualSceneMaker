@@ -13,16 +13,17 @@ import static org.junit.Assert.*;
  * Created by alvaro on 5/28/16.
  */
 public class StickmanMaryttsExecutorTest {
-    private BaxterExecutor executor;
+    private StickmanMaryttsExecutor executor;
     private EditorProject project = new EditorProject();
     @Before
     public void setUp(){
-        project.parse(new File("/home/alvaro/Documents/WorkHiwi/VSM_stable/Projects/Baxter").getPath());
-        executor = new BaxterExecutor(project.getPluginConfig("baxter"), project);
+        project.parse(new File("/home/alvaro/Documents/Universitat/TesisProject/VisualSceneMaker/res/tutorials/6-MaryTTS").getPath());
+        executor = new StickmanMaryttsExecutor(project.getPluginConfig("stickmanmarytts"), project);
     }
     @Test
     public void testMarker() throws Exception {
-
+        String res = executor.marker(1);
+        assertEquals("$1", res);
     }
 
     @Test
