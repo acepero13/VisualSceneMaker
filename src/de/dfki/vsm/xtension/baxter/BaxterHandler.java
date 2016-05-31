@@ -22,11 +22,8 @@ public class BaxterHandler extends Thread implements EventListener {
     // The logger instance
     private final LOGConsoleLogger mLogger
             = LOGConsoleLogger.getInstance();
-    // The executor instance
-    private final BaxterExecutor mExecutor;
-    // The client socket
-    private final Socket mSocket;
-    // The socket streams
+    private  BaxterExecutor mExecutor;
+    private  Socket mSocket;
     private BufferedReader mInStream;
     private BufferedWriter mOutStream;
     // The termination flag
@@ -40,6 +37,10 @@ public class BaxterHandler extends Thread implements EventListener {
         // Initialize the executor
         mExecutor = executor;
         mEventDispatcher.register(this);
+    }
+
+    public BufferedReader getmInStream(){
+        return mInStream;
     }
 
     // Start the client thread
@@ -77,10 +78,10 @@ public class BaxterHandler extends Thread implements EventListener {
     }
 
     // Receive some message
-    public final String recv() {
+    public  String recv() {
         try {
             // Receive The Next Line
-            final String message = mInStream.readLine();
+            String message = mInStream.readLine();
             // Debug Some Information
             mLogger.message("Receiving '" + message + "'");
             // Return Received Data

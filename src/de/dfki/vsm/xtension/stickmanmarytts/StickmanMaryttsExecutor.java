@@ -41,25 +41,17 @@ import java.util.LinkedList;
  */
 public class StickmanMaryttsExecutor extends ActivityExecutor {
 
-    // The stickman stage window
     private static StickmanStage mStickmanStage;
     // The singelton logger instance
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
-    // The tworld listener
     private StickmanMaryttsListener mListener;
-    // The map of processes
-    private final HashMap<String, Process> mProcessMap = new HashMap();
-    // The client thread list
     private final HashMap<String, StickmanMaryttsHandler> mClientMap = new HashMap();
-    // The map of activity worker
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
-    private final String OS = System.getProperty("os.name").toLowerCase();
     private HashMap<String, String> languageAgentMap;
     private HashMap<String, AbstractActivity> speechActivities = new HashMap<>();
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
     private MaryTTsProcess marySelfServer;
 
-    private I4GMaryClient maryTTs;
     private int maryId;
 
     // Construct the executor
@@ -229,7 +221,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         }
     }
     private void launchMaryTTSAndDialog() throws Exception {
-
         WaitingDialog InfoDialog  = new WaitingDialog("Loading MaryTTS...");
         marySelfServer.registerObserver(InfoDialog);
         Thread tDialog = new Thread() {
@@ -244,8 +235,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         tDialog.start();
         InfoDialog.setModal(true);
         InfoDialog.setVisible(true);
-
-
     }
 
 
