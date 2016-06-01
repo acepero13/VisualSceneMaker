@@ -1,9 +1,7 @@
 package de.dfki.vsm.xtension.baxter;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.stickman.Stickman;
 import de.dfki.stickman.StickmanStage;
-import de.dfki.stickman.animationlogic.Animation;
 import de.dfki.stickman.animationlogic.AnimationLoader;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
@@ -12,20 +10,14 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
-import de.dfki.vsm.util.xml.XMLUtilities;
+import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
-import de.dfki.vsm.xtension.baxter.command.BaxterCommand;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
-import sun.misc.BASE64Encoder;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -46,15 +38,16 @@ public class BaxterExecutor extends ActivityExecutor {
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
     private HashMap<String, SpeakerActivity> speechActivities = new HashMap<>();
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
-    final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 2.0f, new Dimension(640, 480), false);
-
+    private StickmanStage mStickmanStage;
     private BaxterListener mListener;
     private BaxterHandler baxterServerHandler;
-    private StickmanStage mStickmanStage;
+
+    private BaxterStickman baxterStickman;
 
     public BaxterExecutor(PluginConfig config, RunTimeProject project) {
         super(config, project);
         marySelfServer = new MaryTTsProcess(mConfig.getProperty("mary.base"));
+        baxterStickman = new BaxterStickman();
     }
 
     public void accept(final Socket socket) {
@@ -97,56 +90,20 @@ public class BaxterExecutor extends ActivityExecutor {
         if (activity instanceof ActionMouthActivity) {
             animationDuration = ((ActionMouthActivity) activity).getDuration();
         }
-        if (mBaxterStickman != null) {
-            AnimationLoader.getInstance().loadAnimation(mBaxterStickman, activity.getName(), animationDuration, true);
-            mBaxterStickman.doAnimation(activity.getName(), 500, false);
+        if (baxterStickman != null) {
+            baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }
     }
 
     protected void executeAnimation() {
-        BufferedImage image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-        BufferedImage head;
         ArrayList<String> params = new ArrayList<>();
-        Graphics g = image.createGraphics();
-        mBaxterStickman.mShowStage=false;
-        mBaxterStickman.paint( g );
-        g.dispose();
-        head = cropHead(image, (int)mBaxterStickman.mHead.getWidth(), (int)mBaxterStickman.mHead.getHeight(), 2.0f);
-        String headAsString = transformStickmanToImage(head);
+        String headAsString = baxterStickman.getAnimationImage();
         params.add(headAsString);
-        buildBaxterCommandAndSend(params);
+        String baxterXMLCommand = baxterStickman.buildBaxterCommand(params);
+        broadcast(baxterXMLCommand);
     }
 
-    private String  transformStickmanToImage(BufferedImage head){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String imageString= "" ;
-        try {
-            ImageIO.write(head, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);
-            baos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imageString;
-    }
-
-    private void buildBaxterCommandAndSend(ArrayList<String> params){
-        BaxterCommand command = new BaxterCommand("paint", "testId", params);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOSIndentWriter iosw = new IOSIndentWriter(out);
-        boolean r = XMLUtilities.writeToXMLWriter(command, iosw);
-        String toSend = new String(out.toByteArray());
-        toSend+= "#END\n";
-        broadcast(toSend);
-    }
-
-    private BufferedImage cropHead(BufferedImage src, int width, int height, float scale ){
-        BufferedImage dest = src.getSubimage(0, 0, width  +70, height  -50);
-        return dest;
-    }
 
     private void executeMaryTTSAndWait(String executionId){
         String spokenText = intentSpeak(executionId);
@@ -179,6 +136,67 @@ public class BaxterExecutor extends ActivityExecutor {
                     mLogger.failure(exc.toString());
                 }
             }
+        }
+    }
+
+    public void handle(String message, final BaxterHandler client){
+        if (message.contains("#AUDIO#end#")) {
+            handleAudio(message);
+        }
+        else if (message.contains("#ANIM#end#")) {
+            handleAnimation(message);
+        }
+    }
+
+    private void  handleAudio(String message){
+        int start = message.lastIndexOf("#") + 1;
+        String event_id = message.substring(start);
+        System.out.println("Message");
+        synchronized (mActivityWorkerMap){
+            mActivityWorkerMap.remove(event_id);
+            mActivityWorkerMap.notifyAll();
+        }
+    }
+
+    private void handleAnimation(String message){
+        int start = message.lastIndexOf("#") + 1;
+        String animId = message.substring(start);
+        if (mActivityWorkerMap.containsKey(animId)) {
+            mActivityWorkerMap.remove(animId);
+        }
+        synchronized (mActivityWorkerMap) {
+            mActivityWorkerMap.notifyAll();
+        }
+    }
+
+    public SpeechActivity scheduleSpeech(String executionId){//TODO: Refactorizar
+        SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(executionId);
+        MaryTTsSpeaker marySpeak = speakerActivity.getMarySpeak();
+        SpeechActivity activity = speakerActivity.getSpeechActivity();
+        LinkedList blocks = marySpeak.getSpeechActivityTextBlocs();
+        int wordIndex = 0;
+        int totalTime = 0;
+        WordTimeMarkSequence wts = marySpeak.getWordTimeSequence();
+        for (final Object item : blocks) {
+            if (!item.toString().contains("$")) {
+                LinkedList<Phoneme> wordPhonemes = marySpeak.getWordPhonemeList(wordIndex);
+                for (Phoneme p : wordPhonemes) {
+                    if (p.getLipPosition() == null) {
+                        continue;
+                    }
+                    mScheduler.schedule((int) p.getmStart(), null, new ActionMouthActivity(activity.getActor(), "face",
+                            "Mouth_" + p.getLipPosition(), null, (int) (p.getmEnd() - p.getmStart()), wts), mProject.getAgentDevice(activity.getActor()));
+                    totalTime+= (int) (p.getmEnd() - p.getmStart());
+                }
+                wordIndex++;
+            }
+        }
+        return  activity;
+    }
+
+    private void broadcast(final String message) {
+        for (final BaxterHandler client : mClientMap.values()) {
+            client.send(message);
         }
     }
 
@@ -227,18 +245,10 @@ public class BaxterExecutor extends ActivityExecutor {
         mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
     }
 
-    public void launchBaxterServer() throws FileNotFoundException {
+    public void launchBaxterServer() throws IOException {
         String processName = "imageviwer";
-        try {
-            String []serverPath = getServerCmdPath();
-            mProcessMap.put(processName, Runtime.getRuntime().exec(serverPath));
-        } catch (final FileNotFoundException e){
-            e.printStackTrace();
-            throw e;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        String []serverPath = getServerCmdPath();
+        mProcessMap.put(processName, Runtime.getRuntime().exec(serverPath));
     }
 
     private String[] getServerCmdPath() throws FileNotFoundException {
@@ -256,8 +266,18 @@ public class BaxterExecutor extends ActivityExecutor {
 
     @Override
     public void unload() {
-        unloadBaxterServer();
-        unloadClients();
+        try {
+            unloadBaxterServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            unloadClients();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         mActivityWorkerMap.clear();
         try {
             marySelfServer.stopMaryServer();
@@ -272,98 +292,25 @@ public class BaxterExecutor extends ActivityExecutor {
         }
     }
 
-    private void unloadBaxterServer(){
+    private void unloadBaxterServer() throws IOException, InterruptedException {
         for (final Map.Entry<String, Process> entry : mProcessMap.entrySet()) {
             final String name = entry.getKey();
             final Process process = entry.getValue();
             Process killer = null;
             final String killCmd = "ps aux | grep '" + name + "' | awk '{print $2}' | xargs kill";
             String[] cmd = {"/bin/sh", "-c", killCmd};
-            try {
-                killer = Runtime.getRuntime().exec(cmd);
-                killer.waitFor();
-                process.waitFor();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            killer = Runtime.getRuntime().exec(cmd);
+            killer.waitFor();
+            process.waitFor();
         }
     }
 
-    private void unloadClients(){
+    private void unloadClients() throws InterruptedException {
         for (final BaxterHandler client : mClientMap.values()) {
             client.abort();
-            try {
-                client.join();
-            } catch (final Exception exc) {
-                mLogger.failure(exc.toString());
-                mLogger.message("Joining client thread");
-            }
+            client.join();
         }
         mClientMap.clear();
-    }
-
-
-    public void handle(String message, final BaxterHandler client){
-        if (message.contains("#AUDIO#end#")) {
-            handleAudio(message);
-        }
-        else if (message.contains("#ANIM#end#")) {
-            handleAnimation(message);
-        }
-    }
-
-    private void  handleAudio(String message){
-        int start = message.lastIndexOf("#") + 1;
-        String event_id = message.substring(start);
-        System.out.println("Message");
-        synchronized (mActivityWorkerMap){
-            mActivityWorkerMap.remove(event_id);
-            mActivityWorkerMap.notifyAll();
-        }
-    }
-
-    private void handleAnimation(String message){
-        int start = message.lastIndexOf("#") + 1;
-        String animId = message.substring(start);
-        if (mActivityWorkerMap.containsKey(animId)) {
-            mActivityWorkerMap.remove(animId);
-        }
-        synchronized (mActivityWorkerMap) {
-            mActivityWorkerMap.notifyAll();
-        }
-    }
-
-    public SpeechActivity scheduleSpeech(String executionId){
-        SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(executionId);
-        MaryTTsSpeaker marySpeak = speakerActivity.getMarySpeak();
-        SpeechActivity activity = speakerActivity.getSpeechActivity();
-        LinkedList blocks = marySpeak.getSpeechActivityTextBlocs();
-        int wordIndex = 0;
-        int totalTime = 0;
-        WordTimeMarkSequence wts = marySpeak.getWordTimeSequence();
-        for (final Object item : blocks) {
-            if (!item.toString().contains("$")) {
-                LinkedList<Phoneme> wordPhonemes = marySpeak.getWordPhonemeList(wordIndex);
-                for (Phoneme p : wordPhonemes) {
-                    if (p.getLipPosition() == null) {
-                        continue;
-                    }
-                    mScheduler.schedule((int) p.getmStart(), null, new ActionMouthActivity(activity.getActor(), "face",
-                            "Mouth_" + p.getLipPosition(), null, (int) (p.getmEnd() - p.getmStart()), wts), mProject.getAgentDevice(activity.getActor()));
-                    totalTime+= (int) (p.getmEnd() - p.getmStart());
-                }
-                wordIndex++;
-            }
-        }
-        return  activity;
-    }
-
-    private void broadcast(final String message) {
-        for (final BaxterHandler client : mClientMap.values()) {
-            client.send(message);
-        }
     }
 
 }
