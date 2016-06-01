@@ -13,6 +13,7 @@ import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
+import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -31,6 +32,7 @@ public class BaxterExecutor extends ActivityExecutor {
     private final HashMap<String, Process> mProcessMap = new HashMap();
     private int maryExecutionId=0;
     private MaryTTsProcess marySelfServer;
+    private BaxterServerProcess baxterServerProcess;
     final private String language = "en"; //TODO: Put in config file
     final private VoiceName voice = new VoiceName("dfki-spike");;
     private final HashMap<String, BaxterHandler> mClientMap = new HashMap();
@@ -47,6 +49,7 @@ public class BaxterExecutor extends ActivityExecutor {
         super(config, project);
         marySelfServer = new MaryTTsProcess(mConfig.getProperty("mary.base"));
         baxterStickman = new BaxterStickman();
+        baxterServerProcess = new BaxterServerProcess(mConfig.getProperty("server"));
     }
 
     public void accept(final Socket socket) {
@@ -202,9 +205,9 @@ public class BaxterExecutor extends ActivityExecutor {
     @Override
     public void launch() {
         try {
-            launchBaxterServer(); //TODO: Hacer como en el MaryTTSServer que espera hasta que se ejecute
+            baxterServerProcess.launchBaxterServer();
+            Thread.sleep(2000);//TODO: Quitar cuando se haga lo de eserar a que termine
             connectToBaxterServer();
-            startBaxterServer();
             marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
             mListener = new BaxterListener(8000, this);
             mListener.start();
@@ -212,8 +215,10 @@ public class BaxterExecutor extends ActivityExecutor {
             waitForClients();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            unload();
         } catch (Exception e) {
             e.printStackTrace();
+            unload();
         }
     }
 
@@ -227,49 +232,22 @@ public class BaxterExecutor extends ActivityExecutor {
         }
     }
 
-    public void connectToBaxterServer() throws IOException {
-        InetAddress inteAddress = null;
-        inteAddress = InetAddress.getByName("localhost");
-        SocketAddress socketAddress = new InetSocketAddress(inteAddress, 1313);
-        Socket mSocket = new Socket();
-        mSocket.connect(socketAddress, 2000); // wait max. 2000ms
+    private void connectToBaxterServer() throws IOException {
+        Socket mSocket = baxterServerProcess.connectToSocket();
         baxterServerHandler = new BaxterHandler(mSocket, this);
-
-
+        startBaxterServer();
     }
 
-    private void startBaxterServer() throws IOException {
+    public void startBaxterServer() throws IOException {
         baxterServerHandler.start(); //TODO: Separate for testing
         mClientMap.put("pythonServerBaxter", baxterServerHandler);
     }
-
-
-
 
     private void launchStickmanClient(){
         final String host = mConfig.getProperty("smhost");
         final String port = mConfig.getProperty("smport");
         mLogger.message("Starting StickmanStage Client Application ...");
         mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
-    }
-
-    public void launchBaxterServer() throws IOException {
-        String processName = "imageviwer";
-        String []serverPath = getServerCmdPath();
-        mProcessMap.put(processName, Runtime.getRuntime().exec(serverPath));
-    }
-
-    private String[] getServerCmdPath() throws FileNotFoundException {
-        String server = mConfig.getProperty("server");
-        if(server == null || server.equals("")){
-            throw new FileNotFoundException("Baxter Server not found");
-        }
-        File f = new File(server);
-        if(!f.exists()) {
-            throw new FileNotFoundException("Baxter Server not found");
-        }
-        String cmdPath[] = {"python", server};
-        return cmdPath;
     }
 
     @Override
@@ -280,15 +258,13 @@ public class BaxterExecutor extends ActivityExecutor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         try {
-            unloadBaxterServer();
+            baxterServerProcess.unloadBaxterServer();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         mActivityWorkerMap.clear();
         try {
             marySelfServer.stopMaryServer();
@@ -300,20 +276,6 @@ public class BaxterExecutor extends ActivityExecutor {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void unloadBaxterServer() throws IOException, InterruptedException {
-        for (final Map.Entry<String, Process> entry : mProcessMap.entrySet()) {
-            final String name = entry.getKey();
-            final Process process = entry.getValue();
-            Process killer = null;
-            final String killCmd = "ps aux | grep '" + name + "' | awk '{print $2}' | xargs kill";
-            String[] cmd = {"/bin/sh", "-c", killCmd};
-            killer = Runtime.getRuntime().exec(cmd);
-            killer.waitFor();
-            int value = process.waitFor();
-            int a = value;
         }
     }
 

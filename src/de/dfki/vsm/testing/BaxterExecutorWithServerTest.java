@@ -2,33 +2,23 @@
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.project.PluginConfig;
 
-import de.dfki.vsm.runtime.activity.AbstractActivity;
-import de.dfki.vsm.runtime.activity.ActionActivity;
-import de.dfki.vsm.runtime.activity.SpeechActivity;
-import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.xtension.baxter.BaxterExecutor;
 import de.dfki.vsm.xtension.baxter.BaxterHandler;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by alvaro on 5/24/16.
@@ -51,23 +41,26 @@ public class BaxterExecutorWithServerTest {
     }
 
     @Test
-    public void testConnection(){
+    public void testConnection() throws IOException {
         //No va  a funcionar porque falta separar el .start del cuando inicia el baxter en el metodo launch
+        unload();
+        BaxterExecutor executorSpy = Mockito.spy(executor);
+        doNothing().when(executorSpy).startBaxterServer();
         try {
-            executor.launchBaxterServer();
-            Thread.sleep(2000);
-            executor.connectToBaxterServer();
-            Thread.sleep(2000);
-        } catch (IOException e) {
-            assertTrue(false);
+            executorSpy.launch();
+            Thread.sleep(10000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
+            assertTrue(false);
         }
-        HashMap clientMap = (HashMap) getPrivateExecutorField("mClientMap");
-        BaxterHandler serverHandler = (BaxterHandler) getPrivateExecutorField("baxterServerHandler");
+
+        BaxterHandler serverHandler = (BaxterHandler) getPrivateSpiedExecutorField(executorSpy, "baxterServerHandler");
+        HashMap clientMap = (HashMap) getPrivateSpiedExecutorField(executorSpy,"mClientMap");
         clientMap.put("pythonServerBaxter", serverHandler);
         BaxterHandler handler = (BaxterHandler) clientMap.get("pythonServerBaxter");
         BaxterHandler handlerSpy = Mockito.spy(handler);
+
         //handlerSpy.send("Test\n");
         doAnswer(new Answer<Object>() {
             @Override
@@ -89,6 +82,8 @@ public class BaxterExecutorWithServerTest {
 
 
     }
+
+
 
     private void unload(){
         try {
@@ -117,25 +112,7 @@ public class BaxterExecutorWithServerTest {
     }
 
 
-    @Test
-    public void testLaunchWrongServerPath() throws Exception {
-        Iterator projIterator = project.getProjectConfig().getPluginConfigList().iterator();
-        while (projIterator.hasNext()){
-            PluginConfig plugin = (PluginConfig) projIterator.next();
-            plugin.setProperty("server", "wrong_path");
-        }
-        Method method = BaxterExecutor.class.getDeclaredMethod("getServerCmdPath", null);
-        method.setAccessible(true);
-        try {
-            method.invoke(executor, null);
-        }catch (Exception e){
-            if(e.getCause().getMessage().equals("Baxter Server not found")){
-                assertTrue(true);
-            }else {
-                assertTrue(false);
-            }
-        }
-    }
+
 
 
 
@@ -150,6 +127,22 @@ public class BaxterExecutorWithServerTest {
         field.setAccessible(true);
         try {
             return field.get(executor);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return new Object();
+    }
+
+    private Object getPrivateSpiedExecutorField(BaxterExecutor execut, String fieldName){
+        Field field = null;
+        try {
+            field = BaxterExecutor.class.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        field.setAccessible(true);
+        try {
+            return field.get(execut);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
