@@ -53,10 +53,19 @@ public class BaxterExecutorWithServerTest {
     @Test
     public void testConnection(){
         //No va  a funcionar porque falta separar el .start del cuando inicia el baxter en el metodo launch
-        executor.launch();
+        try {
+            executor.launchBaxterServer();
+            Thread.sleep(2000);
+            executor.connectToBaxterServer();
+            Thread.sleep(2000);
+        } catch (IOException e) {
+            assertTrue(false);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         HashMap clientMap = (HashMap) getPrivateExecutorField("mClientMap");
-        assertTrue(clientMap.size()> 0);
-        assertTrue(clientMap.containsKey("pythonServerBaxter"));
+        BaxterHandler serverHandler = (BaxterHandler) getPrivateExecutorField("baxterServerHandler");
+        clientMap.put("pythonServerBaxter", serverHandler);
         BaxterHandler handler = (BaxterHandler) clientMap.get("pythonServerBaxter");
         BaxterHandler handlerSpy = Mockito.spy(handler);
         //handlerSpy.send("Test\n");
@@ -77,6 +86,7 @@ public class BaxterExecutorWithServerTest {
         handlerSpy.start();
         System.out.println("Sending..!!");
         handlerSpy.send("Test\n");
+
 
     }
 
@@ -162,23 +172,39 @@ public class BaxterExecutorWithServerTest {
 
     }
 
-    @Test
-    public void testSpeechToMouth(){
-        unload();
-        executor.launch();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        HashMap<String, AbstractActivity> speechActivitiesCopy = new HashMap<>();
-        SpeechActivity speech =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
-        speechActivitiesCopy.put("id1", speech);
-        setPrivateExecutorField("speechActivities", speechActivitiesCopy );
-        assertEquals(speech, executor.scheduleSpeech("id1"));
-        unload();
-    }
 
+
+    @Test
+    public void testUnload()  {
+        String[] cmdForBaxterServer = {"/bin/sh","-c","ps -e -o cmd"};
+        executor.launch();
+        //Thread.sleep(1000);
+        String res = null;
+        try {
+            res = executeAndReturnMsg(cmdForBaxterServer);
+            assertTrue(true);
+        } catch (IOException e) {
+            assertTrue(false);
+        }
+        if(res.contains("imageviwer")){
+            assertTrue(true);
+        }else {
+            assertTrue(false);
+        }
+        unload();
+        try {
+            res = executeAndReturnMsg(cmdForBaxterServer);
+            assertTrue(true);
+        } catch (IOException e) {
+            assertTrue(false);
+        }
+        if(!res.contains("imageviwer")){
+            assertTrue(true);
+        }else {
+            assertTrue(false);
+        }
+
+    }
 
     private String executeAndReturnMsg(String[] cmd) throws IOException {
         ProcessBuilder   ps=new ProcessBuilder(cmd);

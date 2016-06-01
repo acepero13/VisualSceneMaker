@@ -2,7 +2,6 @@ package de.dfki.vsm.xtension.baxter;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.stickman.StickmanStage;
-import de.dfki.stickman.animationlogic.AnimationLoader;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
 import de.dfki.vsm.runtime.activity.ActionActivity;
@@ -106,13 +105,13 @@ public class BaxterExecutor extends ActivityExecutor {
 
 
     private void executeMaryTTSAndWait(String executionId){
-        String spokenText = intentSpeak(executionId);
+        String spokenText = intentToSpeak(executionId);
         if(spokenText.length() > 0 && Thread.currentThread() instanceof  ActivityWorker) { //TODO: Remove later, only for testing
             waitForSpeachToFinish(executionId);
         }
     }
 
-    public String intentSpeak(String  executionId ){
+    public String intentToSpeak(String  executionId ){
         synchronized (mActivityWorkerMap) {
             String spokenText = "";
             SpeakerActivity speaker = speechActivities.get(executionId);
@@ -204,10 +203,11 @@ public class BaxterExecutor extends ActivityExecutor {
     public void launch() {
         try {
             launchBaxterServer(); //TODO: Hacer como en el MaryTTSServer que espera hasta que se ejecute
+            connectToBaxterServer();
+            startBaxterServer();
             marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
             mListener = new BaxterListener(8000, this);
             mListener.start();
-            connectToBaxterServer();
             launchStickmanClient();
             waitForClients();
         } catch (FileNotFoundException e) {
@@ -234,9 +234,17 @@ public class BaxterExecutor extends ActivityExecutor {
         Socket mSocket = new Socket();
         mSocket.connect(socketAddress, 2000); // wait max. 2000ms
         baxterServerHandler = new BaxterHandler(mSocket, this);
+
+
+    }
+
+    private void startBaxterServer() throws IOException {
         baxterServerHandler.start(); //TODO: Separate for testing
         mClientMap.put("pythonServerBaxter", baxterServerHandler);
     }
+
+
+
 
     private void launchStickmanClient(){
         final String host = mConfig.getProperty("smhost");
@@ -266,6 +274,13 @@ public class BaxterExecutor extends ActivityExecutor {
 
     @Override
     public void unload() {
+
+        try {
+            unloadClients();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         try {
             unloadBaxterServer();
         } catch (IOException e) {
@@ -273,11 +288,7 @@ public class BaxterExecutor extends ActivityExecutor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        try {
-            unloadClients();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         mActivityWorkerMap.clear();
         try {
             marySelfServer.stopMaryServer();
@@ -301,7 +312,8 @@ public class BaxterExecutor extends ActivityExecutor {
             String[] cmd = {"/bin/sh", "-c", killCmd};
             killer = Runtime.getRuntime().exec(cmd);
             killer.waitFor();
-            process.waitFor();
+            int value = process.waitFor();
+            int a = value;
         }
     }
 

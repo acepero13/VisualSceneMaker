@@ -21,7 +21,6 @@ import java.util.ArrayList;
 public class BaxterStickman {
     final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 2.0f, new Dimension(640, 480), false);
 
-    //TODO: Refactorizar en nueva clase
     private String getImageHeadFromStickmanAnimation() {
         BufferedImage image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
         BufferedImage head;
@@ -34,7 +33,6 @@ public class BaxterStickman {
         return headAsString;
     }
 
-    //TODO: Refactorizar en nueva clase
     private String transformStickmanToImage(BufferedImage head) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String imageString = "";
@@ -50,7 +48,6 @@ public class BaxterStickman {
         return imageString;
     }
 
-    //TODO: Refactorizar en nueva clase
     public String buildBaxterCommand(ArrayList<String> params) {
         BaxterCommand command = new BaxterCommand("paint", "testId", params);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -61,7 +58,6 @@ public class BaxterStickman {
         return toSend;
     }
 
-    //TODO: Refactorizar en nueva clase
     private BufferedImage cropHead(BufferedImage src, int width, int height, float scale) {
         BufferedImage dest = src.getSubimage(0, 0, width + 70, height - 50);
         return dest;

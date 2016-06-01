@@ -1,17 +1,17 @@
 package de.dfki.vsm.xtension.baxter;
 
+import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.editor.project.EditorProject;
-import de.dfki.vsm.runtime.activity.AbstractActivity;
+import de.dfki.vsm.runtime.activity.ActionActivity;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
+import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
+import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -52,7 +52,7 @@ public class BaxterExecutorTest {
         SpeakerActivity speakerActivity = mock(SpeakerActivity.class);
         speechActivities.put("my_activity", speakerActivity);
         BaxterExecutor spyExecutor = Mockito.spy(executor);
-        when(spyExecutor.intentSpeak("my_speak_activity")).thenReturn("Hello World");
+        when(spyExecutor.intentToSpeak("my_speak_activity")).thenReturn("Hello World");
         when(spyExecutor.getExecutionId()).thenReturn("my_speak_activity");
         SpeechActivity speech =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
         ActivityWorker task = new ActivityWorker(0, new LinkedList<>(), speech, spyExecutor);
@@ -61,7 +61,7 @@ public class BaxterExecutorTest {
         HashMap mActivityWorkerMap = (HashMap) getPrivateExecutorField("mActivityWorkerMap");
         assertEquals(1, mActivityWorkerMap.size());
         assertTrue(mActivityWorkerMap.containsKey("my_speak_activity"));
-        when(spyExecutor.intentSpeak("my_speak_activity2")).thenReturn("Hello World");
+        when(spyExecutor.intentToSpeak("my_speak_activity2")).thenReturn("Hello World");
         when(spyExecutor.getExecutionId()).thenReturn("my_speak_activity2");
         /*task.join();
         ActivityWorker task2 = new ActivityWorker(0, new LinkedList<>(), speech, spyExecutor);
@@ -70,8 +70,75 @@ public class BaxterExecutorTest {
         Thread.sleep(500);
         assertTrue(true);*/
 
+        SpeechActivity speech3 =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
+        spyExecutor.execute(speech3);
+        HashMap activities = (HashMap) getPrivateExecutorField("speechActivities");
+        assertEquals(3, activities.size());
+    }
+
+    @Test
+    public void testMarker(){
+        assertEquals("$13", executor.marker(13));
+    }
+
+    @Test
+    public void testScheduleSpeech() throws Exception {
+        SpeechActivity speech =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
+        HashMap speechActivities = (HashMap) getPrivateExecutorField("speechActivities");
+        SpeakerActivity mockSActivity = mock(SpeakerActivity.class);
+        MaryTTsSpeaker mockSpeaker = mock(MaryTTsSpeaker.class);
+        when(mockSpeaker.getWordTimeSequence()).thenReturn(new WordTimeMarkSequence());
+        when(mockSpeaker.getSpeechActivityTextBlocs()).thenReturn(getHelloWordSpeechBlockForSpeechActivity());
+        when(mockSpeaker.getWordPhonemeList(any(Integer.class))).thenReturn(getWordPhonemeList());
+
+        when(mockSActivity.getMarySpeak()).thenReturn(mockSpeaker);
+        when(mockSActivity.getSpeechActivity()).thenReturn(speech);
+        speechActivities.put("my_activity", mockSActivity);
+        assertEquals(speech, executor.scheduleSpeech("my_activity"));
+    }
+
+    private LinkedList<Phoneme> getWordPhonemeList() {
+        LinkedList<Phoneme> phonemes = new LinkedList<>();
+        phonemes.add( new Phoneme("A", 0, 10));
+        phonemes.add(new Phoneme("O", 10, 20));
+        phonemes.add( new Phoneme("u", 20, 30));
+        phonemes.add(new Phoneme("This is a bad phoneme", 30,40));
+        return phonemes;
+    }
+
+    @Test
+    public void executeEmptySpeech(){
+        executor.execute(null);
+        assertTrue(true);
+    }
 
 
+
+
+    @Test
+    public void executeAnimation(){
+        ActionActivity activity = new ActionActivity("baxter", "mode", "Smile", "Texto");
+        executor.execute(activity);
+        HashMap speechActivities = (HashMap) getPrivateExecutorField("speechActivities");
+        assertEquals(0, speechActivities.size());
+    }
+
+    @Test
+    public void testActionMouth(){
+        ActionMouthActivity activityMouth = new ActionMouthActivity("baxter", "mode", "Smile", "Texto", 1000);
+        executor.execute(activityMouth);
+        HashMap speechActivities = (HashMap) getPrivateExecutorField("speechActivities");
+        assertEquals(0, speechActivities.size());
+
+    }
+
+    @Test
+    public void testEmptyBaxter(){
+        ActionMouthActivity activityMouth = new ActionMouthActivity("baxter", "mode", "Smile", "Texto", 1000);
+        setPrivateExecutorField("baxterStickman", null);
+        executor.execute(activityMouth);
+        HashMap speechActivities = (HashMap) getPrivateExecutorField("speechActivities");
+        assertEquals(0, speechActivities.size());
     }
 
 
@@ -119,10 +186,7 @@ public class BaxterExecutorTest {
         assertEquals(0, activityWorker.size());
     }
 
-    @Test
-    public void testScheduleSpeech() throws Exception {
 
-    }
 
     private Object getPrivateExecutorField(String fieldName){
         Field field = null;
