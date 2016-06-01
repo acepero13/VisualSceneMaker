@@ -43,7 +43,6 @@ public class BaxterExecutorWithServerTest {
     @Test
     public void testConnection() throws IOException {
         //No va  a funcionar porque falta separar el .start del cuando inicia el baxter en el metodo launch
-        unload();
         BaxterExecutor executorSpy = Mockito.spy(executor);
         doNothing().when(executorSpy).startBaxterServer();
         try {
@@ -169,9 +168,9 @@ public class BaxterExecutorWithServerTest {
 
     @Test
     public void testUnload()  {
+        unload();
         String[] cmdForBaxterServer = {"/bin/sh","-c","ps -e -o cmd"};
         executor.launch();
-        //Thread.sleep(1000);
         String res = null;
         try {
             res = executeAndReturnMsg(cmdForBaxterServer);

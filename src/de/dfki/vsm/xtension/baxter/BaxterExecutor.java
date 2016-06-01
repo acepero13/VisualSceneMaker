@@ -205,12 +205,8 @@ public class BaxterExecutor extends ActivityExecutor {
     @Override
     public void launch() {
         try {
-            baxterServerProcess.launchBaxterServer();
-            Thread.sleep(2000);//TODO: Quitar cuando se haga lo de eserar a que termine
-            connectToBaxterServer();
-            marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
-            mListener = new BaxterListener(8000, this);
-            mListener.start();
+            launchBaxter();
+            launchMary();
             launchStickmanClient();
             waitForClients();
         } catch (FileNotFoundException e) {
@@ -220,6 +216,17 @@ public class BaxterExecutor extends ActivityExecutor {
             e.printStackTrace();
             unload();
         }
+    }
+
+    private void launchBaxter() throws Exception {
+        baxterServerProcess.launchBaxterServer();
+        connectToBaxterServer();
+        mListener = new BaxterListener(8000, this);
+        mListener.start();
+    }
+
+    private void launchMary() throws Exception {
+        marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
     }
 
     private void waitForClients(){

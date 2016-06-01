@@ -2,22 +2,20 @@ package de.dfki.vsm.xtension.baxter.utils;
 
 import de.dfki.vsm.xtension.baxter.BaxterHandler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
+import java.io.*;
+import java.net.*;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by alvaro on 6/1/16.
  */
-public class BaxterServerProcess {
+public class BaxterServerProcess extends Observable {
     private final String processName = "imageviwer";
     private final String serverBasePath;
-
+    private LinkedList<Observer> observers = new LinkedList<>();
     public BaxterServerProcess(String basePath){
         serverBasePath = basePath;
     }
@@ -42,11 +40,31 @@ public class BaxterServerProcess {
         return cmdPath;
     }
 
-    //TODO: Hacer como en el MaryTTSServer que espera hasta que se ejecute
-    public void launchBaxterServer() throws IOException {
+    public void launchBaxterServer() throws Exception {
         String processName = "imageviwer";
-        String []serverPath = getServerCmdPath();
-        Runtime.getRuntime().exec(serverPath);
+        String []serverCmdPath = getServerCmdPath();
+        final ProcessBuilder processB = new ProcessBuilder(serverCmdPath);
+        processB.redirectErrorStream(true);
+        Process p;
+        try {
+            p = processB.start();
+            boolean started = false;
+            while (!started) {
+                try {
+                    ServerSocket serverSocket = new ServerSocket(1313);
+                    serverSocket.close();
+                    Thread.sleep(100);
+                } catch (IOException e) {
+                   started = true;
+                    notifyAllObservers("Server started");
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            notifyAllObservers("Server could not be started. Reason: " + e.getMessage());
+            throw new Exception("Baxter SErver could not be started");
+        }
     }
 
     public Socket connectToSocket() throws IOException {
@@ -57,6 +75,16 @@ public class BaxterServerProcess {
         mSocket.connect(socketAddress, 2000); // wait max. 2000ms
 
         return mSocket;
+    }
+
+    public void registerObserver(Observer observer){
+        observers.add(observer);
+    }
+
+    public void notifyAllObservers(String message){
+        for (Observer o: observers  ) {
+            o.update(this, message);
+        }
     }
 
 

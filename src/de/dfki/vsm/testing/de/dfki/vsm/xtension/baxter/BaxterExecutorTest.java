@@ -5,8 +5,10 @@ import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.runtime.activity.ActionActivity;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
+import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
+import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import org.junit.Before;
@@ -14,6 +16,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,6 +83,76 @@ public class BaxterExecutorTest {
     @Test
     public void testMarker(){
         assertEquals("$13", executor.marker(13));
+    }
+
+    @Test
+    public void testLaunchNotFoundServer(){
+        BaxterServerProcess processMock = mock(BaxterServerProcess.class);
+        try {
+            doThrow(new FileNotFoundException("Server not found")).when(processMock).launchBaxterServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            assertTrue(false);
+            e.printStackTrace();
+        }
+        setPrivateExecutorField("baxterServerProcess", processMock);
+        executor.launch();
+        assertTrue(true);
+
+    }
+
+    @Test
+    public void testExceptionForUnload(){
+        BaxterServerProcess processMock = mock(BaxterServerProcess.class);
+        try {
+            doThrow(new IOException("IOxpetion")).when(processMock).unloadBaxterServer();
+        } catch (IOException e) {
+            assertTrue(true);
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        setPrivateExecutorField("baxterServerProcess", processMock);
+        executor.unload();
+        assertTrue(true);
+    }
+
+    @Test
+    public void testExectionBadListener(){
+        setPrivateExecutorField("mListener", new BaxterListener(12,null));
+        executor.unload();
+        assertTrue(true);
+    }
+
+    @Test
+    public void testExectionBadListenerException(){
+        MaryTTsProcess processMock = mock(MaryTTsProcess.class);
+        try {
+            doThrow(new IOException("IOxpetion")).when(processMock).stopMaryServer();
+        } catch (IOException e) {
+            assertTrue(true);
+            e.printStackTrace();
+        }
+        setPrivateExecutorField("marySelfServer",processMock);
+        executor.unload();
+        assertTrue(true);
+    }
+
+    @Test
+    public void testExceptionInterruptForUnload(){
+        BaxterServerProcess processMock = mock(BaxterServerProcess.class);
+        try {
+            doThrow(new InterruptedException("Interrupted")).when(processMock).unloadBaxterServer();
+        } catch (IOException e) {
+            assertTrue(true);
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        setPrivateExecutorField("baxterServerProcess", processMock);
+        executor.unload();
+        assertTrue(true);
     }
 
     @Test
