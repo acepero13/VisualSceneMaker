@@ -211,9 +211,11 @@ public class BaxterExecutor extends ActivityExecutor {
             waitForClients();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.out.println("Could not start server. Shutting down");
             unload();
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Could not start server. Shutting down");
             unload();
         }
     }
