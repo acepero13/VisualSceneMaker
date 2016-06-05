@@ -130,7 +130,10 @@ public class BaxterHandler extends Thread implements EventListener {
     public void update(EventObject event) {
         if(event instanceof LineStart){
             //mExecutor.handle(message, this);
-            mExecutor.scheduleSpeech(((LineStart) event).getExecutionId());
+            String executionId = ((LineStart) event).getExecutionId();
+            if(executionId.startsWith(BaxterExecutor.sExecutionId)){
+                mExecutor.scheduleSpeech(executionId);
+            }
         }
         if(event instanceof LineStop){
             String message = "#AUDIO#end#" + ((LineStop) event).getExecutionId();

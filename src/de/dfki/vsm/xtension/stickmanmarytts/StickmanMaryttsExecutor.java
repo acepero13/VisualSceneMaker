@@ -51,6 +51,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     private HashMap<String, AbstractActivity> speechActivities = new HashMap<>();
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
     private MaryTTsProcess marySelfServer;
+    public static String sExecutionId = "stickmanmary_";
 
     private int maryId;
 
@@ -60,7 +61,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         super(config, project);
         maryId = 0;
         languageAgentMap = new HashMap<>();
-        marySelfServer = new MaryTTsProcess(mConfig.getProperty("mary.base"));
+        marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
 
     }
 
@@ -80,7 +81,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     private final String getExecutionId() {
-        return "mary_" + maryId++;
+        return sExecutionId + maryId++;
     }
 
     @Override
@@ -197,20 +198,27 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             launchMaryTTSAndDialog();
         } catch (Exception e) {
             e.printStackTrace();
-
         }
         mListener = new StickmanMaryttsListener(8000, this);
         mListener.start();
+        launchStickmanClient();
+        addStickmansToStage();
+        waitForClients();
+    }
+
+    private void launchStickmanClient() {
         for (ConfigFeature cf : mConfig.getEntryList()) {
             mLogger.message("Stickman Plugin Config: " + cf.getKey() + " = " + cf.getValue());
         }
         final String host = mConfig.getProperty("smhost");
         final String port = mConfig.getProperty("smport");
-
         // Start the StickmanStage client application
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
-        addStickmansToStage();
+        mStickmanStage = StickmanStage.getNetworkInstances(host, Integer.parseInt(port));
+        mStickmanStage.setVisible(true);
+    }
+
+    private void waitForClients() {
         while (mClientMap.isEmpty()) {
             mLogger.message("Waiting for StickmanStage to launch");
             try {
@@ -220,6 +228,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             }
         }
     }
+
     private void launchMaryTTSAndDialog() throws Exception {
         WaitingDialog InfoDialog  = new WaitingDialog("Loading MaryTTS...");
         marySelfServer.registerObserver(InfoDialog);
@@ -250,21 +259,9 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     public void unload() {
         // clear the stage
         StickmanStage.clearStage();
-        for (final StickmanMaryttsHandler client : mClientMap.values()) {
-            client.abort();
-            try {
-                client.join();
-            } catch (final Exception exc) {
-                mLogger.failure(exc.toString());
-                mLogger.message("Joining client thread");
-            }
-        }
-        mClientMap.clear();
-        languageAgentMap.clear();
-        wtsMap.clear();
-        mActivityWorkerMap.clear();
         // Abort the server thread
         try {
+            stopClients();
             marySelfServer.stopMaryServer();
             mListener.abort();
             mListener.join();
@@ -272,6 +269,23 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
 
         } catch (final Exception exc) {
             mLogger.failure(exc.toString());
+        } finally {
+            clearMaps();
+        }
+    }
+
+    private void clearMaps() {
+        mClientMap.clear();
+        languageAgentMap.clear();
+        wtsMap.clear();
+        mActivityWorkerMap.clear();
+    }
+
+    private void stopClients() throws InterruptedException {
+        for (final StickmanMaryttsHandler client : mClientMap.values()) {
+            client.abort();
+            client.join();
+
         }
     }
 

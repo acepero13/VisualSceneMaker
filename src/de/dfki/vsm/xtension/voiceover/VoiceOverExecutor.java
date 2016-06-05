@@ -23,14 +23,14 @@ import java.util.HashMap;
 public class VoiceOverExecutor extends ActivityExecutor implements EventListener{
     private MaryTTsProcess marySelfServer;
     private String language = "en";
-    private VoiceName voiceName = new VoiceName("dfki-spike");
+    private VoiceName voiceName = new VoiceName("dfki-poppy");
     private int maryExecutionId=0;
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
     private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
 
     public VoiceOverExecutor(PluginConfig config, RunTimeProject project) {
         super(config, project);
-        marySelfServer = new MaryTTsProcess(mConfig.getProperty("mary.base"));
+        marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
         mEventDispatcher.register(this);
     }
 
@@ -106,11 +106,11 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
     @Override
     public void unload() {
         mEventDispatcher.remove(this);
-        try {
+        /*try {
             stopMaryServer();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void stopMaryServer() throws IOException {

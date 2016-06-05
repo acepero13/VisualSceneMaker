@@ -29,6 +29,7 @@ import java.util.Map;
  * Created by alvaro on 5/16/16.
  */
 public class BaxterExecutor extends ActivityExecutor {
+    public static java.lang.String sExecutionId = "baxtermary_";
     private final HashMap<String, Process> mProcessMap = new HashMap();
     private int maryExecutionId=0;
     private MaryTTsProcess marySelfServer;
@@ -47,7 +48,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     public BaxterExecutor(PluginConfig config, RunTimeProject project) {
         super(config, project);
-        marySelfServer = new MaryTTsProcess(mConfig.getProperty("mary.base"));
+        marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
         baxterStickman = new BaxterStickman();
         baxterServerProcess = new BaxterServerProcess(mConfig.getProperty("server"));
     }
@@ -60,7 +61,7 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     public  String getExecutionId() {
-        return "mary_" + maryExecutionId++;
+        return sExecutionId + maryExecutionId++;
     }
 
     @Override
@@ -223,7 +224,7 @@ public class BaxterExecutor extends ActivityExecutor {
     private void launchBaxter() throws Exception {
         baxterServerProcess.launchBaxterServer();
         connectToBaxterServer();
-        mListener = new BaxterListener(8000, this);
+        mListener = new BaxterListener(8001, this);
         mListener.start();
     }
 
@@ -256,7 +257,7 @@ public class BaxterExecutor extends ActivityExecutor {
         final String host = mConfig.getProperty("smhost");
         final String port = mConfig.getProperty("smport");
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
+        mStickmanStage = StickmanStage.getNetworkInstances(host, Integer.parseInt(port));
     }
 
     @Override

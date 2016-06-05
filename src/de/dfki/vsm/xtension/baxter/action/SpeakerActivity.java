@@ -6,8 +6,6 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 
-import java.util.LinkedList;
-
 /**
  * Created by alvaro on 5/31/16.
  */
@@ -40,9 +38,7 @@ public class SpeakerActivity {
         return marySpeak.speak(executionId);
     }
 
-    public String speak() throws Exception {
-        return marySpeak.speak();
-    }
+
 
     public SpeechActivity getSpeechActivity(){
         return speechActivity;
