@@ -516,7 +516,7 @@ public class I4GMaryClient {
         return speakerVoice;
     }
 
-    public void speak(Stickman.TYPE gender, String language) throws IOException, UnknownHostException, UnsupportedAudioFileException,
+    public void speak(Stickman.TYPE gender, String language, VoiceName voiceName) throws IOException, UnknownHostException, UnsupportedAudioFileException,
             InterruptedException, Exception {
         if(language == null || language.equals("")){
             language = "en";
@@ -527,7 +527,6 @@ public class I4GMaryClient {
 
         //mLogger.message("Speak: \"" + text + "\"");
         if(text.length()> 0) {
-            System.out.println("MEssage: " + text);
             String rawMaryXml = getRawMaryXml("", text, languageMap.get(language));
             String acoustParams = getAcoustParams("", rawMaryXml, speakerVoice,language);
             ByteArrayOutputStream audio = getAudio("", acoustParams, speakerVoice,language);

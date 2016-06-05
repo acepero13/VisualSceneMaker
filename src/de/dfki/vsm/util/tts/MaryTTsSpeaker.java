@@ -103,6 +103,21 @@ public class MaryTTsSpeaker {
         return  textToSepak;
     }
 
+    public String speak() throws Exception {
+        String textToSepak = "";
+        try {
+            addWordsToMaryClient();
+            textToSepak = maryTTs.getText();
+            if(textToSepak.length()>0) {
+                maryTTs.speak(voiceName, langVoice);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        return  textToSepak;
+    }
+
     public WordTimeMarkSequence getWordTimeSequence(){
         WordTimeMarkSequence wts = new WordTimeMarkSequence(speech.getTextOnly("$"));
         LinkedList blocks = speech.getBlocks();

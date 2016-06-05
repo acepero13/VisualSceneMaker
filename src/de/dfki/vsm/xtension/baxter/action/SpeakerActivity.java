@@ -40,6 +40,10 @@ public class SpeakerActivity {
         return marySpeak.speak(executionId);
     }
 
+    public String speak() throws Exception {
+        return marySpeak.speak();
+    }
+
     public SpeechActivity getSpeechActivity(){
         return speechActivity;
     }
