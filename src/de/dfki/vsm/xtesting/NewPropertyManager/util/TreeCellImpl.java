@@ -1,5 +1,8 @@
-package de.dfki.vsm.xtesting.propertymanager.util;
+package de.dfki.vsm.xtesting.NewPropertyManager.util;
 
+import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryAgent;
+import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryPlugin;
+import de.dfki.vsm.xtesting.NewPropertyManager.model.EntryRoot;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
@@ -8,7 +11,7 @@ import javafx.scene.input.KeyCode;
 
 import java.util.LinkedList;
 
-public final class TreeCellImpl extends TreeCell<String> implements TreeObservable{
+public  class TreeCellImpl<AbstractTreeEntry> extends TreeCell<AbstractTreeEntry> implements TreeObservable{
 
     private TextField textField;
     private String editingNode;
@@ -16,7 +19,7 @@ public final class TreeCellImpl extends TreeCell<String> implements TreeObservab
     private String newValue;
     private LinkedList<TreeObserver> observers = new LinkedList<>();
     @Override
-    public void updateItem(String item, boolean empty) {
+    public void updateItem(AbstractTreeEntry item, boolean empty) {
 
         super.updateItem(item, empty);
 
@@ -33,7 +36,7 @@ public final class TreeCellImpl extends TreeCell<String> implements TreeObservab
             }else {
                 setText(getItem() == null ? "" : getItem().toString());
                 setGraphic(getTreeItem().getGraphic());
-                if (getTreeItem() instanceof AbstractTreeItem  && (getTreeItem().getParent() != null && getTreeItem().getParent().getValue().equals("Devices"))) {
+                if (getTreeItem() instanceof AbstractTreeItem ) {
                     setContextMenu(((AbstractTreeItem) getTreeItem()).getMenu());
                 }else{
                     setContextMenu(new ContextMenu());
@@ -71,15 +74,36 @@ public final class TreeCellImpl extends TreeCell<String> implements TreeObservab
         textField = new TextField(getString());
         textField.setOnKeyReleased((KeyEvent t) -> {
             if (t.getCode() == KeyCode.ENTER){
-                commitEdit(textField.getText());
+                AbstractTreeEntry entry = getEntry();
+                commitEdit(getEditedItemFactory(entry, textField.getText()));
             } else if (t.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }
         });
     }
 
+    private AbstractTreeEntry getEntry(){
+        AbstractTreeEntry entry = null;
+        if(this.getTreeItem() instanceof  BoxTreeItem){
+            entry  = this.getTreeItem().getValue();
+        }else{
+            entry = (AbstractTreeEntry) ((ContextTreeItem)this.getTreeItem()).getEntryItem();
+        }
+        return entry;
+    }
+
+    private AbstractTreeEntry getEditedItemFactory(AbstractTreeEntry entry, String text){
+        if(entry instanceof EntryAgent){
+            ((EntryAgent) entry).setName(text);
+        }
+        if(entry instanceof EntryPlugin){
+            ((EntryPlugin) entry).setName(text);
+        }
+        return entry;
+    }
+
     @Override
-    public void commitEdit(String item) {
+    public void commitEdit(AbstractTreeEntry item) {
         // rename the file or directory
         super.commitEdit(item);
         if (editingNode != null) {
@@ -111,7 +135,12 @@ public final class TreeCellImpl extends TreeCell<String> implements TreeObservab
     @Override
     public void notifyObserver() {
         for (TreeObserver observer:observers    ) {
-            observer.update(new CellEvent(newValue, oldValue));
+            observer.update(new CellEvent(newValue, oldValue, (de.dfki.vsm.xtesting.NewPropertyManager.model.AbstractTreeEntry) getItem()));
         }
+    }
+
+    @Override
+    public String toString(){
+        return getTreeItem().toString();
     }
 }

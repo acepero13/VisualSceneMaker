@@ -24,9 +24,11 @@ public class MaryTTsProcess extends Observable{
 
     public boolean startMaryServer() throws Exception {
         if(!isMaryTTSInstalled()){
+            notifyAllObservers("MaryTTS Server couldn't be found");
             throw new FileNotFoundException("MaryTTS Server couldn't be found");
         }
         if(isInstanceRunning()){
+            notifyAllObservers("Server already running");
             throw new Exception("Server already running. Nothing to start");
         }
         final String []command = buildMaryTTSCmd();

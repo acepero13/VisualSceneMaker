@@ -43,10 +43,13 @@ public class WaitingDialog extends JDialog implements Observer{
     public void update(Observable o, Object arg) {
         if(o instanceof MaryTTsProcess){
             String message = (String) arg;
-            if(message.equals("Server started")){
+            if(message.equals("Server started") || message.equals("Server already running")){
                 dispose();
             }else{
                 setMessageText(message);
+                pack();
+                repaint();
+                revalidate();
             }
         }
     }

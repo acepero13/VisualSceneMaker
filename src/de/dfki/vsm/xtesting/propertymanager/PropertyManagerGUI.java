@@ -2,6 +2,7 @@ package de.dfki.vsm.xtesting.propertymanager;
 
 import de.dfki.vsm.model.project.ProjectConfig;
 import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.xtesting.NewPropertyManager.PropertyManagerController;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +20,7 @@ import java.io.IOException;
  * Created by alvaro on 4/23/16.
  */
 public class PropertyManagerGUI {
-    private FXMLDocumentNewController mController;
+    private PropertyManagerController mController;
     private  ProjectConfig mConfig;
     private Region mRootRegion;
     private Double mScaleFactor = 1.5d;
@@ -33,18 +34,17 @@ public class PropertyManagerGUI {
             mProject = project;
             mFrame = new JFrame("Property Editor");
             mFrame.add(mJFXPanel);
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/res/de/dfki/vsm/xtesting/propertymanager/FXMLDocumentNew.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/res/de/dfki/vsm/xtesting/NewPropertyManager/PropertyManager.fxml"));
 
            // Parent root =  FXMLLoader.load(getClass().getResource("/res/de/dfki/vsm/xtesting/propertymanager/FXMLDocumentNew.fxml"));
-            //mController = new FXMLDocumentNewController();
-            mController = new FXMLDocumentNewController( mProject);
+            mController = new PropertyManagerController( mProject);
             fxmlLoader.setController(mController);
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
 
             mJFXPanel.setScene(scene);
             mJFXPanel.setVisible(true);
-            mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //mFrame.setDefaultCloseOperation(JFrame.);
             mFrame.setVisible(true);
             mFrame.setMinimumSize(new Dimension(800,800));
 
@@ -87,7 +87,6 @@ public class PropertyManagerGUI {
         //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/res/de/dfki/vsm/xtesting/propertymanager/FXMLDocument.fxml"));
         //mController = new FXMLDocumentController(mConfig, mProject);
        // FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/res/de/dfki/vsm/xtesting/propertymanager/FXMLDocumentNew.fxml"));
-       // mController = new FXMLDocumentNewController();
         //fxmlLoader.setController(mController);
 
         /*mFrame = new JFrame("Property editor");
