@@ -12,6 +12,7 @@ public final class ActionMouthActivity extends AbstractActivity {
     private Phoneme mPhoneme;
     private final String mText;
     private WordTimeMarkSequence mWts;
+    private String word;
     public ActionMouthActivity(String actor, String mode, String name, String text) {
         super(Policy.PARALLEL, actor, mode, name);
         mText = text;
@@ -50,5 +51,12 @@ public final class ActionMouthActivity extends AbstractActivity {
 
     public final String getText() {
         return mText;
+    }
+
+    public void setWord(String w){
+        word = w;
+    }
+    public String getWord(){
+        return word;
     }
 }

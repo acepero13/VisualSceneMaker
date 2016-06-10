@@ -106,11 +106,11 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
     @Override
     public void unload() {
         mEventDispatcher.remove(this);
-        /*try {
+        try {
             stopMaryServer();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private void stopMaryServer() throws IOException {

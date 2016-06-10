@@ -102,7 +102,6 @@ public class BaxterHandler extends Thread implements EventListener {
             mOutStream.newLine();
             mOutStream.flush();
             // Print some information
-            mLogger.message("Sending '" + string + "'");
             // Return true at success
             return true;
         } catch (final IOException exc) {

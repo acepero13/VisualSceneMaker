@@ -43,6 +43,8 @@
       <Feature key="computation" val="affect\AffectComputation.aml"/>
       <Feature key="definition" val="affect\CharacterDefinition.aml"/>
     </Plugin>
+    <Plugin type="device" name="test" class="de.dfki.vsm.xtension.button.ButtonGUIExecutor" load="true">
+    </Plugin>
   </Plugins>
   <Agents>
     <Agent name="environment" device="tworld">
@@ -84,6 +86,10 @@
     <Agent name="display" device="mediadisplay">
     </Agent>
     <Agent name="Agent" device="environment">
+    </Agent>
+    <Agent name="Agent2" device="test">
+    </Agent>
+    <Agent name="Agent3" device="test">
     </Agent>
   </Agents>
 </Project>

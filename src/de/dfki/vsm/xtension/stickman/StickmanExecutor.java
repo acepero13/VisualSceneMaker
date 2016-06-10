@@ -46,11 +46,13 @@ public class StickmanExecutor extends ActivityExecutor {
     private final HashMap<String, StickmanHandler> mClientMap = new HashMap();
     // The map of activity worker
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
+    private StickmanStage stickmanStage;
 
     // Construct the executor
     public StickmanExecutor(final PluginConfig config, final RunTimeProject project) {
         // Initialize the plugin
         super(config, project);
+        stickmanStage = new StickmanStage();
     }
 
     // Accept some socket
@@ -161,7 +163,7 @@ public class StickmanExecutor extends ActivityExecutor {
 
         // Start the StickmanStage client application 
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage = StickmanStage.getNetworkInstance(host, Integer.parseInt(port));
+        mStickmanStage.setNetWorkProperties(host, Integer.parseInt(port));
         mStickmanStage.showStickmanName(showStickmanNames);
 
         // Get Stickman agents configuration
@@ -169,7 +171,7 @@ public class StickmanExecutor extends ActivityExecutor {
             AgentConfig ac = mProject.getAgentConfig(name);
 
             if (ac.getDeviceName().equalsIgnoreCase("stickman")) {
-                StickmanStage.addStickman(name);
+                mStickmanStage.addStickman(name);
             }
         }
 
@@ -187,7 +189,7 @@ public class StickmanExecutor extends ActivityExecutor {
     @Override
     public void unload() {
         // clear the stage
-        StickmanStage.clearStage();
+        mStickmanStage.clearStage();
         // Abort the client threads
         for (final StickmanHandler client : mClientMap.values()) {
             client.abort();

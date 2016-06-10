@@ -1,3 +1,4 @@
+package integration;
 
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.model.project.PluginConfig;

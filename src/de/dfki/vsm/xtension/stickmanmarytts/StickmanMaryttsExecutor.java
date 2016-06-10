@@ -25,7 +25,6 @@ import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.I4GMaryClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
@@ -41,9 +40,9 @@ import java.util.LinkedList;
  */
 public class StickmanMaryttsExecutor extends ActivityExecutor {
 
-    private static StickmanStage mStickmanStage;
     // The singelton logger instance
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
+    private StickmanStage mStickmanStage ;
     private StickmanMaryttsListener mListener;
     private final HashMap<String, StickmanMaryttsHandler> mClientMap = new HashMap();
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
@@ -178,17 +177,23 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                 e.printStackTrace();
             }
             if(spokenText.length() > 0) {
-                ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
-                mActivityWorkerMap.put(executionId, cAW);
-                while (mActivityWorkerMap.containsValue(cAW)) {
-                    try {
-                        mActivityWorkerMap.wait();
-                    } catch (InterruptedException exc) {
-                        mLogger.failure(exc.toString());
-                    }
-                }
-                mLogger.warning("ActivityWorker " + executionId + " done ....");
+                waitForSpeechToFinish(executionId);
             }
+        }
+    }
+
+    private void waitForSpeechToFinish(String executionId) {
+        synchronized (mActivityWorkerMap) {
+            ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
+            mActivityWorkerMap.put(executionId, cAW);
+            while (mActivityWorkerMap.containsValue(cAW)) {
+                try {
+                    mActivityWorkerMap.wait();
+                } catch (InterruptedException exc) {
+                    mLogger.failure(exc.toString());
+                }
+            }
+            mLogger.warning("ActivityWorker " + executionId + " done ....");
         }
     }
 
@@ -214,7 +219,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         final String port = mConfig.getProperty("smport");
         // Start the StickmanStage client application
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage = StickmanStage.getNetworkInstances(host, Integer.parseInt(port));
+        mStickmanStage =  new StickmanStage(host, Integer.parseInt(port));
         mStickmanStage.setVisible(true);
     }
 
@@ -250,7 +255,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     private void addStickmansToStage( ){
         for (AgentConfig agent:mProject.getProjectConfig().getAgentConfigList()) {
             if(agent.getDeviceName().equalsIgnoreCase("stickmanmarytts") || agent.getDeviceName().equalsIgnoreCase("stickman")){
-                StickmanStage.addStickman(agent.getAgentName());
+                mStickmanStage.addStickman(agent.getAgentName());
             }
         }
     }
@@ -258,20 +263,22 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     @Override
     public void unload() {
         // clear the stage
-        StickmanStage.clearStage();
-        // Abort the server thread
         try {
-            stopClients();
-            marySelfServer.stopMaryServer();
-            mListener.abort();
-            mListener.join();
-            mLogger.message("Joining server thread");
-
+            stopClientsAndServers();
         } catch (final Exception exc) {
             mLogger.failure(exc.toString());
         } finally {
             clearMaps();
+            mStickmanStage.clearStage();
         }
+    }
+
+    private void stopClientsAndServers() throws InterruptedException, IOException {
+        stopClients();
+        marySelfServer.stopMaryServer();
+        mListener.abort();
+        mListener.join();
+        mLogger.message("Joining server thread");
     }
 
     private void clearMaps() {
@@ -285,7 +292,6 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         for (final StickmanMaryttsHandler client : mClientMap.values()) {
             client.abort();
             client.join();
-
         }
     }
 
@@ -330,27 +336,41 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     // Handle some message
     public void handle(final String message, final StickmanMaryttsHandler client) {
         mLogger.message("Handling " + message + "");
+        if (message.contains("#ANIM#end#")) {
+            handleAnimation(message);
+        } else if (message.contains("$")) {
+            handleAction(message);
+        } else if (message.contains("#AUDIO#end#")) {
+            handleAudio(message);
+        }
+
+
+    }
+
+    private void handleAudio(String message) {
         synchronized (mActivityWorkerMap) {
-            if (message.contains("#ANIM#end#")) {
-                int start = message.lastIndexOf("#") + 1;
-                String animId = message.substring(start);
-                if (mActivityWorkerMap.containsKey(animId)) {
-                    mActivityWorkerMap.remove(animId);
-                }
-                // wake me up ..
-                mActivityWorkerMap.notifyAll();
-            } else if (message.contains("$")) {
-                // wake me up ..
-                mActivityWorkerMap.notifyAll();
-                mProject.getRunTimePlayer().getActivityScheduler().handle(message);
-            } else if (message.contains("#AUDIO#end#")) {
-                int start = message.lastIndexOf("#") + 1;
-                String event_id = message.substring(start);
-                mActivityWorkerMap.remove(event_id);
-                mActivityWorkerMap.notifyAll();
+            int start = message.lastIndexOf("#") + 1;
+            String event_id = message.substring(start);
+            mActivityWorkerMap.remove(event_id);
+            mActivityWorkerMap.notifyAll();
+        }
+    }
 
+    private void handleAction(String message) {
+        synchronized (mActivityWorkerMap) {
+            mActivityWorkerMap.notifyAll();
+            mProject.getRunTimePlayer().getActivityScheduler().handle(message);
+        }
+    }
+
+    private void handleAnimation(String message) {
+        synchronized (mActivityWorkerMap) {
+            int start = message.lastIndexOf("#") + 1;
+            String animId = message.substring(start);
+            if (mActivityWorkerMap.containsKey(animId)) {
+                mActivityWorkerMap.remove(animId);
             }
-
+            mActivityWorkerMap.notifyAll();
         }
     }
 
