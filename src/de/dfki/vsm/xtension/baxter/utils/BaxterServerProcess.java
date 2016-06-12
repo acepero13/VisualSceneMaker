@@ -36,13 +36,14 @@ public class BaxterServerProcess extends Observable {
         if(!f.exists()) {
             throw new FileNotFoundException("Baxter Server not found");
         }
-        String cmdPath[] = {"python", serverBasePath};
+        String cmdPath[] = {"python", serverBasePath, "> /dev/null 2>&1"};
         return cmdPath;
     }
 
     public void launchBaxterServer() throws Exception {
         String processName = "imageviwer";
         String []serverCmdPath = getServerCmdPath();
+
         final ProcessBuilder processB = new ProcessBuilder(serverCmdPath);
         processB.redirectErrorStream(true);
         Process p;

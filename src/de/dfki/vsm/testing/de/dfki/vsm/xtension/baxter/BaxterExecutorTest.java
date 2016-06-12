@@ -1,5 +1,8 @@
 package de.dfki.vsm.xtension.baxter;
 
+import de.dfki.action.sequence.Entry;
+import de.dfki.action.sequence.TimeMark;
+import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.editor.project.EditorProject;
 import de.dfki.vsm.runtime.activity.ActionActivity;
@@ -8,6 +11,7 @@ import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
+import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
 import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -15,10 +19,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -43,12 +46,50 @@ public class BaxterExecutorTest {
         executor = new BaxterExecutor(project.getPluginConfig("baxter"), project);
     }
     @Test
-    public void testExecute() throws Exception { //It will throw an execption
+    public void testExecute_SpeechActivity_ActivityAdded() throws Exception { //It will throw an execption
         SpeechActivity speech =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
         executor.execute(speech);
         HashMap activities = (HashMap) getPrivateExecutorField("speechActivities");
         assertEquals(1, activities.size());
     }
+
+    @Test
+    public void testAccept_Socket_AddedToClientList() throws IOException {
+        Socket socket = mock(Socket.class);
+        when(socket.getInputStream()).thenReturn(new InputStream() {
+            @Override
+            public int read() throws IOException {
+                return 0;
+            }
+        });
+
+        when(socket.getOutputStream()).thenReturn(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+
+            }
+        });
+        executor.accept(socket);
+        HashMap clients = (HashMap) getPrivateExecutorField("mClientMap");
+        assertEquals(1, clients.size());
+    }
+
+    @Test
+    public void executeActionExecuteActionTimeMark_TimeMark_HandleClusterActionCalled(){
+        BaxterExecutor spyExecutor = Mockito.spy(executor);
+        WordTimeMarkSequence wts = new WordTimeMarkSequence();
+        wts.add(new TimeMark("$3"));
+        wts.add(new Word("Hello"));
+        doNothing().when(spyExecutor).handleClusterActions(any());
+        TimeMarkActivity activity = new TimeMarkActivity("none", "none", "", wts);
+        try {
+            spyExecutor.execute(activity);
+
+        }catch (NullPointerException e){
+        }
+        verify(spyExecutor, times(1)).handleClusterActions(activity.getCluster().get(0));
+    }
+
 
     @Test
     public void testExecuteSpeech() throws Exception {
@@ -67,12 +108,6 @@ public class BaxterExecutorTest {
         assertTrue(mActivityWorkerMap.containsKey("my_speak_activity"));
         when(spyExecutor.intentToSpeak("my_speak_activity2")).thenReturn("Hello World");
         when(spyExecutor.getExecutionId()).thenReturn("my_speak_activity2");
-        /*task.join();
-        ActivityWorker task2 = new ActivityWorker(0, new LinkedList<>(), speech, spyExecutor);
-        task2.start();
-        task2.join();
-        Thread.sleep(500);
-        assertTrue(true);*/
 
         SpeechActivity speech3 =  new SpeechActivity("baxter", getHelloWordSpeechBlockForSpeechActivity(), "$");
         spyExecutor.execute(speech3);

@@ -136,7 +136,10 @@ public class BaxterHandler extends Thread implements EventListener {
         }
         if(event instanceof LineStop){
             String message = "#AUDIO#end#" + ((LineStop) event).getExecutionId();
-            mExecutor.handle(message, this);
+            String executionId = ((LineStop) event).getExecutionId();
+            if(executionId.startsWith(BaxterExecutor.sExecutionId)){
+                mExecutor.handle(message, this);
+            }
         }
     }
 }

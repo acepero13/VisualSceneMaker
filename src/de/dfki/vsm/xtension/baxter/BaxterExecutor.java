@@ -3,8 +3,6 @@ package de.dfki.vsm.xtension.baxter;
 import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.stickman.StickmanStage;
-import de.dfki.stickman.animationlogic.Animation;
-import de.dfki.stickman.animationlogic.AnimationLoader;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
 import de.dfki.vsm.runtime.activity.ActionActivity;
@@ -27,12 +25,12 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Created by alvaro on 5/16/16.
  */
 public class BaxterExecutor extends ActivityExecutor {
+    public static final String PYTHON_SERVER_BAXTER = "pythonServerBaxter";
     public static java.lang.String sExecutionId = "baxtermary_";
     private final HashMap<String, Process> mProcessMap = new HashMap();
     private int maryExecutionId=0;
@@ -91,7 +89,7 @@ public class BaxterExecutor extends ActivityExecutor {
         }
     }
 
-    private void handleClusterActions(ArrayList<Entry> cluster) {
+    protected void handleClusterActions(ArrayList<Entry> cluster) {
         if (WordTimeMarkSequence.getClusterType(cluster) == Entry.TYPE.TIMEMARK) {
             // here we have to spread the word that a specific timemark has been reached
             // the interface is the runActionAtTimemark method in the EventActionPlayer
@@ -127,7 +125,7 @@ public class BaxterExecutor extends ActivityExecutor {
         String headAsString = baxterStickman.getAnimationImage();
         params.add(headAsString);
         String baxterXMLCommand = baxterStickman.buildBaxterCommand(params);
-        broadcastToBaxterServer(baxterXMLCommand);
+        broadcastToSpecificServer(baxterXMLCommand, PYTHON_SERVER_BAXTER);
     }
 
 
@@ -229,11 +227,6 @@ public class BaxterExecutor extends ActivityExecutor {
         }
 
         mScheduler.schedule(totalTime, null, new TimeMarkActivity(activity.getActor(), "", "HandleTimeMark", wts), mProject.getAgentDevice(activity.getActor()));
-
-
-
-
-        //baxterStickman.loadEventAnimation("Speaking", 3000, wts);
         return  activity;
     }
 
@@ -243,8 +236,13 @@ public class BaxterExecutor extends ActivityExecutor {
         }
     }
 
-    private void broadcastToBaxterServer(final String message){ //TODO: Coger de la lista.. no directamente
-        baxterServerHandler.send(message);
+
+    private void broadcastToSpecificServer(final String message, final String serverName){
+        if(mClientMap.containsKey(serverName)){
+            final BaxterHandler client = mClientMap.get(serverName);
+            client.send(message);
+        }
+
     }
 
     @Override
@@ -294,7 +292,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     public void startBaxterServer() throws IOException {
         baxterServerHandler.start(); //TODO: Separate for testing
-        mClientMap.put("pythonServerBaxter", baxterServerHandler);
+        mClientMap.put(PYTHON_SERVER_BAXTER, baxterServerHandler);
     }
 
     private void launchStickmanClient(){
