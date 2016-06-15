@@ -105,11 +105,12 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
 
     @Override
     public void unload() {
-        mEventDispatcher.remove(this);
         try {
             stopMaryServer();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            mActivityWorkerMap.clear();
         }
     }
 
