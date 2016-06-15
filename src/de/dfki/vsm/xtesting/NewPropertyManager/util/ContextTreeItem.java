@@ -45,6 +45,7 @@ public class ContextTreeItem extends AbstractTreeItem implements TreeObservable{
             MenuItem addNewAgent = getAddNewAgentItem();
             menu.getItems().add(addNewAgent);
         }
+        //TODO: Delete Option
         /*MenuItem deleteItem = getDeleteItem();
         menu.getItems().add(deleteItem);*/
         return menu;
@@ -74,10 +75,6 @@ public class ContextTreeItem extends AbstractTreeItem implements TreeObservable{
         });
         return  deleteItem;
     }
-
-
-
-
 
 
     @Override
