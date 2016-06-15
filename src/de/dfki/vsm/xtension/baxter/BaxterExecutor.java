@@ -319,7 +319,7 @@ public class BaxterExecutor extends ActivityExecutor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        mStickmanStage.clearStage();
+        unloadBaxterStickman();
         mActivityWorkerMap.clear();
         try {
             marySelfServer.stopMaryServer();
@@ -331,6 +331,12 @@ public class BaxterExecutor extends ActivityExecutor {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void unloadBaxterStickman() {
+        if(mStickmanStage != null) {
+            mStickmanStage.clearStage();
         }
     }
 
