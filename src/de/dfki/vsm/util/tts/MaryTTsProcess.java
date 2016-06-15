@@ -137,6 +137,7 @@ public class MaryTTsProcess extends Observable{
             return false;
         }finally {
             sInstance = null;
+            serverStarted = false;
         }
 
         return true;

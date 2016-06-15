@@ -319,6 +319,7 @@ public class BaxterExecutor extends ActivityExecutor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        mStickmanStage.clearStage();
         mActivityWorkerMap.clear();
         try {
             marySelfServer.stopMaryServer();
