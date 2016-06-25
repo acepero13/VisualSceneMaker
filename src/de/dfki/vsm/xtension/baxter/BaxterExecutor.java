@@ -14,6 +14,7 @@ import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.factory.CereprocFactory;
+import de.dfki.vsm.util.tts.factory.MaryTtsFactory;
 import de.dfki.vsm.util.tts.factory.TTsAbstractFactory;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
@@ -105,7 +106,7 @@ public class BaxterExecutor extends ActivityExecutor {
     private void actionExecuteSpeech(AbstractActivity activity){
         SpeechActivity sa = (SpeechActivity) activity;
         //SpeakerActivity speakerActivity = new SpeakerActivity(sa, language, voice);
-        TTsAbstractFactory tts = new CereprocFactory();
+        TTsAbstractFactory tts = new MaryTtsFactory();
         SpeakerTts speakerTts = tts.createTts(sa, language, voice.toString());
         SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
         String executionId = getExecutionId();
@@ -270,7 +271,7 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void launchBaxter() throws Exception {
-       // baxterServerProcess.launchBaxterServer();
+        baxterServerProcess.launchBaxterServer();
         connectToBaxterServer();
         mListener = new BaxterListener(8001, this);
         mListener.start();

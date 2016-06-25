@@ -85,6 +85,7 @@ public class Cereprog extends SpeechClient {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            clearWordQueue();
             mEventCaster.convey(new LineStop(this, executionId));
             return spokenText;
         }
@@ -135,7 +136,7 @@ public class Cereprog extends SpeechClient {
         speekCallback.ClearCallback(eng, chan_handle);
         cerevoice_eng.CPRCEN_engine_channel_close(eng, chan_handle);
         cerevoice_eng.CPRCEN_engine_delete(eng);
-        clearWordQueue();
+
     }
 
 

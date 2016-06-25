@@ -28,6 +28,7 @@ public class SpeakerActivity {
 
     public SpeakerActivity(SpeakerTts pSpeak){
         ttsSpeak = pSpeak;
+        speechActivity = ttsSpeak.getSpeech();
 
     }
 
