@@ -6,7 +6,6 @@
     <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/lib" />
-      <root url="file://$PROJECT_DIR$/../Stickman/src" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" type="SOURCES" />

@@ -5,7 +5,6 @@ import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.I4GMaryClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.MaryStickmanPhonemes;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
@@ -17,7 +16,7 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 5/24/16.
  */
-public class MaryTTsSpeaker {
+public class MaryTTsSpeaker implements SpeakerTts{
     private SpeechActivity speech;
     private String langVoice;
     private VoiceName voiceName;
@@ -91,7 +90,7 @@ public class MaryTTsSpeaker {
     public String speak(String executionId) throws Exception {
         String textToSepak = "";
         try {
-            addWordsToMaryClient();
+            addWords();
             textToSepak = maryTTs.getText();
             if(textToSepak.length()>0) {
                 maryTTs.speak(getGenderTypeFromString(), executionId, voiceName, langVoice);
@@ -117,7 +116,7 @@ public class MaryTTsSpeaker {
         return wts;
     }
 
-    private void addWordsToMaryClient(){
+    public void addWords(){
         LinkedList blocks = speech.getBlocks();
         for (final Object item : blocks) {
             if (!item.toString().contains("$")) {
