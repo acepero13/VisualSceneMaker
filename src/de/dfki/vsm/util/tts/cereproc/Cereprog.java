@@ -3,7 +3,10 @@ package de.dfki.vsm.util.tts.cereproc;
 import com.cereproc.cerevoice_eng.SWIGTYPE_p_CPRCEN_engine;
 import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
+import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.SpeechClient;
+import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
+import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.AudioFormat;
@@ -11,6 +14,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -25,6 +29,7 @@ public class Cereprog extends SpeechClient {
     private String rate_str;
     TtsEngineCallback speekCallback;
     TtsEngineCallback phonemeCallback;
+    private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
     Float rate;
     byte[] utf8bytes;
@@ -39,13 +44,13 @@ public class Cereprog extends SpeechClient {
 
     public Cereprog(){
         init();
-        wordQueue = new LinkedList<>();
+        wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
     }
 
     public Cereprog(String text){
         finalWord = text;
-        wordQueue = new LinkedList<>();
+        wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
         init();
     }
@@ -67,8 +72,8 @@ public class Cereprog extends SpeechClient {
         finalWord = text;
     }
 
-    public String speak(){
-        Audioline au = openAudioLine();
+    public String speak(String executionId){
+        Audioline au = openAudioLine(executionId);
         getPhrase();
         setAudioCallback(au);
         String spokenText = "";
@@ -80,11 +85,10 @@ public class Cereprog extends SpeechClient {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            mEventCaster.convey(new LineStop(this, executionId));
             return spokenText;
         }
-
     }
-
 
 
     public LinkedList getPhonemes() throws Exception {
@@ -112,6 +116,7 @@ public class Cereprog extends SpeechClient {
         cerevoice_eng.CPRCEN_engine_delete(eng);
         phonemes = ((PhonemeCallback)phonemeCallback).getPhonemes();
         clearWordQueue();
+
         return phonemes;
     }
 
@@ -133,7 +138,18 @@ public class Cereprog extends SpeechClient {
         clearWordQueue();
     }
 
+
+    private Audioline openAudioLine(String executionId) {
+        Audioline au =  getAudioline();
+        mEventCaster.convey(new LineStart(this,  executionId));
+        return au;
+    }
+
     private Audioline openAudioLine() {
+        return getAudioline();
+    }
+
+    private Audioline getAudioline() {
         rate_str = cerevoice_eng.CPRCEN_channel_get_voice_info(eng, chan_handle, "SAMPLE_RATE");
         rate = new Float(rate_str);
         Audioline au = new Audioline(rate.floatValue());
@@ -168,6 +184,7 @@ public class Cereprog extends SpeechClient {
     }
 
     private void clearWordQueue(){
+        finalWord = "";
         wordQueue.clear();
     }
 }

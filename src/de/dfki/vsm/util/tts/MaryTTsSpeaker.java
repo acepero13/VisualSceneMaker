@@ -1,8 +1,5 @@
 package de.dfki.vsm.util.tts;
 
-import de.dfki.action.sequence.TimeMark;
-import de.dfki.action.sequence.Word;
-import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.I4GMaryClient;
@@ -24,13 +21,13 @@ public class MaryTTsSpeaker extends SpeakerTts{
     private LinkedList blockText = new LinkedList(); //Comes from speechActivity
     MaryStickmanPhonemes maryPhonemes = new MaryStickmanPhonemes();
     HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<>();
-    private I4GMaryClient maryTTs;
     public MaryTTsSpeaker(SpeechActivity pSpeech, String pLanguage, VoiceName pVoiceName){
         speech = pSpeech;
         langVoice = pLanguage;
         voiceName = pVoiceName;
         maryPhonemes =  new MaryStickmanPhonemes();
         initMaryClientInstance();
+
     }
 
     public MaryTTsSpeaker(SpeechActivity pSpeech, String pLanguage, VoiceName pVoiceName, MaryStickmanPhonemes phonemesList){
@@ -58,9 +55,9 @@ public class MaryTTsSpeaker extends SpeakerTts{
     }
 
     private void initMaryClientInstance(){
-        if (maryTTs == null) {
+        if (speechClient == null) {
             try {
-                maryTTs = I4GMaryClient.instance();
+                speechClient = I4GMaryClient.instance();
             } catch (Exception e) {
                 System.out.println("MaryTT not initiated yet");
             }
@@ -91,15 +88,19 @@ public class MaryTTsSpeaker extends SpeakerTts{
         String textToSepak = "";
         try {
             addWords();
-            textToSepak = maryTTs.getText();
+            textToSepak = getAsMaryClient().getText();
             if(textToSepak.length()>0) {
-                maryTTs.speak(getGenderTypeFromString(), executionId, voiceName, langVoice);
+                getAsMaryClient().speak(getGenderTypeFromString(), executionId, voiceName, langVoice);
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         return  textToSepak;
+    }
+
+    private I4GMaryClient getAsMaryClient(){
+        return (I4GMaryClient) speechClient;
     }
 
 

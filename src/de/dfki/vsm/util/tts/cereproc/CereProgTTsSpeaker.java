@@ -49,7 +49,7 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     @Override
     public String speak(String executionId) throws Exception {
         addWords();
-        return getAsCereproc().speak();
+        return getAsCereproc().speak(executionId);
     }
 
 

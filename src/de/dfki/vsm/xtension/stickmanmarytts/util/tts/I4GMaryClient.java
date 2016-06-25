@@ -106,7 +106,6 @@ public class I4GMaryClient extends SpeechClient{
     // Singleton
     static private I4GMaryClient instance = null;
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
-    private List wordQueue = null;
     private String speak_text = "";
     private HashMap<String, Language> languageMap = new HashMap<>();
 
@@ -116,6 +115,7 @@ public class I4GMaryClient extends SpeechClient{
         this(System.getProperty("server.host", "localhost"), Integer.getInteger("server.port", 59125).intValue());
        // wordQueue = new LinkedList<>();
         wordQueue =  Collections.synchronizedList(new LinkedList());
+        finalWord = "";
         
     }
 
@@ -364,6 +364,7 @@ public class I4GMaryClient extends SpeechClient{
         synchronized(wordQueue) {
             wordQueue.clear();
             speak_text = "";
+            finalWord = "";
         }
         
     }

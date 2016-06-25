@@ -12,6 +12,7 @@ import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.factory.CereprocFactory;
+import de.dfki.vsm.util.tts.factory.MaryTtsFactory;
 import de.dfki.vsm.util.tts.factory.TTsAbstractFactory;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
@@ -51,11 +52,20 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
 
     private void actionExecuteSpeechAndWait(AbstractActivity activity) {
         String executionId = getExecutionId();
-        String spokenText = intentToSpeak(executionId, activity);
-        if(spokenText.length() > 0 &&  Thread.currentThread() instanceof  ActivityWorker){
-            waitForSpeachToFinish(executionId);
-        }
+        Thread thread = getSpeakThread(activity, executionId);
+        thread.start();
+        waitForSpeachToFinish(executionId);
+
     }
+
+    private Thread getSpeakThread(final AbstractActivity activity, final String executionId) {
+        return new Thread(){
+                public void run(){
+                    intentToSpeak(executionId, activity);
+                }
+            };
+    }
+
     public  String getExecutionId() {
         return "mary_" + maryExecutionId++;
     }
