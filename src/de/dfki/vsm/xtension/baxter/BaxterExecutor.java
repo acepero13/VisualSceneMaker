@@ -12,6 +12,9 @@ import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
+import de.dfki.vsm.util.tts.SpeakerTts;
+import de.dfki.vsm.util.tts.factory.CereprocFactory;
+import de.dfki.vsm.util.tts.factory.TTsAbstractFactory;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
@@ -101,7 +104,10 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private void actionExecuteSpeech(AbstractActivity activity){
         SpeechActivity sa = (SpeechActivity) activity;
-        SpeakerActivity speakerActivity = new SpeakerActivity(sa, language, voice);
+        //SpeakerActivity speakerActivity = new SpeakerActivity(sa, language, voice);
+        TTsAbstractFactory tts = new CereprocFactory();
+        SpeakerTts speakerTts = tts.createTts(sa, language, voice.toString());
+        SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
         String executionId = getExecutionId();
         WordTimeMarkSequence wts = speakerActivity.getWordTimeSequence();
         speechActivities.put(executionId, speakerActivity);
@@ -205,7 +211,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     public SpeechActivity scheduleSpeech(String executionId){//TODO: Refactorizar
         SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(executionId);
-        MaryTTsSpeaker marySpeak = speakerActivity.getMarySpeak();
+        MaryTTsSpeaker marySpeak = (MaryTTsSpeaker) speakerActivity.getTtsSpeak();
         SpeechActivity activity = speakerActivity.getSpeechActivity();
         LinkedList blocks = marySpeak.getSpeechActivityTextBlocs();
         int wordIndex = 0;

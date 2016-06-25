@@ -167,6 +167,7 @@
         <java classname="de.dfki.vsm.SceneMaker3" fork="true">
             <!-- <arg line="runtime res/prj/testing"/>-->
             <jvmarg line="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" />
+            <sysproperty key="java.library.path" path="/home/alvaro/Documentos/Tesis/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib"/>
             <classpath refid="clspath"/>
         </java>
     </target>

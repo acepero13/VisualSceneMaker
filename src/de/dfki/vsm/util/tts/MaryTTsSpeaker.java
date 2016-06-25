@@ -16,8 +16,8 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 5/24/16.
  */
-public class MaryTTsSpeaker implements SpeakerTts{
-    private SpeechActivity speech;
+public class MaryTTsSpeaker extends SpeakerTts{
+
     private String langVoice;
     private VoiceName voiceName;
     private String gender;
@@ -102,29 +102,6 @@ public class MaryTTsSpeaker implements SpeakerTts{
         return  textToSepak;
     }
 
-    public WordTimeMarkSequence getWordTimeSequence(){
-        WordTimeMarkSequence wts = new WordTimeMarkSequence(speech.getTextOnly("$"));
-        LinkedList blocks = speech.getBlocks();
-        for (final Object item : blocks) {
-            if (!item.toString().contains("$")) {
-                Word w = new Word(item.toString());
-                wts.add(w);
-            } else {
-                wts.add(new TimeMark(item.toString()));
-            }
-        }
-        return wts;
-    }
-
-    public void addWords(){
-        LinkedList blocks = speech.getBlocks();
-        for (final Object item : blocks) {
-            if (!item.toString().contains("$")) {
-                Word w = new Word(item.toString());
-                maryTTs.addWord(item.toString());
-            }
-        }
-    }
 
     private Stickman.TYPE getGenderTypeFromString(){
         if(gender == Stickman.TYPE.MALE.toString()){

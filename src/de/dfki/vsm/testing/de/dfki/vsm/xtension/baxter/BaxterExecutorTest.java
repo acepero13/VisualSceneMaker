@@ -1,6 +1,5 @@
 package de.dfki.vsm.xtension.baxter;
 
-import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.TimeMark;
 import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
@@ -200,7 +199,7 @@ public class BaxterExecutorTest {
         when(mockSpeaker.getSpeechActivityTextBlocs()).thenReturn(getHelloWordSpeechBlockForSpeechActivity());
         when(mockSpeaker.getWordPhonemeList(any(Integer.class))).thenReturn(getWordPhonemeList());
 
-        when(mockSActivity.getMarySpeak()).thenReturn(mockSpeaker);
+        when(mockSActivity.getTtsSpeak()).thenReturn(mockSpeaker);
         when(mockSActivity.getSpeechActivity()).thenReturn(speech);
         speechActivities.put("my_activity", mockSActivity);
         assertEquals(speech, executor.scheduleSpeech("my_activity"));

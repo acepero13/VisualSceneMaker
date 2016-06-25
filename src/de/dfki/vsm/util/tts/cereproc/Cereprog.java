@@ -3,6 +3,7 @@ package de.dfki.vsm.util.tts.cereproc;
 import com.cereproc.cerevoice_eng.SWIGTYPE_p_CPRCEN_engine;
 import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
+import de.dfki.vsm.xtension.stickmanmarytts.util.tts.SpeechClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.AudioFormat;
@@ -10,24 +11,21 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
  * Created by alvaro on 25/06/16.
  */
-public class Cereprog {
+public class Cereprog extends SpeechClient {
     private SWIGTYPE_p_CPRCEN_engine eng;
     private int chan_handle, res;
     //TODO: Read from config file
     private String voice_name =  "/home/alvaro/Documentos/Tesis/cerevoice_heather_3.2.0_48k.voice";
     private String license_name = "/home/alvaro/Documentos/Tesis/license.lic";
-    //----------------
-    private String text_name;
     private String rate_str;
     TtsEngineCallback speekCallback;
     TtsEngineCallback phonemeCallback;
-    private LinkedList<String> wordQueue = null;
+
     Float rate;
     byte[] utf8bytes;
     static {
@@ -42,13 +40,13 @@ public class Cereprog {
     public Cereprog(){
         init();
         wordQueue = new LinkedList<>();
-        text_name = "";
+        finalWord = "";
     }
 
     public Cereprog(String text){
-        text_name = text;
+        finalWord = text;
         wordQueue = new LinkedList<>();
-        text_name = "";
+        finalWord = "";
         init();
     }
 
@@ -66,7 +64,7 @@ public class Cereprog {
     }
 
     public void setText(String text){
-        text_name = text;
+        finalWord = text;
     }
 
     public String speak(){
@@ -76,7 +74,7 @@ public class Cereprog {
         String spokenText = "";
         try {
             speak(au);
-            spokenText =  text_name;
+            spokenText = finalWord;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -87,15 +85,7 @@ public class Cereprog {
 
     }
 
-    private void getPhrase() {
-        synchronized(wordQueue){
-            Iterator it = wordQueue.iterator();
-            while (it.hasNext()) {
-                String word = (String) it.next();
-                text_name += word + " ";
-            }
-        }
-    }
+
 
     public LinkedList getPhonemes() throws Exception {
         try {
@@ -113,8 +103,8 @@ public class Cereprog {
         Audioline au = openAudioLine();
         setPhonemeCallback(au);
         LinkedList <Phoneme> phonemes = new LinkedList<>();
-        utf8bytes = text_name.getBytes("UTF-8");
-        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, text_name + "\n", utf8bytes.length + 1, 0);
+        utf8bytes = finalWord.getBytes("UTF-8");
+        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, finalWord + "\n", utf8bytes.length + 1, 0);
         cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, "", 0, 1);
         au.flush();
         phonemeCallback.ClearCallback(eng, chan_handle);
@@ -126,15 +116,15 @@ public class Cereprog {
     }
 
     private void isTextNonEmpty() throws Exception {
-        if(text_name.equals("")){
+        if(finalWord.equals("")){
             throw new Exception("Empty Text, could not speak");
         }
     }
 
     private void speak(Audioline au) throws Exception {
         isTextNonEmpty();
-        utf8bytes = text_name.getBytes("UTF-8");
-        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, text_name + "\n", utf8bytes.length + 1, 0);
+        utf8bytes = finalWord.getBytes("UTF-8");
+        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, finalWord + "\n", utf8bytes.length + 1, 0);
         cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, "", 0, 1);
         au.flush();
         speekCallback.ClearCallback(eng, chan_handle);

@@ -10,6 +10,9 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.tts.MaryTTsProcess;
+import de.dfki.vsm.util.tts.SpeakerTts;
+import de.dfki.vsm.util.tts.factory.CereprocFactory;
+import de.dfki.vsm.util.tts.factory.TTsAbstractFactory;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
@@ -63,7 +66,10 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
 
     public String intentToSpeak(String  executionId, AbstractActivity activity){
         synchronized (mActivityWorkerMap) {
-            SpeakerActivity speakerActivity = new SpeakerActivity(getSpeechActivityFromAbstract(activity), language, voiceName);
+            //SpeakerActivity speakerActivity = new SpeakerActivity(getSpeechActivityFromAbstract(activity), language, voiceName);
+            TTsAbstractFactory tts = new CereprocFactory();
+            SpeakerTts speakerTts = tts.createTts(getSpeechActivityFromAbstract(activity), language, voiceName.toString());
+            SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
             String spokenText = "";
             try {
                 spokenText = speakerActivity.speak(executionId);
@@ -99,7 +105,7 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
     }
 
     private void launchMary() throws Exception {
-        marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
+        //marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
     }
 
 

@@ -77,7 +77,7 @@ import javax.xml.xpath.XPathFactory;
 import org.xml.sax.SAXException;
 
 
-public class I4GMaryClient {
+public class I4GMaryClient extends SpeechClient{
 
     private MaryClient maryClient = null;
 
@@ -289,19 +289,7 @@ public class I4GMaryClient {
         return this.speak_text;
     }
     
-    private String getPhrase(){
-        String finalWord = "";
-        synchronized(wordQueue){
-            Iterator it = wordQueue.iterator();
-            while (it.hasNext()) {
-                String word = (String) it.next();
-                finalWord+= word + " ";
-            }
-        }
-        
-        //mLogger.message("Word to process: \"" + finalWord + "\"");
-        return finalWord;
-    }
+
     
     public long getPhraseTime(VoiceName voiceName, String language) throws IOException, UnknownHostException, UnsupportedAudioFileException,
             InterruptedException, Exception { //TODO: Get language from scene

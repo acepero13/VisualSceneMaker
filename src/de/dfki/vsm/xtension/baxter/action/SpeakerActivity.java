@@ -1,9 +1,9 @@
 package de.dfki.vsm.xtension.baxter.action;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.vsm.runtime.activity.AbstractActivity;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.MaryTTsSpeaker;
+import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 
 /**
@@ -11,7 +11,7 @@ import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
  */
 public class SpeakerActivity {
     private SpeechActivity speechActivity;
-    private MaryTTsSpeaker marySpeak;
+    private SpeakerTts ttsSpeak;
     private String language;
     private VoiceName voiceName;
     public SpeakerActivity(SpeechActivity sa){
@@ -23,21 +23,25 @@ public class SpeakerActivity {
         speechActivity = sa;
         language = lang;
         voiceName = voice;
-        marySpeak = new MaryTTsSpeaker(sa, language, voice);
+        ttsSpeak = new MaryTTsSpeaker(sa, language, voice);
+    }
+
+    public SpeakerActivity(SpeakerTts pSpeak){
+        ttsSpeak = pSpeak;
+
     }
 
     public WordTimeMarkSequence getWordTimeSequence(){
-        return marySpeak.getWordTimeSequence();
+        return ttsSpeak.getWordTimeSequence();
     }
 
-    public MaryTTsSpeaker getMarySpeak(){
-        return marySpeak;
+    public SpeakerTts getTtsSpeak(){
+        return ttsSpeak;
     }
 
     public String speak(String executionId) throws Exception {
-        return marySpeak.speak(executionId);
+        return ttsSpeak.speak(executionId);
     }
-
 
 
     public SpeechActivity getSpeechActivity(){
