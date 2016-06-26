@@ -2,7 +2,7 @@ package de.dfki.vsm.xtension.baxter.action;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
-import de.dfki.vsm.util.tts.MaryTTsSpeaker;
+import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 

@@ -1,8 +1,5 @@
-package de.dfki.vsm.util.tts;
+package de.dfki.vsm.util.tts.marytts;
 
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.MaryStickmanPhonemes;
-
-import javax.swing.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.util.LinkedList;

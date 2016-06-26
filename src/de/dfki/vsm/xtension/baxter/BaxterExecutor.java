@@ -10,12 +10,9 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
-import de.dfki.vsm.util.tts.MaryTTsProcess;
-import de.dfki.vsm.util.tts.MaryTTsSpeaker;
+import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
+import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.SpeakerTts;
-import de.dfki.vsm.util.tts.factory.CereprocFactory;
-import de.dfki.vsm.util.tts.factory.MaryTtsFactory;
-import de.dfki.vsm.util.tts.factory.TTsAbstractFactory;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
@@ -105,9 +102,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private void actionExecuteSpeech(AbstractActivity activity){
         SpeechActivity sa = (SpeechActivity) activity;
-        //SpeakerActivity speakerActivity = new SpeakerActivity(sa, language, voice);
-        TTsAbstractFactory tts = new MaryTtsFactory();
-        SpeakerTts speakerTts = tts.createTts(sa, language, voice.toString());
+        SpeakerTts speakerTts = new MaryTTsSpeaker(sa, language, voice);
         SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
         String executionId = getExecutionId();
         WordTimeMarkSequence wts = speakerActivity.getWordTimeSequence();

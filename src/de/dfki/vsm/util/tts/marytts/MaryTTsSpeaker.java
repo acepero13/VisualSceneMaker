@@ -1,7 +1,8 @@
-package de.dfki.vsm.util.tts;
+package de.dfki.vsm.util.tts.marytts;
 
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
+import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.I4GMaryClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.MaryStickmanPhonemes;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
@@ -13,7 +14,7 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 5/24/16.
  */
-public class MaryTTsSpeaker extends SpeakerTts{
+public class MaryTTsSpeaker extends SpeakerTts {
 
     private String langVoice;
     private VoiceName voiceName;

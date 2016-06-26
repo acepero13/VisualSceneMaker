@@ -1,8 +1,8 @@
 package de.dfki.vsm.util.tts;
 
-import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
+import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.MaryStickmanPhonemes;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;

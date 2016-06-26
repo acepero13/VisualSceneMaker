@@ -42,7 +42,6 @@ public abstract class SpeakerTts {
         }
     }
 
-
     public SpeechActivity getSpeech() {
         return speech;
     }

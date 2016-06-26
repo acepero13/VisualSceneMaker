@@ -1,6 +1,6 @@
 package de.dfki.vsm.editor.dialog;
 
-import de.dfki.vsm.util.tts.MaryTTsProcess;
+import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 
 import javax.swing.*;
 import java.util.Observable;
