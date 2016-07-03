@@ -1,6 +1,5 @@
 package de.dfki.vsm.util.tts.cereproc;
 
-import de.dfki.action.sequence.Word;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -16,6 +15,7 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     private String langVoice;
     private String voiceName;
     private String gender;
+
     public CereProgTTsSpeaker(){
         speechClient = new Cereprog();
     }
@@ -23,7 +23,9 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     public CereProgTTsSpeaker(SpeechActivity pSpeech, String pLanguage, String pVoiceName){
         speech = pSpeech;
         langVoice = pLanguage;
-        voiceName = pVoiceName;
+
+
+        //voiceName = pVoiceName;
         speechClient = new Cereprog();
     }
 
@@ -31,8 +33,14 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     public LinkedList<Phoneme> getWordPhonemeList(int index) {
         LinkedList<Phoneme> wordPhonemes = null;
         addWords();
+        getAsCereproc().setText(getPhrase());
         try {
-            wordPhonemes = getAsCereproc().getPhonemes();
+            if(phonemes.size() <= 0){
+                phonemes = getAsCereproc().getPhonemes();
+            }
+            if(phonemes.containsKey(index)) {
+                wordPhonemes = phonemes.get(index);
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (Exception e) {

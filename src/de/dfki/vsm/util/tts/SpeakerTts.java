@@ -7,16 +7,24 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.SpeechClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
  * Created by alvaro on 25/06/16.
  */
-public abstract class SpeakerTts {
+public abstract class SpeakerTts { //Todo make it factory
     protected SpeechActivity speech;
     protected SpeechClient speechClient;
+    protected HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<>();
+    public LinkedList getSpeechActivityTextBlocs(){
+        return speech.getBlocks();
+    }
+
     public abstract LinkedList<Phoneme> getWordPhonemeList(int index);
     public abstract String speak(String executionId) throws Exception;
+
+    private String toSpeakWord;
 
     public  WordTimeMarkSequence getWordTimeSequence(){
         WordTimeMarkSequence wts = new WordTimeMarkSequence(speech.getTextOnly("$"));
@@ -40,6 +48,14 @@ public abstract class SpeakerTts {
                 speechClient.addWord(item.toString());
             }
         }
+    }
+
+    public String getFinalWord(){
+        return speechClient.getFinalWord();
+    }
+
+    public String getPhrase(){
+        return speechClient.getPhrase();
     }
 
     public SpeechActivity getSpeech() {

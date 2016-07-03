@@ -12,7 +12,7 @@ public abstract class SpeechClient {
     protected List wordQueue = new LinkedList<>();
     protected String finalWord;
     public abstract void addWord(String s);
-    protected String getPhrase() {
+    public String getPhrase() {
         synchronized(wordQueue){
             if(finalWord.length() <=0){
                 Iterator it = wordQueue.iterator();
@@ -22,6 +22,10 @@ public abstract class SpeechClient {
                 }
             }
         }
+        return finalWord;
+    }
+
+    public String getFinalWord(){
         return finalWord;
     }
 }

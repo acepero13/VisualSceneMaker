@@ -21,7 +21,7 @@ public class MaryTTsSpeaker extends SpeakerTts {
     private String gender;
     private LinkedList blockText = new LinkedList(); //Comes from speechActivity
     MaryStickmanPhonemes maryPhonemes = new MaryStickmanPhonemes();
-    HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<>();
+
     public MaryTTsSpeaker(SpeechActivity pSpeech, String pLanguage, VoiceName pVoiceName){
         speech = pSpeech;
         langVoice = pLanguage;
@@ -58,6 +58,7 @@ public class MaryTTsSpeaker extends SpeakerTts {
     private void initMaryClientInstance(){
         if (speechClient == null) {
             try {
+
                 speechClient = I4GMaryClient.instance();
             } catch (Exception e) {
                 System.out.println("MaryTT not initiated yet");
@@ -68,10 +69,6 @@ public class MaryTTsSpeaker extends SpeakerTts {
 
     public void setSpeechActivity(SpeechActivity pSpeech){
         speech = pSpeech;
-    }
-
-    public LinkedList getSpeechActivityTextBlocs(){
-        return speech.getBlocks();
     }
 
     public LinkedList<Phoneme> getWordPhonemeList(int index){

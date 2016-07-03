@@ -15,6 +15,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -29,6 +30,8 @@ public class Cereprog extends SpeechClient {
     private String rate_str;
     TtsEngineCallback speekCallback;
     TtsEngineCallback phonemeCallback;
+    TtsEngineCallback genericCallback;
+    HashMap<String, HashMap<Integer, LinkedList<Phoneme>>> phrasePhonemes = new HashMap<>();
     private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
     Float rate;
@@ -75,11 +78,13 @@ public class Cereprog extends SpeechClient {
     public String speak(String executionId){
         Audioline au = openAudioLine(executionId);
         getPhrase();
-        setAudioCallback(au);
+        //setAudioCallback(au);
+        setGenericCallback(au);
         String spokenText = "";
         try {
             speak(au);
             spokenText = finalWord;
+            mEventCaster.convey(new LineStart(this,  executionId));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -91,34 +96,46 @@ public class Cereprog extends SpeechClient {
         }
     }
 
+    public HashMap<Integer, LinkedList<Phoneme>> getPhonemes(String phrase){
+        if(phrasePhonemes.containsKey(phrase)){
+            return phrasePhonemes.get(phrase);
+        }
+        return  new HashMap<>();
+    }
 
-    public LinkedList getPhonemes() throws Exception {
+
+
+    public HashMap<Integer, LinkedList<Phoneme>> getPhonemes() throws Exception {
         try {
-            getPhrase();
+
+            if(!phrasePhonemes.containsKey(finalWord)) {
+                getPhrase();
+            }else{
+                return phrasePhonemes.get(finalWord);
+            }
             isTextNonEmpty();
             return tryGetPhonemes();
         }
         catch (Exception e){
             e.printStackTrace();
-            return new LinkedList();
+            return new HashMap<Integer, LinkedList<Phoneme>>();
         }
     }
 
-    private LinkedList tryGetPhonemes() throws UnsupportedEncodingException {
-        Audioline au = openAudioLine();
-        setPhonemeCallback(au);
-        LinkedList <Phoneme> phonemes = new LinkedList<>();
-        utf8bytes = finalWord.getBytes("UTF-8");
-        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, finalWord + "\n", utf8bytes.length + 1, 0);
-        cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, "", 0, 1);
-        au.flush();
-        phonemeCallback.ClearCallback(eng, chan_handle);
-        cerevoice_eng.CPRCEN_engine_channel_close(eng, chan_handle);
-        cerevoice_eng.CPRCEN_engine_delete(eng);
-        phonemes = ((PhonemeCallback)phonemeCallback).getPhonemes();
-        clearWordQueue();
-
-        return phonemes;
+    private HashMap<Integer, LinkedList<Phoneme>> tryGetPhonemes() throws UnsupportedEncodingException {
+            Audioline au = openAudioLine();
+            setPhonemeCallback(au);
+            HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
+            utf8bytes = finalWord.getBytes("UTF-8");
+            cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, finalWord + "\n", utf8bytes.length + 1, 0);
+            cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, "", 0, 1);
+            au.flush();
+            phonemeCallback.ClearCallback(eng, chan_handle);
+            cerevoice_eng.CPRCEN_engine_channel_close(eng, chan_handle);
+            cerevoice_eng.CPRCEN_engine_delete(eng);
+            phonemes = ((PhonemeCallback) phonemeCallback).getPhonemes();
+            clearWordQueue();
+            return phonemes;
     }
 
     private void isTextNonEmpty() throws Exception {
@@ -127,22 +144,28 @@ public class Cereprog extends SpeechClient {
         }
     }
 
+
+
     private void speak(Audioline au) throws Exception {
+        HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
         isTextNonEmpty();
         utf8bytes = finalWord.getBytes("UTF-8");
         cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, finalWord + "\n", utf8bytes.length + 1, 0);
         cerevoice_eng.CPRCEN_engine_channel_speak(eng, chan_handle, "", 0, 1);
         au.flush();
-        speekCallback.ClearCallback(eng, chan_handle);
+        genericCallback.ClearCallback(eng, chan_handle);
         cerevoice_eng.CPRCEN_engine_channel_close(eng, chan_handle);
         cerevoice_eng.CPRCEN_engine_delete(eng);
+        phonemes = ((GenericCallback) genericCallback).getPhonemes();
+        phrasePhonemes.put(finalWord, phonemes);
+
 
     }
 
 
     private Audioline openAudioLine(String executionId) {
         Audioline au =  getAudioline();
-        mEventCaster.convey(new LineStart(this,  executionId));
+
         return au;
     }
 
@@ -160,6 +183,11 @@ public class Cereprog extends SpeechClient {
     private void setAudioCallback(Audioline au) {
         speekCallback = new SpeakCallback(au.line());
         speekCallback.SetCallback(eng, chan_handle);
+    }
+
+    private void setGenericCallback(Audioline au) {
+        genericCallback = new GenericCallback(au.line());
+        genericCallback.SetCallback(eng, chan_handle);
     }
 
     private void setPhonemeCallback(Audioline au) {

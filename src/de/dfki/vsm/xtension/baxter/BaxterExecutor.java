@@ -10,6 +10,7 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.util.tts.cereproc.CereProgTTsSpeaker;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.SpeakerTts;
@@ -102,13 +103,13 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private void actionExecuteSpeech(AbstractActivity activity){
         SpeechActivity sa = (SpeechActivity) activity;
-        SpeakerTts speakerTts = new MaryTTsSpeaker(sa, language, voice);
+        SpeakerTts speakerTts = new CereProgTTsSpeaker(sa, language, voice.toString());
         SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
         String executionId = getExecutionId();
         WordTimeMarkSequence wts = speakerActivity.getWordTimeSequence();
         speechActivities.put(executionId, speakerActivity);
         wtsMap.put(executionId, wts);
-        executeMaryTTSAndWait(executionId);
+        executeTTSAndWait(executionId);
     }
 
     private void actionLoadAnimation(AbstractActivity activity) {
@@ -131,11 +132,20 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
 
-    private void executeMaryTTSAndWait(String executionId){
-        String spokenText = intentToSpeak(executionId);
-        if(spokenText.length() > 0 && Thread.currentThread() instanceof  ActivityWorker) { //TODO: Remove later, only for testing
-            waitForSpeachToFinish(executionId);
-        }
+    private void executeTTSAndWait(String executionId){
+        Thread thread = getSpeakThread(executionId);
+        thread.start();
+        waitForSpeachToFinish(executionId);
+    }
+
+    private Thread getSpeakThread(final String executionId) {
+        return new Thread(){
+            public void run(){
+                System.out.println("ExecutionID: " + executionId);
+                intentToSpeak(executionId);
+                System.out.println("EndExec: ");
+            }
+        };
     }
 
     public String intentToSpeak(String  executionId ){
@@ -207,15 +217,18 @@ public class BaxterExecutor extends ActivityExecutor {
 
     public SpeechActivity scheduleSpeech(String executionId){//TODO: Refactorizar
         SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(executionId);
-        MaryTTsSpeaker marySpeak = (MaryTTsSpeaker) speakerActivity.getTtsSpeak();
+        if(speakerActivity == null){
+            return null;
+        }
+        SpeakerTts ttsSpeak =  speakerActivity.getTtsSpeak();
         SpeechActivity activity = speakerActivity.getSpeechActivity();
-        LinkedList blocks = marySpeak.getSpeechActivityTextBlocs();
+        LinkedList blocks = ttsSpeak.getSpeechActivityTextBlocs();
         int wordIndex = 0;
         int totalTime = 0;
-        WordTimeMarkSequence wts = marySpeak.getWordTimeSequence();
+        WordTimeMarkSequence wts = ttsSpeak.getWordTimeSequence();
         for (final Object item : blocks) {
             if (!item.toString().contains("$")) {
-                LinkedList<Phoneme> wordPhonemes = marySpeak.getWordPhonemeList(wordIndex);
+                LinkedList<Phoneme> wordPhonemes = ttsSpeak.getWordPhonemeList(wordIndex);
                 for (Phoneme p : wordPhonemes) {
                     if (p.getLipPosition() == null) {
                         continue;
