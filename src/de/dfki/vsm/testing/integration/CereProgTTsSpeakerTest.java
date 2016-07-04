@@ -128,6 +128,7 @@ public class CereProgTTsSpeakerTest implements EventListener {
                 }
             };
             s.start();
+            s.join();
         }
 
     }
@@ -140,10 +141,10 @@ public class CereProgTTsSpeakerTest implements EventListener {
 
     @Override
     public void update(EventObject event) {
-        if(event instanceof LineStop) {
+        if(event instanceof LineStart) {
             LinkedList<String> words = new LinkedList();
             words.add(LONG_TEXT);
-            String executionId = ((LineStop) event).getExecutionId();
+            String executionId = ((LineStart) event).getExecutionId();
             SpeechActivity speech =  new SpeechActivity("actor", words, "$");
             try {
                 int id = Integer.parseInt(executionId);

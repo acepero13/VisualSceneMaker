@@ -23,15 +23,13 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     public CereProgTTsSpeaker(SpeechActivity pSpeech, String pLanguage, String pVoiceName){
         speech = pSpeech;
         langVoice = pLanguage;
-
-
         //voiceName = pVoiceName;
         speechClient = new Cereprog();
     }
 
     @Override
     public LinkedList<Phoneme> getWordPhonemeList(int index) {
-        LinkedList<Phoneme> wordPhonemes = null;
+        LinkedList<Phoneme> wordPhonemes = new LinkedList<>();
         addWords();
         getAsCereproc().setText(getPhrase());
         try {

@@ -96,14 +96,6 @@ public class Cereprog extends SpeechClient {
         }
     }
 
-    public HashMap<Integer, LinkedList<Phoneme>> getPhonemes(String phrase){
-        if(phrasePhonemes.containsKey(phrase)){
-            return phrasePhonemes.get(phrase);
-        }
-        return  new HashMap<>();
-    }
-
-
 
     public HashMap<Integer, LinkedList<Phoneme>> getPhonemes() throws Exception {
         try {
