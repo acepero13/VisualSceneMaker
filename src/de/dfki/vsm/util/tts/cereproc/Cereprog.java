@@ -51,12 +51,6 @@ public class Cereprog extends SpeechClient {
         finalWord = "";
     }
 
-    public Cereprog(String text){
-        finalWord = text;
-        wordQueue =  Collections.synchronizedList(new LinkedList());
-        finalWord = "";
-        init();
-    }
 
     private void init() {
         try {

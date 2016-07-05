@@ -133,8 +133,6 @@ public class BaxterExecutor extends ActivityExecutor {
 
 
     private void executeTTSAndWait(String executionId){
-        Thread thread = getSpeakThread(executionId);
-        thread.start();
         waitForSpeachToFinish(executionId);
     }
 
@@ -143,7 +141,6 @@ public class BaxterExecutor extends ActivityExecutor {
             public void run(){
                 System.out.println("ExecutionID: " + executionId);
                 intentToSpeak(executionId);
-                System.out.println("EndExec: ");
             }
         };
     }
@@ -168,6 +165,9 @@ public class BaxterExecutor extends ActivityExecutor {
             mActivityWorkerMap.put(executionId, cAW);
             while (mActivityWorkerMap.containsValue(cAW)) {
                 try {
+                    Thread thread = getSpeakThread(executionId);
+                    System.out.println("Wait: " + executionId);
+                    thread.start();
                     mActivityWorkerMap.wait();
                 } catch (InterruptedException exc) {
                     mLogger.failure(exc.toString());

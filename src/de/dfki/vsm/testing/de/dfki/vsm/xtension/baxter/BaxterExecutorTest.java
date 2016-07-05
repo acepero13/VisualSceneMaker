@@ -41,7 +41,7 @@ public class BaxterExecutorTest {
     @Before
     public void setUp(){
         executor = null;
-        project.parse(new File("/home/alvaro/Documents/WorkHiwi/VSM_stable/Projects/Baxter").getPath());
+        project.parse(new File("res/tutorials/6-MaryTTS").getPath());
         executor = new BaxterExecutor(project.getPluginConfig("baxter"), project);
     }
     @Test

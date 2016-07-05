@@ -50,15 +50,14 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
 
     private void actionExecuteSpeechAndWait(AbstractActivity activity) {
         String executionId = getExecutionId();
-        Thread thread = getSpeakThread(activity, executionId);
-        thread.start();
-        waitForSpeachToFinish(executionId);
+        waitForSpeachToFinish(executionId, activity);
 
     }
 
     private Thread getSpeakThread(final AbstractActivity activity, final String executionId) {
         return new Thread(){
                 public void run(){
+                    System.out.println("ExecutionVoiceID: " + executionId);
                     intentToSpeak(executionId, activity);
                 }
             };
@@ -87,12 +86,15 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
         }
     }
 
-    private void waitForSpeachToFinish(String  executionId){
+    private void waitForSpeachToFinish(String  executionId, AbstractActivity activity){
         synchronized (mActivityWorkerMap){
             ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
             mActivityWorkerMap.put(executionId, cAW);
             while (mActivityWorkerMap.containsValue(cAW)) {
                 try {
+                    Thread thread = getSpeakThread(activity, executionId);
+                    thread.start();
+                    System.out.println("Wait Voice: " + executionId);
                     mActivityWorkerMap.wait();
                 } catch (InterruptedException exc) {
                     mLogger.failure(exc.toString());

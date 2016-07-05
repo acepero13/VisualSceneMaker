@@ -17,7 +17,7 @@ public class StickmanMaryttsExecutorTest {
     private EditorProject project = new EditorProject();
     @Before
     public void setUp(){
-        project.parse(new File("/home/alvaro/Documents/Universitat/TesisProject/VisualSceneMaker/res/tutorials/6-MaryTTS").getPath());
+        project.parse(new File("res/tutorials/6-MaryTTS").getPath());
         executor = new StickmanMaryttsExecutor(project.getPluginConfig("stickmanmarytts"), project);
     }
     @Test
