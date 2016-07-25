@@ -9,11 +9,12 @@ import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
+import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.cereproc.CereProgTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
+import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 
 import java.io.IOException;
@@ -74,7 +75,8 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
     public String intentToSpeak(String  executionId, AbstractActivity activity){
         synchronized (mActivityWorkerMap) {
             //SpeakerActivity speakerActivity = new SpeakerActivity(getSpeechActivityFromAbstract(activity), language, voiceName);
-            SpeakerTts speakerTts = new CereProgTTsSpeaker(getSpeechActivityFromAbstract(activity), language, voiceName.toString());
+            TTSFactory factoryTTs = new TTSFactory(mConfig, getSpeechActivityFromAbstract(activity), mProject);
+            SpeakerTts speakerTts = factoryTTs.getTTs();
             SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
             String spokenText = "";
             try {
@@ -114,7 +116,7 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
     }
 
     private void launchMary() throws Exception {
-        //marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
+        marySelfServer.startMaryServer(); //TODO: Show info dialog of loading....
     }
 
 

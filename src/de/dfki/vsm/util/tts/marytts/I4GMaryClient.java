@@ -26,13 +26,13 @@
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-package de.dfki.vsm.xtension.stickmanmarytts.util.tts;
+package de.dfki.vsm.util.tts.marytts;
 
 
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
-import de.dfki.vsm.util.log.LOGDefaultLogger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,6 +49,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import de.dfki.vsm.util.tts.SpeechClient;
+import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.AudioClosed;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.AudioOpened;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
@@ -77,7 +79,7 @@ import javax.xml.xpath.XPathFactory;
 import org.xml.sax.SAXException;
 
 
-public class I4GMaryClient extends SpeechClient{
+public class I4GMaryClient extends SpeechClient {
 
     private MaryClient maryClient = null;
 

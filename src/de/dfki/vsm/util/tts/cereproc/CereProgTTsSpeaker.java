@@ -1,5 +1,6 @@
 package de.dfki.vsm.util.tts.cereproc;
 
+import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -17,14 +18,21 @@ public class CereProgTTsSpeaker extends SpeakerTts {
     private String gender;
 
     public CereProgTTsSpeaker(){
-        speechClient = new Cereprog();
     }
 
-    public CereProgTTsSpeaker(SpeechActivity pSpeech, String pLanguage, String pVoiceName){
+    public  CereProgTTsSpeaker(SpeechActivity pSpeech, String pLanguage, String pVoiceName){
         speech = pSpeech;
         langVoice = pLanguage;
         //voiceName = pVoiceName;
         speechClient = new Cereprog();
+    }
+
+    public  CereProgTTsSpeaker(SpeechActivity pSpeech,String pLanguage, String pVoiceFilePath, String pLicenseName){
+        speech = pSpeech;
+        langVoice = pLanguage;
+        //voiceName = pVoiceName;
+        speechClient = new Cereprog(pLicenseName, pVoiceFilePath);
+
     }
 
     @Override
@@ -57,6 +65,7 @@ public class CereProgTTsSpeaker extends SpeakerTts {
         addWords();
         return getAsCereproc().speak(executionId);
     }
+
 
 
 

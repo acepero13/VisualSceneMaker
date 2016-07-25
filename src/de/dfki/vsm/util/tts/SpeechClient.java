@@ -1,4 +1,4 @@
-package de.dfki.vsm.xtension.stickmanmarytts.util.tts;
+package de.dfki.vsm.util.tts;
 
 
 import java.util.Iterator;

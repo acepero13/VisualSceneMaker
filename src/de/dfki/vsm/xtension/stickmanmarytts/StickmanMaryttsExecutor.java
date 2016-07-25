@@ -25,7 +25,7 @@ import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
+import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 

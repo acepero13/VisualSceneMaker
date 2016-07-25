@@ -4,7 +4,6 @@ import de.dfki.action.sequence.TimeMark;
 import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.SpeechClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import java.util.HashMap;
@@ -61,5 +60,6 @@ public abstract class SpeakerTts { //Todo make it factory
     public SpeechActivity getSpeech() {
         return speech;
     }
+
 
 }

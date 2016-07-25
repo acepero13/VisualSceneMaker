@@ -1,8 +1,9 @@
-package de.dfki.vsm.xtension.stickmanmarytts.util.tts;
+package de.dfki.vsm.util.tts.marytts;
 
 import de.dfki.action.sequence.Word;
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
+import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import java.io.IOException;

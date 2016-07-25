@@ -1,4 +1,4 @@
-package de.dfki.vsm.xtension.stickmanmarytts.util.tts;
+package de.dfki.vsm.util.tts;
 
 /**
  * Created by alvaro on 8/09/15.

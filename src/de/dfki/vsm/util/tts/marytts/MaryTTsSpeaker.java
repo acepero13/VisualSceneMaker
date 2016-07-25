@@ -3,12 +3,9 @@ package de.dfki.vsm.util.tts.marytts;
 import de.dfki.stickman.Stickman;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.SpeakerTts;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.I4GMaryClient;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.MaryStickmanPhonemes;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.VoiceName;
+import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -96,6 +93,8 @@ public class MaryTTsSpeaker extends SpeakerTts {
         }
         return  textToSepak;
     }
+
+
 
     private I4GMaryClient getAsMaryClient(){
         return (I4GMaryClient) speechClient;

@@ -4,7 +4,7 @@ import com.cereproc.cerevoice_eng.SWIGTYPE_p_CPRCEN_engine;
 import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.SpeechClient;
+import de.dfki.vsm.util.tts.SpeechClient;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -51,9 +51,12 @@ public class Cereprog extends SpeechClient {
         finalWord = "";
     }
 
-    public Cereprog(String license_name_path, String voice_path){
-        license_name = license_name_path;
-        voice_name = voice_path;
+    public Cereprog(String licenseNamePath, String voicePath){
+        license_name = licenseNamePath;
+        voice_name = voicePath;
+        init();
+        wordQueue =  Collections.synchronizedList(new LinkedList());
+        finalWord = "";
     }
 
 
