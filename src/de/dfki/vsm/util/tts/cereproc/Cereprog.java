@@ -25,8 +25,8 @@ public class Cereprog extends SpeechClient {
     private SWIGTYPE_p_CPRCEN_engine eng;
     private int chan_handle, res;
     //TODO: Read from config file
-    private String voice_name =  "/home/alvaro/Documentos/Tesis/cerevoice_heather_3.2.0_48k.voice";
-    private String license_name = "/home/alvaro/Documentos/Tesis/license.lic";
+    private String voice_name =   "/home/alvaro/Documents/Universitat/TesisProject/cerevoice_heather_3.2.0_48k.voice";
+    private String license_name = "/home/alvaro/Documents/Universitat/TesisProject/license.lic";
     private String rate_str;
     TtsEngineCallback speekCallback;
     TtsEngineCallback phonemeCallback;
@@ -49,6 +49,11 @@ public class Cereprog extends SpeechClient {
         init();
         wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
+    }
+
+    public Cereprog(String license_name_path, String voice_path){
+        license_name = license_name_path;
+        voice_name = voice_path;
     }
 
 

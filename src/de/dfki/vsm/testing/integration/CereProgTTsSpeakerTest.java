@@ -34,7 +34,7 @@ public class CereProgTTsSpeakerTest implements EventListener {
     @org.junit.Before
     public void setUp() throws Exception {
         cereprog = null;
-        System.setProperty("java.library.path", "/home/alvaro/Documentos/Tesis/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib");
+        System.setProperty("java.library.path", "/home/alvaro/Documents/Universitat/TesisProject/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib");
 
     }
 

@@ -103,7 +103,8 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private void actionExecuteSpeech(AbstractActivity activity){
         SpeechActivity sa = (SpeechActivity) activity;
-        SpeakerTts speakerTts = new CereProgTTsSpeaker(sa, language, voice.toString());
+        SpeakerTts speakerTts = new MaryTTsSpeaker(sa, language, voice);
+        //SpeakerTts speakerTts = new CereProgTTsSpeaker(sa, language, voice.toString());
         SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
         String executionId = getExecutionId();
         WordTimeMarkSequence wts = speakerActivity.getWordTimeSequence();
@@ -163,11 +164,12 @@ public class BaxterExecutor extends ActivityExecutor {
         synchronized (mActivityWorkerMap){
             ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
             mActivityWorkerMap.put(executionId, cAW);
+            Thread thread = getSpeakThread(executionId);
+            thread.start();
             while (mActivityWorkerMap.containsValue(cAW)) {
                 try {
-                    Thread thread = getSpeakThread(executionId);
                     System.out.println("Wait: " + executionId);
-                    thread.start();
+
                     mActivityWorkerMap.wait();
                 } catch (InterruptedException exc) {
                     mLogger.failure(exc.toString());
