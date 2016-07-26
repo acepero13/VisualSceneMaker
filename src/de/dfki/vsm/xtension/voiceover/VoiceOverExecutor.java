@@ -25,8 +25,6 @@ import java.util.HashMap;
  */
 public class VoiceOverExecutor extends ActivityExecutor implements EventListener{
     private MaryTTsProcess marySelfServer;
-    private String language = "en";
-    private VoiceName voiceName = new VoiceName("dfki-poppy");
     private int maryExecutionId=0;
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
     private final EventDispatcher mEventDispatcher = EventDispatcher.getInstance();
@@ -55,26 +53,38 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
 
     }
 
-    private Thread getSpeakThread(final AbstractActivity activity, final String executionId) {
-        return new Thread(){
-                public void run(){
-                    System.out.println("ExecutionVoiceID: " + executionId);
-                    intentToSpeak(executionId, activity);
-                }
-            };
-    }
 
     public  String getExecutionId() {
         return "mary_" + maryExecutionId++;
     }
 
-    private SpeechActivity getSpeechActivityFromAbstract(AbstractActivity activity){
-        return (SpeechActivity) activity;
+    private void waitForSpeachToFinish(String  executionId, AbstractActivity activity){
+        synchronized (mActivityWorkerMap){
+            ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
+            mActivityWorkerMap.put(executionId, cAW);
+            Thread thread = getSpeakThread(activity, executionId);
+            thread.start();
+            while (mActivityWorkerMap.containsValue(cAW)) {
+                try {
+                    mActivityWorkerMap.wait();
+                } catch (InterruptedException exc) {
+                    mLogger.failure(exc.toString());
+                }
+            }
+        }
+    }
+
+
+    private Thread getSpeakThread(final AbstractActivity activity, final String executionId) {
+        return new Thread(){
+            public void run(){
+                intentToSpeak(executionId, activity);
+            }
+        };
     }
 
     public String intentToSpeak(String  executionId, AbstractActivity activity){
         synchronized (mActivityWorkerMap) {
-            //SpeakerActivity speakerActivity = new SpeakerActivity(getSpeechActivityFromAbstract(activity), language, voiceName);
             TTSFactory factoryTTs = new TTSFactory(mConfig, getSpeechActivityFromAbstract(activity), mProject);
             SpeakerTts speakerTts = factoryTTs.getTTs();
             SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
@@ -88,22 +98,12 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
         }
     }
 
-    private void waitForSpeachToFinish(String  executionId, AbstractActivity activity){
-        synchronized (mActivityWorkerMap){
-            ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
-            mActivityWorkerMap.put(executionId, cAW);
-            while (mActivityWorkerMap.containsValue(cAW)) {
-                try {
-                    Thread thread = getSpeakThread(activity, executionId);
-                    thread.start();
-                    System.out.println("Wait Voice: " + executionId);
-                    mActivityWorkerMap.wait();
-                } catch (InterruptedException exc) {
-                    mLogger.failure(exc.toString());
-                }
-            }
-        }
+    private SpeechActivity getSpeechActivityFromAbstract(AbstractActivity activity){
+        return (SpeechActivity) activity;
     }
+
+
+
 
     @Override
     public void launch() {

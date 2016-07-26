@@ -20,9 +20,9 @@ public class TTSFactory {
         mProject = project;
     }
     public SpeakerTts getTTs(){
-        String voiceLang = getLangVoiceFromConfig();
+        String voiceLang = getLanguageFromAgentConfig();
         String ttsType = pluginConfig.getProperty("tts");
-        String voice = getVoice(voiceLang);
+        String voice = getVoiceFromAgentConfig(voiceLang);
         String licensePath = pluginConfig.getProperty("license");
         if(ttsType.equalsIgnoreCase("cereproc")){
             return new CereProgTTsSpeaker(pSpeech, voiceLang, voice, licensePath);
@@ -33,13 +33,13 @@ public class TTSFactory {
         return new DummyTTsSpeaker();
     }
 
-    private String getLangVoiceFromConfig() {
+    private String getLanguageFromAgentConfig() {
         AgentConfig agent = getAgentConfig();
         String langVoice = agent.getProperty("default-voice");
         return langVoice;
     }
 
-    private String getVoice(String lang){
+    private String getVoiceFromAgentConfig(String lang){
         AgentConfig agent = getAgentConfig();
         String voice = agent.getProperty(lang);
         return voice;
