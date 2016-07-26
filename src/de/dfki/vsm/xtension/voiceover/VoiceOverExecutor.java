@@ -102,9 +102,6 @@ public class VoiceOverExecutor extends ActivityExecutor implements EventListener
         return (SpeechActivity) activity;
     }
 
-
-
-
     @Override
     public void launch() {
         try {

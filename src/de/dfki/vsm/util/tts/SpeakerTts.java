@@ -12,7 +12,7 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 25/06/16.
  */
-public abstract class SpeakerTts { //Todo make it factory
+public abstract class SpeakerTts {
     protected SpeechActivity speech;
     protected SpeechClient speechClient;
     protected HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<>();
@@ -22,8 +22,6 @@ public abstract class SpeakerTts { //Todo make it factory
 
     public abstract LinkedList<Phoneme> getWordPhonemeList(int index);
     public abstract String speak(String executionId) throws Exception;
-
-    private String toSpeakWord;
 
     public  WordTimeMarkSequence getWordTimeSequence(){
         WordTimeMarkSequence wts = new WordTimeMarkSequence(speech.getTextOnly("$"));

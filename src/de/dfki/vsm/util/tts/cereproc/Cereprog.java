@@ -78,10 +78,7 @@ public class Cereprog extends SpeechClient {
     }
 
     public String speak(String executionId){
-        Audioline au = openAudioLine(executionId);
-        getPhrase();
-        //setAudioCallback(au);
-        setGenericCallback(au);
+        Audioline au = initSpeak(executionId);
         String spokenText = "";
         try {
             speak(au);
@@ -98,10 +95,17 @@ public class Cereprog extends SpeechClient {
         }
     }
 
+    private Audioline initSpeak(String executionId) {
+        Audioline au = openAudioLine(executionId);
+        getPhrase();
+        //setAudioCallback(au);
+        setGenericCallback(au);
+        return au;
+    }
+
 
     public HashMap<Integer, LinkedList<Phoneme>> getPhonemes() throws Exception {
         try {
-
             if(!phrasePhonemes.containsKey(finalWord)) {
                 getPhrase();
             }else{
