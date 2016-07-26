@@ -10,6 +10,11 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 2/07/16.
  */
+/*The Callback function is fired for every phrase returned by the synthesiser.
+  First collect all the phoneme data and then speak
+  This callback colletcts the phoneme information so it can be cached later and the
+  Sends the stream to the audio line in order to create the audio file
+  */
 public class GenericCallback extends TtsEngineCallback {
     private SourceDataLine line;
     private HashMap<Integer, LinkedList<Phoneme>> phonemes;
@@ -19,6 +24,7 @@ public class GenericCallback extends TtsEngineCallback {
     }
 
     public void Callback(SWIGTYPE_p_CPRC_abuf abuf) {
+
         System.out.println("INFO: firing engine callback");
         int i, sz;
         // sz is the number of 16-bits samples
@@ -82,8 +88,6 @@ public class GenericCallback extends TtsEngineCallback {
         sz =  cerevoice_eng.CPRC_abuf_wav_sz(abuf);
         byte[] b = new byte[sz * 2];
         short s;
-        // This is not the most elegant way to do this conversion, but shows
-        // how e.g. audio effects could be applied.
         for(i = 0; i < sz; i++) {
             // Sample at position i, a short
             s = cerevoice_eng.CPRC_abuf_wav(abuf, i);

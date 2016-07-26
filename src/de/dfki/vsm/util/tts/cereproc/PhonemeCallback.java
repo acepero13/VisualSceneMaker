@@ -10,6 +10,11 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 25/06/16.
  */
+
+/*The Callback function is fired for every phrase returned by the synthesiser.
+  First collect all the phoneme data and then speak
+  This callback colletcts the phoneme information
+  */
 public class PhonemeCallback extends TtsEngineCallback {
     private SourceDataLine line;
     private HashMap<Integer, LinkedList<Phoneme>> phonemes;
