@@ -1,7 +1,9 @@
 package de.dfki.vsm.util.tts.cereproc;
 
 import com.cereproc.cerevoice_eng.*;
+import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.tts.cereproc.phonemes.ScottishPhoneme;
+import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.SourceDataLine;
@@ -19,10 +21,22 @@ import java.util.LinkedList;
 public class GenericCallback extends TtsEngineCallback {
     private SourceDataLine line;
     private HashMap<Integer, LinkedList<Phoneme>> phonemes;
+    private String executionId;
+    private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
+    private Cereproc cereproc;
     public GenericCallback(SourceDataLine line) {
         this.line = line;
         phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
     }
+
+    public GenericCallback(SourceDataLine line, String pExecutionId, Cereproc cereInstance) {
+        this.line = line;
+        phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
+        executionId = pExecutionId;
+        cereproc = cereInstance;
+    }
+
+
 
     public void Callback(SWIGTYPE_p_CPRC_abuf abuf) {
 
@@ -75,6 +89,10 @@ public class GenericCallback extends TtsEngineCallback {
             phonemes.put(word_counter, wordPhoneme);
         }
 
+        cereproc.addPhonemeList(phonemes);
+
+
+
         speak(abuf);
 
 
@@ -97,6 +115,7 @@ public class GenericCallback extends TtsEngineCallback {
             b[i * 2 + 1] = (byte) (s & 0x00ff);
         }
         // Send the audio data to the Java audio player
+        mEventCaster.convey(new LineStart(this, executionId)); //Notify we start speaking
         line.write(b, 0, sz * 2);
     }
 

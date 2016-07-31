@@ -21,7 +21,7 @@ import java.util.LinkedList;
 /**
  * Created by alvaro on 25/06/16.
  */
-public class Cereprog extends SpeechClient {
+public class Cereproc extends SpeechClient {
     private SWIGTYPE_p_CPRCEN_engine eng;
     private int chan_handle, res;
     //TODO: Read from config file
@@ -45,13 +45,13 @@ public class Cereprog extends SpeechClient {
         System.loadLibrary("cerevoice_eng");
     }
 
-    public Cereprog(){
+    public Cereproc(){
         init();
         wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
     }
 
-    public Cereprog(String licenseNamePath, String voicePath){
+    public Cereproc(String licenseNamePath, String voicePath){
         license_name = licenseNamePath;
         voice_name = voicePath;
         init();
@@ -81,9 +81,10 @@ public class Cereprog extends SpeechClient {
         Audioline au = initSpeak(executionId);
         String spokenText = "";
         try {
+            //Notification is sent from callback
             speak(au);
             spokenText = finalWord;
-            mEventCaster.convey(new LineStart(this,  executionId)); //Notify we start speaking
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -99,7 +100,7 @@ public class Cereprog extends SpeechClient {
         Audioline au = openAudioLine(executionId);
         getPhrase();
         //setAudioCallback(au);
-        setGenericCallback(au);
+        setGenericCallback(au, executionId);
         return au;
     }
 
@@ -166,6 +167,10 @@ public class Cereprog extends SpeechClient {
         phrasePhonemes.put(finalWord, phonemes);
     }
 
+    public void addPhonemeList(HashMap<Integer, LinkedList<Phoneme>> phonemes){
+        phrasePhonemes.put(finalWord, phonemes);
+    }
+
     private Audioline openAudioLine(String executionId) {
         Audioline au =  getAudioline();
         return au;
@@ -187,8 +192,8 @@ public class Cereprog extends SpeechClient {
         speekCallback.SetCallback(eng, chan_handle);
     }
 
-    private void setGenericCallback(Audioline au) {
-        genericCallback = new GenericCallback(au.line());
+    private void setGenericCallback(Audioline au, String executionId) {
+        genericCallback = new GenericCallback(au.line(), executionId, this);
         genericCallback.SetCallback(eng, chan_handle);
     }
 
