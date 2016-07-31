@@ -38,64 +38,21 @@ public class GenericCallback extends TtsEngineCallback {
         toSpeakPhrase = phrase;
     }
 
-
-
     public void Callback(SWIGTYPE_p_CPRC_abuf abuf) {
-
         System.out.println("INFO: firing engine callback");
-        int i, sz;
-        // sz is the number of 16-bits samples
-        System.out.println("INFO: checking audio size");
-        sz =  cerevoice_eng.CPRC_abuf_wav_sz(abuf);
-        byte[] b = new byte[sz * 2];
-        byte b1, b2;
-        short s;
-        SWIGTYPE_p_CPRC_abuf_trans trans;
-        CPRC_ABUF_TRANS_TYPE transtype;
-        float start, end;
-        String name;
-        String word = "";
         int word_counter = -1;
         if(phonemes.size() >0){
             word_counter = phonemes.size();
         }
         LinkedList<Phoneme> wordPhoneme = new LinkedList<>();
-
-        for(i = 0; i < cerevoice_eng.CPRC_abuf_trans_sz(abuf); i++) {
-            trans = cerevoice_eng.CPRC_abuf_get_trans(abuf, i);
-            transtype = cerevoice_eng.CPRC_abuf_trans_type(trans);
-            start = cerevoice_eng. CPRC_abuf_trans_start(trans);
-            end = cerevoice_eng.CPRC_abuf_trans_end(trans);
-            name = cerevoice_eng.CPRC_abuf_trans_name(trans);
-            if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_PHONE) {
-                wordPhoneme.add(new ScottishPhoneme(name, (long) (start*1000), (long) (end * 1000)));
-                System.err.printf("INFO: phoneme: %.3f %.3f %s\n", start, end, name);
-            }
-            else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_WORD) {
-                if(word_counter >= 0) {
-                    phonemes.put(word_counter, wordPhoneme);
-                }
-                word = name;
-                word_counter++;
-                System.err.printf("INFO: word: %.3f %.3f %s\n", start, end, name);
-                wordPhoneme = new LinkedList<>();
-            }
-            else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_MARK) {
-                System.err.printf("INFO: marker: %.3f %.3f %s\n", start, end, name);
-            }
-            else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_ERROR) {
-                System.err.printf("ERROR: could not retrieve transcription at '%d'", i);
-            }
-        }
+        CereprocBuff cereprocBuff = new CereprocBuff(abuf, word_counter, wordPhoneme).invoke();
+        word_counter = cereprocBuff.getWord_counter();
+        wordPhoneme = cereprocBuff.getWordPhoneme();
         if(word_counter >= 0) {
             phonemes.put(word_counter, wordPhoneme);
         }
-
         phraseCache.add(toSpeakPhrase, phonemes);
         speak(abuf);
-
-
-
     }
 
     private void speak(SWIGTYPE_p_CPRC_abuf abuf){
@@ -120,5 +77,64 @@ public class GenericCallback extends TtsEngineCallback {
 
     public HashMap<Integer, LinkedList<Phoneme>> getPhonemes(){
         return phonemes;
+    }
+
+    private class CereprocBuff {
+        private SWIGTYPE_p_CPRC_abuf abuf;
+        private int word_counter;
+        private LinkedList<Phoneme> wordPhoneme;
+
+        public CereprocBuff(SWIGTYPE_p_CPRC_abuf abuf, int word_counter, LinkedList<Phoneme> wordPhoneme) {
+            this.abuf = abuf;
+            this.word_counter = word_counter;
+            this.wordPhoneme = wordPhoneme;
+        }
+
+        public int getWord_counter() {
+            return word_counter;
+        }
+
+        public LinkedList<Phoneme> getWordPhoneme() {
+            return wordPhoneme;
+        }
+
+        public CereprocBuff invoke() {
+            int i;SWIGTYPE_p_CPRC_abuf_trans trans;CPRC_ABUF_TRANS_TYPE transtype;
+            float start;
+            float end;
+            String name;
+            for(i = 0; i < cerevoice_eng.CPRC_abuf_trans_sz(abuf); i++) {
+                trans = cerevoice_eng.CPRC_abuf_get_trans(abuf, i);
+                transtype = cerevoice_eng.CPRC_abuf_trans_type(trans);
+                start = cerevoice_eng. CPRC_abuf_trans_start(trans);
+                end = cerevoice_eng.CPRC_abuf_trans_end(trans);
+                name = cerevoice_eng.CPRC_abuf_trans_name(trans);
+                if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_PHONE) {
+                    handlePhoneme(start, end, name);
+                }
+                else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_WORD) {
+                    handleWord(start, end, name);
+                }
+                else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_MARK) {
+                }
+                else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_ERROR) {
+                    System.err.printf("ERROR: could not retrieve transcription at '%d'", i);
+                }
+            }
+            return this;
+        }
+
+        private void handleWord(float start, float end, String name) {
+            if(word_counter >= 0) {
+                phonemes.put(word_counter, wordPhoneme);
+            }
+            word_counter++;
+            wordPhoneme = new LinkedList<>();
+        }
+
+        private void handlePhoneme(float start, float end, String name) {
+            //TODO: Make factory method for Phoneme Class
+            wordPhoneme.add(new ScottishPhoneme(name, (long) (start*1000), (long) (end * 1000)));
+        }
     }
 }
