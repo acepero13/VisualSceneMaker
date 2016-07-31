@@ -9,6 +9,7 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
+import de.dfki.vsm.util.tts.marytts.phonemes.EnglishPhoneme;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
 import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
@@ -207,10 +208,10 @@ public class BaxterExecutorTest {
 
     private LinkedList<Phoneme> getWordPhonemeList() {
         LinkedList<Phoneme> phonemes = new LinkedList<>();
-        phonemes.add( new Phoneme("A", 0, 10));
-        phonemes.add(new Phoneme("O", 10, 20));
-        phonemes.add( new Phoneme("u", 20, 30));
-        phonemes.add(new Phoneme("This is a bad phoneme", 30,40));
+        phonemes.add( new EnglishPhoneme("A", 0, 10));
+        phonemes.add(new EnglishPhoneme("O", 10, 20));
+        phonemes.add( new EnglishPhoneme("u", 20, 30));
+        phonemes.add(new EnglishPhoneme("This is a bad phoneme", 30,40));
         return phonemes;
     }
 

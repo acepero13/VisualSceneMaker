@@ -4,6 +4,7 @@ import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.marytts.MaryStickmanPhonemes;
+import de.dfki.vsm.util.tts.marytts.phonemes.EnglishPhoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +47,8 @@ public class MaryTTsSpeakerTest {
     public void testGetWordPhonemeList() throws Exception {
         HashMap<Integer, LinkedList<Phoneme>> list = new HashMap<>();
         LinkedList phonemeL = new LinkedList();
-        phonemeL.add(new Phoneme("test0", 0, 100));
-        phonemeL.add(new Phoneme("test1", 100, 200));
+        phonemeL.add(new EnglishPhoneme("test0", 0, 100));
+        phonemeL.add(new EnglishPhoneme("test1", 100, 200));
         list.put(1, new LinkedList<>());
         list.put(12, phonemeL);
         MaryTTsSpeaker maryS = getInstance(list);
@@ -59,7 +60,7 @@ public class MaryTTsSpeakerTest {
     public void testGetWordPhonemeListOutBound(){
         HashMap<Integer, LinkedList<Phoneme>> list = new HashMap<>();
         LinkedList phonemeL = new LinkedList();
-        phonemeL.add(new Phoneme("test0", 0, 100));
+        phonemeL.add(new EnglishPhoneme("test0", 0, 100));
         list.put(12, phonemeL);
         MaryTTsSpeaker maryS = getInstance(list);
         LinkedList<Phoneme> result = maryS.getWordPhonemeList(155);

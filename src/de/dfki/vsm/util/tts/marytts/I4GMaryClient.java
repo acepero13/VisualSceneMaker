@@ -51,6 +51,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import de.dfki.vsm.util.tts.SpeechClient;
 import de.dfki.vsm.util.tts.VoiceName;
+import de.dfki.vsm.util.tts.marytts.phonemes.EnglishPhoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.AudioClosed;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.AudioOpened;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
@@ -355,7 +356,7 @@ public class I4GMaryClient extends SpeechClient {
             }
             final String value = nodes.item(i).getAttributes().getNamedItem("p").getNodeValue();
             currentTime+= endT;
-            phonemes.add(new Phoneme(value, startTime, endT));
+            phonemes.add(new EnglishPhoneme(value, startTime, endT));
             startTime = endT;
         }
         return phonemes;

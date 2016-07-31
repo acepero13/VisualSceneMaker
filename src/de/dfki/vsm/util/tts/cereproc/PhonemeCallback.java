@@ -1,6 +1,7 @@
 package de.dfki.vsm.util.tts.cereproc;
 
 import com.cereproc.cerevoice_eng.*;
+import de.dfki.vsm.util.tts.cereproc.phonemes.ScottishPhoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.SourceDataLine;
@@ -47,7 +48,7 @@ public class PhonemeCallback extends TtsEngineCallback {
             end = cerevoice_eng.CPRC_abuf_trans_end(trans);
             name = cerevoice_eng.CPRC_abuf_trans_name(trans);
             if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_PHONE) {
-                wordPhoneme.add(new Phoneme(name, (long) (start*1000), (long) (end * 1000)));
+                wordPhoneme.add(new ScottishPhoneme(name, (long) (start*1000), (long) (end * 1000)));
                 System.err.printf("INFO: phoneme: %.3f %.3f %s\n", start, end, name);
             }
             else if (transtype == CPRC_ABUF_TRANS_TYPE.CPRC_ABUF_TRANS_WORD) {
