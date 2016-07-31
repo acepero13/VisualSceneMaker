@@ -23,17 +23,19 @@ public class GenericCallback extends TtsEngineCallback {
     private HashMap<Integer, LinkedList<Phoneme>> phonemes;
     private String executionId;
     private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
-    private Cereproc cereproc;
+    private PhrasePhonemeCache phraseCache;
+    private String toSpeakPhrase;
     public GenericCallback(SourceDataLine line) {
         this.line = line;
         phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
     }
 
-    public GenericCallback(SourceDataLine line, String pExecutionId, Cereproc cereInstance) {
+    public GenericCallback(SourceDataLine line, String pExecutionId, PhrasePhonemeCache cache, String phrase) {
         this.line = line;
         phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
         executionId = pExecutionId;
-        cereproc = cereInstance;
+        phraseCache = cache;
+        toSpeakPhrase = phrase;
     }
 
 
@@ -89,10 +91,7 @@ public class GenericCallback extends TtsEngineCallback {
             phonemes.put(word_counter, wordPhoneme);
         }
 
-        cereproc.addPhonemeList(phonemes);
-
-
-
+        phraseCache.add(toSpeakPhrase, phonemes);
         speak(abuf);
 
 

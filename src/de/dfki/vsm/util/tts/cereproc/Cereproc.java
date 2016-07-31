@@ -5,7 +5,6 @@ import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.tts.SpeechClient;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 
@@ -31,7 +30,7 @@ public class Cereproc extends SpeechClient {
     TtsEngineCallback speekCallback;
     TtsEngineCallback phonemeCallback;
     TtsEngineCallback genericCallback;
-    HashMap<String, HashMap<Integer, LinkedList<Phoneme>>> phrasePhonemes = new HashMap<>();
+    private PhrasePhonemeCache phonemeCache;
     private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
 
     Float rate;
@@ -49,6 +48,7 @@ public class Cereproc extends SpeechClient {
         init();
         wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
+        phonemeCache = new PhrasePhonemeCache();
     }
 
     public Cereproc(String licenseNamePath, String voicePath){
@@ -57,6 +57,7 @@ public class Cereproc extends SpeechClient {
         init();
         wordQueue =  Collections.synchronizedList(new LinkedList());
         finalWord = "";
+        phonemeCache = new PhrasePhonemeCache();
     }
 
 
@@ -108,7 +109,7 @@ public class Cereproc extends SpeechClient {
     public HashMap<Integer, LinkedList<Phoneme>> getPhonemes() throws Exception {
         try {
             if(isPhonemePhraseCached()) {
-                return phrasePhonemes.get(finalWord);
+                return phonemeCache.retrieve(finalWord);
             }else{
                 getPhrase();
                 isTextNonEmpty();
@@ -123,7 +124,7 @@ public class Cereproc extends SpeechClient {
     }
 
     private boolean isPhonemePhraseCached() {
-        return phrasePhonemes.containsKey(finalWord);
+        return phonemeCache.isPhraseCached(finalWord);
     }
 
     private Audioline initPhoneme() {
@@ -164,12 +165,10 @@ public class Cereproc extends SpeechClient {
         cerevoice_eng.CPRCEN_engine_channel_close(eng, chan_handle);// Close the channel
         cerevoice_eng.CPRCEN_engine_delete(eng);//Delete the engine
         phonemes = ((GenericCallback) genericCallback).getPhonemes();
-        phrasePhonemes.put(finalWord, phonemes);
+        phonemeCache.add(finalWord, phonemes);
     }
 
-    public void addPhonemeList(HashMap<Integer, LinkedList<Phoneme>> phonemes){
-        phrasePhonemes.put(finalWord, phonemes);
-    }
+
 
     private Audioline openAudioLine(String executionId) {
         Audioline au =  getAudioline();
@@ -193,7 +192,7 @@ public class Cereproc extends SpeechClient {
     }
 
     private void setGenericCallback(Audioline au, String executionId) {
-        genericCallback = new GenericCallback(au.line(), executionId, this);
+        genericCallback = new GenericCallback(au.line(), executionId, phonemeCache, finalWord);
         genericCallback.SetCallback(eng, chan_handle);
     }
 
