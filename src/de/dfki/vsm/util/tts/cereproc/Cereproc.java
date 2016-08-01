@@ -16,6 +16,7 @@ import java.util.LinkedList;
 
 /**
  * Created by alvaro on 25/06/16.
+ * Cereproc TTS
  */
 public class Cereproc extends SpeechClient {
     private SWIGTYPE_p_CPRCEN_engine eng;
@@ -133,17 +134,17 @@ public class Cereproc extends SpeechClient {
     }
 
 
-    private void setAudioCallback(Audioline au) {
+    private void setAudioCallback(final Audioline au) {
         TtsEngineCallback speekCallback = new SpeakCallback(au.line());
         speekCallback.SetCallback(eng, chan_handle);
     }
 
-    private void setGenericCallback(Audioline au, String executionId) {
+    private void setGenericCallback(final Audioline au, final String executionId) {
         genericCallback = new GenericCallback(au.line(), executionId, phonemeCache, finalWord);
         genericCallback.SetCallback(eng, chan_handle);
     }
 
-    private void setPhonemeCallback(Audioline au) {
+    private void setPhonemeCallback(final Audioline au) {
         //The callback function, if set, is fired for every phrase returned by the synthesiser.
         phonemeCallback = new PhonemeCallback(au.line());
         phonemeCallback.SetCallback(eng, chan_handle);
