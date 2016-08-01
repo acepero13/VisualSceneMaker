@@ -76,6 +76,7 @@ public final class TWorldSSIPlugin extends SSIRunTimePlugin {
     public void handle(final SSIEventArray array) {
         // Print some information 
         //mLogger.message("Handling SSI events " + array);
+
         for (final SSIEventObject event : array.getEventList()) {
             final SSIEventData obj = event.getData();
             //mLogger.message("Handling SSI event " + obj);
@@ -113,24 +114,25 @@ public final class TWorldSSIPlugin extends SSIRunTimePlugin {
                 values.put("head_orientation_yaw", new StringValue(mSSIData.get("head.orientation.yaw")));
                 values.put("head_movement_nod", new StringValue(mSSIData.get("head.movement.nod")));
                 values.put("head_movement_shake", new StringValue(mSSIData.get("head.movement.shake")));
-                values.put("body_activity", new StringValue(mSSIData.get("body.activity")));
+                float ba = Float.parseFloat(mSSIData.get("body.activity"));
+                values.put("body_activity", new FloatValue(ba));
                 values.put("body_energy", new StringValue(mSSIData.get("body.energy")));
-                values.put("body_posture_leanfront_detected", new StringValue(mSSIData.get("body.posture.leanfront.detected")));
-                values.put("body_posture_leanfront_duration", new StringValue(mSSIData.get("body.posture.leanfront.duration")));
-                values.put("body_posture_leanfront_intensity", new StringValue(mSSIData.get("body.posture.leanfront.intensity")));
-                values.put("body_posture_leanback_detected", new StringValue(mSSIData.get("body.posture.leanback.detected")));
-                values.put("body_posture_leanback_duration", new StringValue(mSSIData.get("body.posture.leanback.duration")));
-                values.put("body_posture_leanback_intensity", new StringValue(mSSIData.get("body.posture.leanback.intensity")));
-                values.put("body_gesture_armsopen_detected", new StringValue(mSSIData.get("body.gesture.armsopen.detected")));
-                values.put("body_gesture_armsopen_duration", new StringValue(mSSIData.get("body.gesture.armsopen.duration")));
-                values.put("body_gesture_armsopen_intensity", new StringValue(mSSIData.get("body.gesture.armsopen.intensity")));
-                values.put("body_gesture_armscrossed_detected", new StringValue(mSSIData.get("body.gesture.armscrossed.detected")));
-                values.put("body_gesture_armscrossed_duration", new StringValue(mSSIData.get("body.gesture.armscrossed.duration")));
-                values.put("body_gesture_armscrossed_intensity", new StringValue(mSSIData.get("body.gesture.armscrossed.intensity")));
-                values.put("body_gesture_lefthandheadtouch_detected", new StringValue(mSSIData.get("body.gesture.lefthandheadtouch.detected")));
-                values.put("body_gesture_lefthandheadtouch_duration", new StringValue(mSSIData.get("body.gesture.lefthandheadtouch.duration")));
-                values.put("body_gesture_righthandheadtouch_detected", new StringValue(mSSIData.get("body.gesture.righthandheadtouch.detected")));
-                values.put("body_gesture_righthandheadtouch_duration", new StringValue(mSSIData.get("body.gesture.righthandheadtouch.duration")));
+//                values.put("body_posture_leanfront_detected", new StringValue(mSSIData.get("body.posture.leanfront.detected")));
+//                values.put("body_posture_leanfront_duration", new StringValue(mSSIData.get("body.posture.leanfront.duration")));
+//                values.put("body_posture_leanfront_intensity", new StringValue(mSSIData.get("body.posture.leanfront.intensity")));
+//                values.put("body_posture_leanback_detected", new StringValue(mSSIData.get("body.posture.leanback.detected")));
+//                values.put("body_posture_leanback_duration", new StringValue(mSSIData.get("body.posture.leanback.duration")));
+//                values.put("body_posture_leanback_intensity", new StringValue(mSSIData.get("body.posture.leanback.intensity")));
+//                values.put("body_gesture_armsopen_detected", new StringValue(mSSIData.get("body.gesture.armsopen.detected")));
+//                values.put("body_gesture_armsopen_duration", new StringValue(mSSIData.get("body.gesture.armsopen.duration")));
+//                values.put("body_gesture_armsopen_intensity", new StringValue(mSSIData.get("body.gesture.armsopen.intensity")));
+//                values.put("body_gesture_armscrossed_detected", new StringValue(mSSIData.get("body.gesture.armscrossed.detected")));
+//                values.put("body_gesture_armscrossed_duration", new StringValue(mSSIData.get("body.gesture.armscrossed.duration")));
+//                values.put("body_gesture_armscrossed_intensity", new StringValue(mSSIData.get("body.gesture.armscrossed.intensity")));
+//                values.put("body_gesture_lefthandheadtouch_detected", new StringValue(mSSIData.get("body.gesture.lefthandheadtouch.detected")));
+//                values.put("body_gesture_lefthandheadtouch_duration", new StringValue(mSSIData.get("body.gesture.lefthandheadtouch.duration")));
+//                values.put("body_gesture_righthandheadtouch_detected", new StringValue(mSSIData.get("body.gesture.righthandheadtouch.detected")));
+//                values.put("body_gesture_righthandheadtouch_duration", new StringValue(mSSIData.get("body.gesture.righthandheadtouch.duration")));
                 values.put("face_expression_smile_detected", new StringValue(mSSIData.get("face.expression.smile.detected")));
                 values.put("face_expression_smile_duration", new StringValue(mSSIData.get("face.expression.smile.duration")));
                 values.put("face_expression_smile_intensity", new StringValue(mSSIData.get("face.expression.smile.intensity")));
@@ -145,6 +147,8 @@ public final class TWorldSSIPlugin extends SSIRunTimePlugin {
                         //mLogger.warning("Variable " + value.getKey() + " not defined!");
                     }
                 }
+
+                long end = System.nanoTime();
             }
         }
     }

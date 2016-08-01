@@ -22,19 +22,19 @@ import org.w3c.dom.Element;
  * @author Patrick Gebhard
  *
  */
-public class StrongYes extends Action implements XMLParseable, XMLWriteable {
+public class StopSpeaking extends Action implements XMLParseable, XMLWriteable {
 
     private String mCharameAvatarId = "1";
     // The logger instance
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
 
     // TODO cai_request sub element String mValue = "";
-    public StrongYes(String aid) {
+    public StopSpeaking(String aid) {
         mName = "caixml";
         mCharameAvatarId = aid;
     }
 
-    public StrongYes() {
+    public StopSpeaking() {
         mName = "caixml";
     }
 
@@ -45,8 +45,9 @@ public class StrongYes extends Action implements XMLParseable, XMLWriteable {
         ComplexAnimationGenerator ca = new ComplexAnimationGenerator();
         ca.getCommand().setId(mId); // set the same id in the Charamel command that has been used in the Tworld command
         ca.getCommand().setAid(Integer.parseInt(mCharameAvatarId));
-        AnimationTrack track1 = ca.addTrack();
-        track1.addMotion(Integer.parseInt(mCharameAvatarId), Motion.YES02);
+        //AnimationTrack track1 = ca.addTrack();
+        ca.getCommand().setEventToStopSpeaking(Integer.parseInt(mCharameAvatarId));
+        //track1.addMotion(Integer.parseInt(mCharameAvatarId), Motion.EXPLAIN03);
         out.push().println(ca.getCaiXML());
         out.pop().pop().println("</Action>");
     }

@@ -1,5 +1,6 @@
 package de.dfki.vsm.xtension.tworld;
 
+import de.dfki.vsm.editor.dialog.WaitingDialog;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.scenescript.ActionFeature;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
@@ -72,6 +73,17 @@ public final class TWorldExecutor extends ActivityExecutor {
         final String cactorcmd = mConfig.getProperty("cactorcmd");
 
         // Create the plugin's processes
+        boolean isCactODirPresent = isPathExisting(cactordir);
+        boolean isTWorldPresent = isPathExisting(tworlddir);
+
+        if (!isCactODirPresent || !isTWorldPresent) {
+            String missing = (!isCactODirPresent) ? cactordir : tworlddir;
+            String message = "Missing installation folder " + missing;
+            WaitingDialog InfoDialog = new WaitingDialog(message);
+            InfoDialog.setModal(true);
+            InfoDialog.setVisible(true);
+            return;
+        }
         try {
             mProcessMap.put(cactorexe, Runtime.getRuntime().exec(
                     "cmd /c start /min " + cactorexe + " " + cactorcmd, null, new File(cactordir)));
@@ -94,6 +106,15 @@ public final class TWorldExecutor extends ActivityExecutor {
             }
         }
         broadcast("Start");
+    }
+
+    private boolean isPathExisting(String path) {
+
+        File f = new File(path);
+        if (f.exists() && f.isDirectory()) {
+            return true;
+        }
+        return false;
     }
 
     // Unload the executor 
@@ -214,25 +235,38 @@ public final class TWorldExecutor extends ActivityExecutor {
                 }
             }
         } else {
-            if (cmd.equalsIgnoreCase("Angry")) {
+            if (cmd.equalsIgnoreCase("StopSpeaking")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Angry", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("StopSpeaking", aid);
+            }
+
+            if (cmd.equalsIgnoreCase("Angry")) {
+                // get the charamel avatar id
+                String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
+                // build action
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Angry", intensity, aid);
             }
 
             if (cmd.equalsIgnoreCase("Demanding")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Demanding", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Demanding", intensity, aid);
             }
 
             if (cmd.equalsIgnoreCase("Disgust")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Disgust", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Disgust", intensity, aid);
             }
 
             if (cmd.equalsIgnoreCase("Neutral")) {
@@ -245,22 +279,42 @@ public final class TWorldExecutor extends ActivityExecutor {
             if (cmd.equalsIgnoreCase("Sad")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Sad", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Sad", intensity, aid);
             }
 
             if (cmd.equalsIgnoreCase("Smile")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Smile", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Smile", intensity, aid);
             }
 
             if (cmd.equalsIgnoreCase("Happy")) {
                 // get the charamel avatar id
                 String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                String intensity = getActionFeatureValue("intensity", features);
+                intensity = (intensity == "") ? "1.0" : intensity;
                 // build action
-                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Happy", "1.0", aid);
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Happy", intensity, aid);
+            }
+
+            if (cmd.equalsIgnoreCase("Reject")) {
+                // get the charamel avatar id
+                String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                // build action
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Reject", aid);
+            }
+
+            if (cmd.equalsIgnoreCase("Challenge")) {
+                // get the charamel avatar id
+                String aid = mProject.getAgentConfig(activity.getActor()).getProperty("aid");
+                // build action
+                twcoa = ActionLoader.getInstance().loadCharamelAnimation("Challenge", aid);
             }
 
             if (cmd.equalsIgnoreCase("ShowPalms")) {

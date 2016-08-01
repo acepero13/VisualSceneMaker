@@ -17,25 +17,25 @@ import org.w3c.dom.Element;
  * @author Patrick Gebhard
  *
  */
-public class WarpPosition extends Action implements XMLParseable, XMLWriteable {
+public class WorldPosition extends Action implements XMLParseable, XMLWriteable {
 
     String mX = "";
     String mY = "";
     String mZ = "";
 
-    public WarpPosition(String x, String y, String z) {
+    public WorldPosition(String x, String y, String z) {
         mName = "warptoworldposition";
         mX = x;
         mY = y;
         mZ = z;
     }
 
-    public WarpPosition() {
+    public WorldPosition() {
     }
 
     @Override
     public void writeXML(IOSIndentWriter out) throws XMLWriteError {
-        out.push().println("<Action name=\"" + mName + "\" id=\"" + mId + "\" r=\"" + mX + "\" g=\"" + mY + "\" b=\"" + mZ + "\"/>");
+        out.push().println("<Action name=\"" + mName + "\" id=\"" + mId + "\" x=\"" + mX + "\" y=\"" + mY + "\" z=\"" + mZ + "\"/>");
     }
 
     @Override
