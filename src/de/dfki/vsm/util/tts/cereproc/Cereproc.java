@@ -5,36 +5,27 @@ import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.tts.SpeechClient;
+import de.dfki.vsm.util.tts.cereproc.util.Audioline;
+import de.dfki.vsm.util.tts.cereproc.util.CereprocLoader;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+
 
 /**
  * Created by alvaro on 25/06/16.
  */
 public class Cereproc extends SpeechClient {
     private SWIGTYPE_p_CPRCEN_engine eng;
-    private int chan_handle, res;
-    //TODO: Read from config file
-    private String voice_name =   "cerevoice_heather_3.2.0_48k.voice";
-    private String license_name = "license.lic";
-    private String rate_str;
-    TtsEngineCallback speekCallback;
-    TtsEngineCallback phonemeCallback;
-    TtsEngineCallback genericCallback;
+    private int chan_handle;
+    private TtsEngineCallback phonemeCallback;
+    private TtsEngineCallback genericCallback;
     private PhrasePhonemeCache phonemeCache;
     private final EventDispatcher mEventCaster = EventDispatcher.getInstance();
-
-    Float rate;
-    byte[] utf8bytes;
+    private byte[] utf8bytes;
+    private  CereprocLoader cereprocLoader;
     static {
         // The cerevoice_eng library must be on the path,
         // specify with eg:
@@ -44,91 +35,65 @@ public class Cereproc extends SpeechClient {
         System.loadLibrary("cerevoice_eng");
     }
 
-    public Cereproc(){
-        init();
-        wordQueue =  Collections.synchronizedList(new LinkedList());
-        finalWord = "";
+
+    public Cereproc(final String licenseNamePath, final String voicePath){
+        cereprocLoader = new CereprocLoader(voicePath, licenseNamePath);
         phonemeCache = new PhrasePhonemeCache();
+        eng = cereprocLoader.getEng();
+        chan_handle = cereprocLoader.getChan_handle();
     }
 
-    public Cereproc(String licenseNamePath, String voicePath){
-        license_name = licenseNamePath;
-        voice_name = voicePath;
-        init();
-        wordQueue =  Collections.synchronizedList(new LinkedList());
-        finalWord = "";
-        phonemeCache = new PhrasePhonemeCache();
-    }
+    public Cereproc() {
 
-
-    private void init() {
-        try {
-            initCereproc();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initCereproc() throws Exception {
-        loadVoice();
-        openDefaultChannel();
-    }
-
-    public void setText(String text){
-        finalWord = text;
     }
 
     public String speak(String executionId){
-        Audioline au = initSpeak(executionId);
+        Audioline au = initializeSpeak(executionId);
         String spokenText = "";
         try {
             //Notification is sent from callback
             speak(au);
             spokenText = finalWord;
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             clearWordQueue();
-            mEventCaster.convey(new LineStop(this, executionId)); //Notify the speach is done
-            return spokenText;
+            notifyEndOfSpeech(executionId);
         }
+        return spokenText;
     }
 
-    private Audioline initSpeak(String executionId) {
-        Audioline au = openAudioLine(executionId);
+    private Audioline initializeSpeak(String executionId) {
+        final Audioline au = cereprocLoader.openAudioLine();
         getPhrase();
-        //setAudioCallback(au);
         setGenericCallback(au, executionId);
         return au;
     }
 
+    private void notifyEndOfSpeech(String executionId) {
+        mEventCaster.convey(new LineStop(this, executionId));
+    }
 
     public HashMap<Integer, LinkedList<Phoneme>> getPhonemes() throws Exception {
         try {
-            if(isPhonemePhraseCached()) {
+            if(phonemeCache.isPhraseCached(finalWord)) {
                 return phonemeCache.retrieve(finalWord);
             }else{
                 getPhrase();
                 isTextNonEmpty();
-                Audioline au = initPhoneme();
+                final Audioline au = initializePhoneme();
                 return tryGetPhonemes(au);
             }
         }
         catch (Exception e){
             e.printStackTrace();
-            return new HashMap<Integer, LinkedList<Phoneme>>();
+            throw  e;
         }
     }
 
-    private boolean isPhonemePhraseCached() {
-        return phonemeCache.isPhraseCached(finalWord);
-    }
 
-    private Audioline initPhoneme() {
-        Audioline au = openAudioLine();
+    private Audioline initializePhoneme() {
+        final Audioline au = cereprocLoader.openAudioLine();
         setPhonemeCallback(au);//Callback for capturing phoneme data
         return au;
     }
@@ -147,14 +112,13 @@ public class Cereproc extends SpeechClient {
             return phonemes;
     }
 
-
     private void isTextNonEmpty() throws Exception {
-        if(finalWord.equals("")){
+        if("".equals(finalWord)){
             throw new Exception("Empty Text, could not speak");
         }
     }
 
-    private void speak(Audioline au) throws Exception {
+    private void speak(final Audioline au) throws Exception {
         HashMap<Integer, LinkedList<Phoneme>> phonemes = new HashMap<Integer, LinkedList<Phoneme>>();
         isTextNonEmpty();
         utf8bytes = finalWord.getBytes("UTF-8");
@@ -169,25 +133,8 @@ public class Cereproc extends SpeechClient {
     }
 
 
-
-    private Audioline openAudioLine(String executionId) {
-        Audioline au =  getAudioline();
-        return au;
-    }
-
-    private Audioline openAudioLine() {
-        return getAudioline();
-    }
-
-    private Audioline getAudioline() {
-        rate_str = cerevoice_eng.CPRCEN_channel_get_voice_info(eng, chan_handle, "SAMPLE_RATE");
-        rate = new Float(rate_str);
-        Audioline au = new Audioline(rate.floatValue());
-        return au;
-    }
-
     private void setAudioCallback(Audioline au) {
-        speekCallback = new SpeakCallback(au.line());
+        TtsEngineCallback speekCallback = new SpeakCallback(au.line());
         speekCallback.SetCallback(eng, chan_handle);
     }
 
@@ -202,19 +149,8 @@ public class Cereproc extends SpeechClient {
         phonemeCallback.SetCallback(eng, chan_handle);
     }
 
-    private void loadVoice() throws Exception {
-        eng = cerevoice_eng.CPRCEN_engine_new();
-        res = cerevoice_eng.CPRCEN_engine_load_voice(eng, license_name, "", voice_name,
-                CPRC_VOICE_LOAD_TYPE.CPRC_VOICE_LOAD);
-        if (res == 0) {
-            throw new Exception("ERROR: unable to load voice file '" + voice_name + "', exiting");
-        }
-    }
 
-    private void openDefaultChannel() {
-        chan_handle = cerevoice_eng.CPRCEN_engine_open_default_channel(eng);
-    }
-
+    @Override
     public void addWord(String s) {
         wordQueue.add(s);
     }
@@ -225,45 +161,4 @@ public class Cereproc extends SpeechClient {
     }
 }
 
-// Simple class to wrap a Java audio line
-class Audioline {
-    private SourceDataLine line;
-    private AudioFormat format;
-
-    public Audioline(float sampleRate){
-        format =  getAudioFormat(sampleRate);
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-                format);
-        // Obtain and open the line.
-        try {
-            line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(format);
-            line.start();
-        }catch (Exception e){
-            System.err.println("Error: " + e.getMessage());
-        }
-    }
-
-    public SourceDataLine line(){
-        return line;
-    }
-
-    private static AudioFormat getAudioFormat(float sampleRate){
-        int sampleSizeInBits = 16;
-        int channels = 1;
-        boolean signed = true;
-        boolean bigEndian = true;
-        return new AudioFormat(
-                sampleRate,
-                sampleSizeInBits,
-                channels,
-                signed,
-                bigEndian);
-    }
-
-    public void flush(){
-        line.drain();
-        line.close();
-    }
-}
 

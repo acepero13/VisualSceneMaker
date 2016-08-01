@@ -9,7 +9,7 @@ import java.util.LinkedList;
  * Created by alvaro on 7/31/16.
  */
 public class PhrasePhonemeCache {
-    HashMap<String, HashMap<Integer, LinkedList<Phoneme>>> phrasePhonemes = new HashMap<>();
+    private final HashMap<String, HashMap<Integer, LinkedList<Phoneme>>> phrasePhonemes = new HashMap<>();
 
     public HashMap<Integer,LinkedList<Phoneme>> retrieve(String phrase) {
         return phrasePhonemes.get(phrase);

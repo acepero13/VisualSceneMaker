@@ -1,6 +1,7 @@
 package de.dfki.vsm.util.tts;
 
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,8 +10,8 @@ import java.util.List;
  * Created by alvaro on 25/06/16.
  */
 public abstract class SpeechClient {
-    protected List wordQueue = new LinkedList<>();
-    protected String finalWord;
+    protected List wordQueue = Collections.synchronizedList(new LinkedList());
+    protected String finalWord = "";
     public abstract void addWord(String s);
     public String getPhrase() {
         synchronized(wordQueue){
@@ -27,5 +28,8 @@ public abstract class SpeechClient {
 
     public String getFinalWord(){
         return finalWord;
+    }
+    public void setText(String text){
+        finalWord = text;
     }
 }

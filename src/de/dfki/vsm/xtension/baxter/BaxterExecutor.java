@@ -154,9 +154,8 @@ public class BaxterExecutor extends ActivityExecutor {
                 spokenText = speaker.speak(executionId);
             } catch (Exception e) {
                 e.printStackTrace();
-            }finally {
-                return spokenText;
             }
+            return spokenText;
         }
     }
 

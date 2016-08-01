@@ -41,7 +41,7 @@ public class GenericCallback extends TtsEngineCallback {
     public void Callback(SWIGTYPE_p_CPRC_abuf abuf) {
         System.out.println("INFO: firing engine callback");
         int word_counter = -1;
-        if(phonemes.size() >0){
+        if(phonemes.isEmpty()){
             word_counter = phonemes.size();
         }
         LinkedList<Phoneme> wordPhoneme = new LinkedList<>();
