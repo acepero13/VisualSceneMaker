@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * @author Gregor Mehlmann
@@ -621,37 +622,7 @@ public class RunTimeProject {
     }
 
     private boolean writeActiconConfig(final File base) {
-        // Create the acticon configuration file
-        final File file = new File(base, "acticon.xml");
-        // Check if the configuration file does exist
-        if (!file.exists()) {
-            // Print a warning message in this case
-            mLogger.warning("Warning: Creating the new acticon configuration file '" + file + "'");
-            // Create a new configuration file now
-            try {
-                // Try to create a new configuration file
-                if (!file.createNewFile()) {
-                    // Print an error message in this case
-                    mLogger.warning("Warning: There already exists a acticon configuration file '" + file + "'");
-                }
-            } catch (final IOException exc) {
-                // Print an error message in this case
-                mLogger.failure("Failure: Cannot create the new acticon configuration file '" + file + "'");
-                // Return failure if it does not exist
-                return false;
-            }
-        }
-        // Write the acticon configuration file
-        if (!XMLUtilities.writeToXMLFile(mActiconConfig, file)) {
-            // Print an error message in this case
-            mLogger.failure("Error: Cannot write acticon configuration file '" + file + "'");
-            // Return failure if it does not exist
-            return false;
-        }
-        // Print an information message in this case
-        mLogger.message("Saved acticon configuration file '" + file + "':\n" + mActiconConfig);
-        // Return success if the project was saved
-        return true;
+        return false;
     }
 
     private boolean parseGesticonConfig(final String path) {
@@ -948,5 +919,24 @@ public class RunTimeProject {
              return mInterpreter.getValueOf(name, member);
         }
         return null;
+    }
+
+    public void deletePlugin(PluginConfig plugin) {
+        deleteRelatedAgents(plugin);
+        mProjectConfig.deleteDevice(plugin);
+    }
+
+    private void deleteRelatedAgents(PluginConfig plugin) {
+        Iterator <AgentConfig> iterator = getProjectConfig().getAgentConfigList().iterator();
+        while (iterator.hasNext()){
+            AgentConfig agent = iterator.next();
+            if(agent.getDeviceName().equals(plugin.getPluginName())){
+                iterator.remove();
+            }
+        }
+    }
+
+    public void deleteAgent(AgentConfig agent) {
+        mProjectConfig.deleteAgent(agent);
     }
 }

@@ -280,7 +280,7 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void launchBaxter() throws Exception {
-        baxterServerProcess.launchBaxterServer();
+        //baxterServerProcess.launchBaxterServer();
         connectToBaxterServer();
         mListener = new BaxterListener(8001, this);
         mListener.start();
