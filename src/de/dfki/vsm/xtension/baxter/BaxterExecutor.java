@@ -17,6 +17,8 @@ import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
+import de.dfki.vsm.xtension.baxter.utils.BaxterCommandSender;
+import de.dfki.vsm.xtension.baxter.utils.BaxterCommandServerWrapper;
 import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.util.tts.VoiceName;
@@ -46,6 +48,7 @@ public class BaxterExecutor extends ActivityExecutor {
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
     private StickmanStage mStickmanStage ;
     private BaxterListener mListener;
+    private BaxterListener speechListener;
     private BaxterHandler baxterServerHandler;
 
     private BaxterStickman baxterStickman;
@@ -82,6 +85,8 @@ public class BaxterExecutor extends ActivityExecutor {
             actionLoadAnimation(activity);
         }else if(activity instanceof TimeMarkActivity){
             actionExecuteActionTimeMark((TimeMarkActivity) activity);
+        }else if(activity instanceof ActionActivity){
+            //TODO: Send to the Server
         }
     }
 
@@ -185,7 +190,13 @@ public class BaxterExecutor extends ActivityExecutor {
         }
         else if (message.contains("#ANIM#end#")) {
             handleAnimation(message);
+        }else if(message.contains("#DETECTEDSPEECH#end#")){
+            System.out.println("DETECTED SPEECH!!!!!!---------------------------");
+            mProject.setVariable("HumanSpeaking", true);
+        }else if(message.contains("#NONDETECTEDSPEECH#end#")){
+            mProject.setVariable("HumanSpeaking", false);
         }
+
     }
 
     private void  handleAudio(String message){
@@ -253,7 +264,7 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
 
-    private void broadcastToSpecificServer(final String message, final String serverName){
+    public void broadcastToSpecificServer(final String message, final String serverName){
         if(mClientMap.containsKey(serverName)){
             final BaxterHandler client = mClientMap.get(serverName);
             client.send(message);
@@ -284,6 +295,8 @@ public class BaxterExecutor extends ActivityExecutor {
         connectToBaxterServer();
         mListener = new BaxterListener(8001, this);
         mListener.start();
+        speechListener = new BaxterListener(1314, this);
+        speechListener.start();
     }
 
     private void launchMary() throws Exception {
@@ -309,6 +322,8 @@ public class BaxterExecutor extends ActivityExecutor {
     public void startBaxterServer() throws IOException {
         baxterServerHandler.start(); //TODO: Separate for testing
         mClientMap.put(PYTHON_SERVER_BAXTER, baxterServerHandler);
+        BaxterCommandServerWrapper wrapper = new BaxterCommandServerWrapper(baxterServerHandler);
+        BaxterCommandSender.setCommandServer(wrapper);
     }
 
     private void launchStickmanClient(){
@@ -328,21 +343,29 @@ public class BaxterExecutor extends ActivityExecutor {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        try {
-            baxterServerProcess.unloadBaxterServer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        unloadServer();
         unloadBaxterStickman();
         mActivityWorkerMap.clear();
+        unloadMary();
+    }
+
+    private void unloadMary() {
         try {
             marySelfServer.stopMaryServer();
             if(mListener!= null){
                 mListener.abort();
                 mListener.join();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unloadServer() {
+        try {
+            baxterServerProcess.unloadBaxterServer();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

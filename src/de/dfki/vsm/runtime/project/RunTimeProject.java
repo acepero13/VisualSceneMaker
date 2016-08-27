@@ -622,7 +622,7 @@ public class RunTimeProject {
     }
 
     private boolean writeActiconConfig(final File base) {
-        return false;
+        return true;
     }
 
     private boolean parseGesticonConfig(final String path) {

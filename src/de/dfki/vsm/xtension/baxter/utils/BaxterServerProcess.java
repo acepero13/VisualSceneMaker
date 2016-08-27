@@ -13,7 +13,7 @@ import java.util.Observer;
  * Created by alvaro on 6/1/16.
  */
 public class BaxterServerProcess extends Observable {
-    private final String processName = "imageviwer";
+    private final String processName = "baxter_server";
     private final String serverBasePath;
     private LinkedList<Observer> observers = new LinkedList<>();
     public BaxterServerProcess(String basePath){
