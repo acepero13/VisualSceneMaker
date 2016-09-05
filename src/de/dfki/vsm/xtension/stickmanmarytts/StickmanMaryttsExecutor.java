@@ -23,9 +23,12 @@ import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
+import de.dfki.vsm.util.tts.SpeakerTts;
+import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.VoiceName;
+import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 
@@ -47,10 +50,11 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     private final HashMap<String, StickmanMaryttsHandler> mClientMap = new HashMap();
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
     private HashMap<String, String> languageAgentMap;
-    private HashMap<String, AbstractActivity> speechActivities = new HashMap<>();
+    private HashMap<String, SpeakerActivity> speechActivities = new HashMap<>();
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
     private MaryTTsProcess marySelfServer;
     public static String sExecutionId = "stickmanmary_";
+    private String mDeviceName;
 
     private int maryId;
 
@@ -60,7 +64,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         super(config, project);
         maryId = 0;
         languageAgentMap = new HashMap<>();
-        marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
+        //marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
 
     }
 
@@ -97,13 +101,17 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             if (text.isEmpty()) {
                 handleEmptyTextActivity(sa);
             }
-            MaryTTsSpeaker marySpeak = new MaryTTsSpeaker(sa, langVoice, voiceName);
+            //MaryTTsSpeaker marySpeak = new MaryTTsSpeaker(sa, langVoice, voiceName);
+            TTSFactory factoryTTs = new TTSFactory(mConfig, sa, mProject);
+            SpeakerTts speakerTts = factoryTTs.getTTs();
+            SpeakerActivity speakerActivity = new SpeakerActivity(speakerTts);
+
             String executionId = getExecutionId();
-            WordTimeMarkSequence wts = marySpeak.getWordTimeSequence();
+            WordTimeMarkSequence wts = speakerActivity.getWordTimeSequence();
             //We will use these two later
-            speechActivities.put(executionId, activity);
+            speechActivities.put(executionId, speakerActivity);
             wtsMap.put(executionId, wts);
-            executeSpeachAndWait(marySpeak, executionId);
+            executeSpeachAndWait(executionId);
         } else if (activity instanceof ActionActivity || activity instanceof ActionMouthActivity) {
             if (name.equalsIgnoreCase("set") && activity instanceof ActionActivity) {
                 actionSetVoice(activity, agent);
@@ -168,24 +176,19 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         }
     }
 
-    private void executeSpeachAndWait(MaryTTsSpeaker marySpeak,  String executionId) {
-        synchronized (mActivityWorkerMap) {
-            String spokenText = "";
-            try {
-                spokenText = marySpeak.speak(executionId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if(spokenText.length() > 0) {
-                waitForSpeechToFinish(executionId);
-            }
-        }
+    private void executeSpeachAndWait(  String executionId) {
+        waitForSpeechToFinish(executionId);
+
     }
+
+
 
     private void waitForSpeechToFinish(String executionId) {
         synchronized (mActivityWorkerMap) {
             ActivityWorker cAW = (ActivityWorker) Thread.currentThread();
             mActivityWorkerMap.put(executionId, cAW);
+            Thread thread = getSpeakThread(executionId);
+            thread.start();
             while (mActivityWorkerMap.containsValue(cAW)) {
                 try {
                     mActivityWorkerMap.wait();
@@ -194,6 +197,28 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
                 }
             }
             mLogger.warning("ActivityWorker " + executionId + " done ....");
+        }
+    }
+
+    private Thread getSpeakThread(final String executionId) {
+        return new Thread(){
+            public void run(){
+                System.out.println("ExecutionID: " + executionId);
+                intentToSpeak(executionId);
+            }
+        };
+    }
+
+    public String intentToSpeak(String  executionId ){
+        synchronized (mActivityWorkerMap) {
+            String spokenText = "";
+            SpeakerActivity speaker = speechActivities.get(executionId);
+            try {
+                spokenText = speaker.speak(executionId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return spokenText;
         }
     }
 
@@ -215,6 +240,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         for (ConfigFeature cf : mConfig.getEntryList()) {
             mLogger.message("Stickman Plugin Config: " + cf.getKey() + " = " + cf.getValue());
         }
+        mDeviceName = mConfig.getPluginName();
         final String host = mConfig.getProperty("smhost");
         final String port = mConfig.getProperty("smport");
         // Start the StickmanStage client application
@@ -254,7 +280,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
 
     private void addStickmansToStage( ){
         for (AgentConfig agent:mProject.getProjectConfig().getAgentConfigList()) {
-            if(agent.getDeviceName().equalsIgnoreCase("stickmanmarytts") || agent.getDeviceName().equalsIgnoreCase("stickman")){
+            if(agent.getDeviceName().equalsIgnoreCase(mDeviceName) ){
                 mStickmanStage.addStickman(agent.getAgentName());
             }
         }
@@ -296,18 +322,21 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     public void scheduleSpeech(String id){
-        SpeechActivity activity = (SpeechActivity) speechActivities.remove(id);
+        SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(id);
+        SpeechActivity activity = speakerActivity.getSpeechActivity();
         final WordTimeMarkSequence wts = wtsMap.remove(id);
         final String actor = activity.getActor();
         final String langVoice = getLangVoiceFromConfig(actor);
         final AgentConfig agent = mProject.getAgentConfig(actor);
         final String voice = agent.getProperty(langVoice);
         final VoiceName voiceName = new VoiceName(voice);
-        MaryTTsSpeaker marySpeak = new MaryTTsSpeaker(activity, langVoice, voiceName);
-        speechToMouth(actor, marySpeak, wts);
+        //MaryTTsSpeaker marySpeak = new MaryTTsSpeaker(activity, langVoice, voiceName);
+        //speechToMouth(actor, marySpeak, wts);
+        SpeakerTts ttsSpeak =  speakerActivity.getTtsSpeak();
+        speechToMouth(actor, ttsSpeak, wts);
     }
 
-    private void speechToMouth(String actor, MaryTTsSpeaker marySpeak, WordTimeMarkSequence wts) {
+    private void speechToMouth(String actor, SpeakerTts marySpeak, WordTimeMarkSequence wts) {
         System.out.println("Entered mouth");
         LinkedList blocks = marySpeak.getSpeechActivityTextBlocs();
         int wordIndex = 0;

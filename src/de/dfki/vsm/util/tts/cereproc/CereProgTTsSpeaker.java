@@ -30,6 +30,7 @@ public class CereProgTTsSpeaker extends SpeakerTts {
         speech = pSpeech;
         langVoice = pLanguage;
         //voiceName = pVoiceName;
+        //Cereproc.licensePath = pLicenseName;
         speechClient = new Cereproc(pLicenseName, pVoiceFilePath);
 
     }

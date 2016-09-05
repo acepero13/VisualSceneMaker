@@ -9,7 +9,11 @@ import de.dfki.vsm.util.tts.cereproc.util.Audioline;
 import de.dfki.vsm.util.tts.cereproc.util.CereprocLoader;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -33,11 +37,44 @@ public class Cereproc extends SpeechClient {
         // java -Djava.library.path=/path/to/library/
         //System.setProperty("java.library.path", "/home/alvaro/Documentos/Tesis/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng");
 
-        System.loadLibrary("cerevoice_eng");
+        try { //Adding Library path
+                addDir("/home/alvaro/Documents/Universitat/TesisProject/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib");
+                System.loadLibrary("cerevoice_eng");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void addDir(String s) throws IOException {
+        try {
+            // This enables the java.library.path to be modified at runtime
+            // From a Sun engineer at http://forums.sun.com/thread.jspa?threadID=707176
+            //
+            Field field = ClassLoader.class.getDeclaredField("usr_paths");
+            field.setAccessible(true);
+            String[] paths = (String[])field.get(null);
+            for (int i = 0; i < paths.length; i++) {
+                if (s.equals(paths[i])) {
+                    return;
+                }
+            }
+            String[] tmp = new String[paths.length+1];
+            System.arraycopy(paths,0,tmp,0,paths.length);
+            tmp[paths.length] = s;
+            field.set(null,tmp);
+            System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + s);
+        } catch (IllegalAccessException e) {
+            throw new IOException("Failed to get permissions to set library path");
+        } catch (NoSuchFieldException e) {
+            throw new IOException("Failed to get field handle to set library path");
+        }
     }
 
 
     public Cereproc(final String licenseNamePath, final String voicePath){
+
         cereprocLoader = new CereprocLoader(voicePath, licenseNamePath);
         phonemeCache = new PhrasePhonemeCache();
         eng = cereprocLoader.getEng();

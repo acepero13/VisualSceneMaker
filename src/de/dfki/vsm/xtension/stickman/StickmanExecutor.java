@@ -163,7 +163,8 @@ public class StickmanExecutor extends ActivityExecutor {
 
         // Start the StickmanStage client application 
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage.setNetWorkProperties(host, Integer.parseInt(port));
+        mStickmanStage =  new StickmanStage(host, Integer.parseInt(port));
+        //mStickmanStage.setNetWorkProperties(host, Integer.parseInt(port));
         mStickmanStage.showStickmanName(showStickmanNames);
 
         // Get Stickman agents configuration
