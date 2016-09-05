@@ -47,7 +47,7 @@
     <!-- Define Scenes Token File -->
     <property name="sfltknfile" value="${sflgendir}${file.separator}ChartFields.java"/>
 
-    <property name="mockito"           value="/home/alvaro/mockito-master"/>
+
     <!-- Define Library Path -->
     <path id="libpath">
         <fileset dir="${libdir}">
@@ -67,16 +67,12 @@
         </fileset>
     </path>
 
-    <path id="mockito">
-        <fileset dir="/home/alvaro/mockito-master/build/libs">
-            <include name="*.jar"/>
-        </fileset>
-    </path>
+
     <!-- Define Classpath -->
     <path id="clspath">
         <path refid="libpath"/>
         <path refid="bldpath"/>
-        <path refid="mockito"/>
+
         <path refid="junitpath"/>
     </path>
     <!-- Info Target -->
