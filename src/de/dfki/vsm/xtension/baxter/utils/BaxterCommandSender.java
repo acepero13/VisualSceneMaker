@@ -25,4 +25,14 @@ public class BaxterCommandSender {
         baxterServer.sendToServer(command);
     }
 
+    public static void BaxterLookFace(String movement){
+        if(baxterServer == null){
+            throw new ExceptionInInitializerError("No handler specified");
+        }
+        ArrayList<String> params = new ArrayList<>();
+        params.add(movement);
+        BaxterCommand command = baxterServer.BaxterBuildCommand("look_at", params);
+        baxterServer.sendToServer(command);
+    }
+
 }

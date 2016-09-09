@@ -23,6 +23,7 @@ import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.net.*;
@@ -199,6 +200,12 @@ public class BaxterExecutor extends ActivityExecutor {
             mProject.setVariable("LookingAtFace", true);
         }else if(message.contains("#FACENONCENTERED#")){
             mProject.setVariable("LookingAtFace", false);
+            int pos_start = StringUtils.ordinalIndexOf(message, "#", 2);
+            int pos_end = StringUtils.ordinalIndexOf(message, "#", 3);
+            if(pos_start > 0 && pos_end > 0) {
+                String movement = message.substring(pos_start, pos_end);
+                BaxterCommandSender.BaxterLookFace(movement);
+            }
         }
 
     }
