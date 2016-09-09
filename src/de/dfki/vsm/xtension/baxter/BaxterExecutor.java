@@ -152,16 +152,16 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     public String intentToSpeak(String  executionId ){
-        synchronized (mActivityWorkerMap) {
-            String spokenText = "";
-            SpeakerActivity speaker = speechActivities.get(executionId);
-            try {
-                spokenText = speaker.speak(executionId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return spokenText;
+
+        String spokenText = "";
+        SpeakerActivity speaker = speechActivities.get(executionId);
+        try {
+            spokenText = speaker.speak(executionId);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return spokenText;
+
     }
 
     private void waitForSpeachToFinish(String  executionId){
@@ -195,6 +195,10 @@ public class BaxterExecutor extends ActivityExecutor {
             mProject.setVariable("HumanSpeaking", true);
         }else if(message.contains("#NONDETECTEDSPEECH#end#")){
             mProject.setVariable("HumanSpeaking", false);
+        } else if(message.contains("#FACECENTERED#")){
+            mProject.setVariable("LookingAtFace", true);
+        }else if(message.contains("#FACENONCENTERED#")){
+            mProject.setVariable("LookingAtFace", false);
         }
 
     }
@@ -291,12 +295,15 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void launchBaxter() throws Exception {
-        //baxterServerProcess.launchBaxterServer();
-        connectToBaxterServer();
-        mListener = new BaxterListener(8001, this);
-        mListener.start();
         speechListener = new BaxterListener(1314, this);
         speechListener.start();
+        baxterServerProcess.launchBaxterServer();
+        connectToBaxterServer();
+
+        mListener = new BaxterListener(8001, this);
+        mListener.start();
+
+
     }
 
     private void launchMary() throws Exception {
