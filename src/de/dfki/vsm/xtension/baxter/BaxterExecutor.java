@@ -188,8 +188,7 @@ public class BaxterExecutor extends ActivityExecutor {
             handleAudio(message);
         } else if (message.contains("$")) {
             handleAction(message);
-        }
-        else if (message.contains("#ANIM#end#")) {
+        } else if (message.contains("#ANIM#end#")) {
             handleAnimation(message);
         }else if(message.contains("#DETECTEDSPEECH#end#")){
             System.out.println("DETECTED SPEECH!!!!!!---------------------------");
@@ -203,8 +202,13 @@ public class BaxterExecutor extends ActivityExecutor {
             int pos_start = StringUtils.ordinalIndexOf(message, "#", 2);
             int pos_end = StringUtils.ordinalIndexOf(message, "#", 3);
             if(pos_start > 0 && pos_end > 0) {
-                String movement = message.substring(pos_start, pos_end);
-                BaxterCommandSender.BaxterLookFace(movement);
+                String movement = message.substring(pos_start+1, pos_end);
+                try {
+                    Float.parseFloat(movement);
+                    BaxterCommandSender.BaxterLookFace(movement);
+                }catch (NumberFormatException e){
+
+                }
             }
         }
 
