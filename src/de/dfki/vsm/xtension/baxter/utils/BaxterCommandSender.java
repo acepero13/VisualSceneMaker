@@ -17,22 +17,49 @@ public class BaxterCommandSender {
     public static void setCommandServer(BaxterCommandServerWrapper wrapper){
         baxterServer = wrapper;
     }
+
     public static void BaxterLookLeft(){
-        if(baxterServer == null){
-            throw new ExceptionInInitializerError("No handler specified");
-        }
+        checkIfBaxterIsRunning();
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_left", new ArrayList<String>());
         baxterServer.sendToServer(command);
     }
 
+    public static void BaxterLookRight(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("look_right", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
     public static void BaxterLookFace(String movement){
-        if(baxterServer == null){
-            throw new ExceptionInInitializerError("No handler specified");
-        }
+        checkIfBaxterIsRunning();
         ArrayList<String> params = new ArrayList<>();
         params.add(movement);
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_at", params);
         baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterSayYes(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("assent", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterSayNo(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("negate", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterLookCenter(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("set_neutral", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    private static void checkIfBaxterIsRunning() {
+        if(baxterServer == null){
+            throw new ExceptionInInitializerError("No handler specified");
+        }
     }
 
 }

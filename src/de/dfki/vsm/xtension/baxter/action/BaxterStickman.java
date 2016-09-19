@@ -22,19 +22,19 @@ import java.util.ArrayList;
  * Created by alvaro on 6/1/16.
  */
 public class BaxterStickman {
-    final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 2.0f, new Dimension(640, 480), false);
+    final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 5.0f, new Dimension(1024, 600), false);
 
     public void setStage(StickmanStage stage){
         mBaxterStickman.setStage(stage);
     }
     private String getImageHeadFromStickmanAnimation() {
-        BufferedImage image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(1024, 600, BufferedImage.TYPE_INT_RGB);
         BufferedImage head;
         Graphics g = image.createGraphics();
         mBaxterStickman.mShowStage = false;
         mBaxterStickman.paint(g);
         g.dispose();
-        head = cropHead(image, (int) mBaxterStickman.mHead.getWidth(), (int) mBaxterStickman.mHead.getHeight(), 2.0f);
+        head = cropHead(image, (int) mBaxterStickman.mHead.getWidth(), (int) mBaxterStickman.mHead.getHeight(), 5.0f);
         String headAsString = transformStickmanToImage(head);
         return headAsString;
     }

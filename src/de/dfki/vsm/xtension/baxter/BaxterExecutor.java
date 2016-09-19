@@ -4,6 +4,7 @@ import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.stickman.StickmanStage;
 import de.dfki.vsm.model.project.PluginConfig;
+import de.dfki.vsm.model.scenescript.ActionFeature;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
 import de.dfki.vsm.runtime.activity.ActionActivity;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
@@ -26,6 +27,8 @@ import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -88,6 +91,18 @@ public class BaxterExecutor extends ActivityExecutor {
             actionExecuteActionTimeMark((TimeMarkActivity) activity);
         }else if(activity instanceof ActionActivity){
             //TODO: Send to the Server
+            for (ActionFeature feat : activity.getFeatureList()) {
+                try {
+                    Method method = BaxterCommandSender.class.getMethod(feat.getKey());
+                    method.invoke(null);
+                } catch (NoSuchMethodException e) {
+                    continue;
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -202,7 +217,7 @@ public class BaxterExecutor extends ActivityExecutor {
             int pos_start = StringUtils.ordinalIndexOf(message, "#", 2);
             int pos_end = StringUtils.ordinalIndexOf(message, "#", 3);
             if(pos_start > 0 && pos_end > 0) {
-                String movement = message.substring(pos_start+1, pos_end);
+                String movement = message.substring(pos_start + 1, pos_end);
                 try {
                     Float.parseFloat(movement);
                     BaxterCommandSender.BaxterLookFace(movement);
@@ -290,14 +305,14 @@ public class BaxterExecutor extends ActivityExecutor {
     @Override
     public void launch() {
         try {
-            launchBaxter();
             launchMary();
+            launchBaxter();
             launchStickmanClient();
             waitForClients();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Could not start server. Shutting down");
-            unload();
+            //unload();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Could not start server. Shutting down");
@@ -308,11 +323,12 @@ public class BaxterExecutor extends ActivityExecutor {
     private void launchBaxter() throws Exception {
         speechListener = new BaxterListener(1314, this);
         speechListener.start();
-        baxterServerProcess.launchBaxterServer();
+        //baxterServerProcess.launchBaxterServer();
         connectToBaxterServer();
 
         mListener = new BaxterListener(8001, this);
         mListener.start();
+        BaxterCommandSender.BaxterLookCenter();//default position
 
 
     }
