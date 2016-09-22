@@ -38,7 +38,7 @@ public class Cereproc extends SpeechClient {
         //System.setProperty("java.library.path", "/home/alvaro/Documentos/Tesis/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng");
 
         try { //Adding Library path
-                addDir("/home/alvaro/Documents/Universitat/TesisProject/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib");
+                addDir("/home/alvaro/Documentos/cerevoice_sdk_3.2.0_linux_x86_64_python26_10980_academic/cerevoice_eng/javalib");
                 System.loadLibrary("cerevoice_eng");
 
         } catch (IOException e) {

@@ -6,6 +6,8 @@
 package de.dfki.vsm.xtension.stickmanmarytts;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
+import de.dfki.common.CommonAnimation;
+import de.dfki.common.StageStickmanController;
 import de.dfki.stickman.StickmanStage;
 import de.dfki.stickman.animationlogic.Animation;
 import de.dfki.stickman.animationlogic.AnimationLoader;
@@ -23,10 +25,10 @@ import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
+import de.dfki.vsm.util.stickman.StickmanRepository;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
-import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
@@ -55,6 +57,9 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     private MaryTTsProcess marySelfServer;
     public static String sExecutionId = "stickmanmary_";
     private String mDeviceName;
+    private  Thread stickmanLaunchThread;
+    private StageStickmanController stickmanStageC;
+    private StickmanRepository stickmanFactory;
 
     private int maryId;
 
@@ -64,7 +69,8 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         super(config, project);
         maryId = 0;
         languageAgentMap = new HashMap<>();
-        //marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
+        stickmanFactory = new StickmanRepository(config);
+        marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
 
     }
 
@@ -122,14 +128,15 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     private void actionLoadAnimation(AbstractActivity activity, String actor, String name) {
-        Animation stickmanAnimation;
+        CommonAnimation stickmanAnimation ;
         int duration = 500;
         if (activity instanceof ActionMouthActivity) {
             duration = ((ActionMouthActivity) activity).getDuration();
         }
-        stickmanAnimation = AnimationLoader.getInstance().loadAnimation(mStickmanStage.getStickman(actor), name, duration, false); // TODO: with regard to get a "good" timing, consult the gesticon
+        stickmanAnimation = stickmanFactory.loadAnimation(stickmanStageC.getStickman(actor), name, duration, false); // TODO: with regard to get a "good" timing, consult the gesticon
         if (activity instanceof ActionMouthActivity) {
-            stickmanAnimation.mParameter = ((ActionMouthActivity) activity).getWortTimeMark();
+            WordTimeMarkSequence mParameter = ((ActionMouthActivity) activity).getWortTimeMark();
+            stickmanAnimation.setParameter(mParameter);
         }
         if (stickmanAnimation != null) {
             executeAnimation(stickmanAnimation);
@@ -161,7 +168,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         return langVoince;
     }
 
-    protected void executeAnimation(Animation stickmanAnimation) {
+    protected void executeAnimation(CommonAnimation stickmanAnimation) {
         // executeAnimation command to platform
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOSIndentWriter iosw = new IOSIndentWriter(out);
@@ -245,8 +252,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         final String port = mConfig.getProperty("smport");
         // Start the StickmanStage client application
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage =  new StickmanStage(host, Integer.parseInt(port));
-        mStickmanStage.setVisible(true);
+        stickmanStageC = stickmanFactory.createStickman();
     }
 
     private void waitForClients() {
@@ -281,9 +287,22 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     private void addStickmansToStage( ){
         for (AgentConfig agent:mProject.getProjectConfig().getAgentConfigList()) {
             if(agent.getDeviceName().equalsIgnoreCase(mDeviceName) ){
-                mStickmanStage.addStickman(agent.getAgentName());
+                stickmanStageC.addStickman(agent.getAgentName());
             }
         }
+
+        stickmanLaunchThread = new Thread() {
+            public void run() {
+                try {
+                    stickmanStageC.launchStickmanStage(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+
+        stickmanLaunchThread.start();
     }
 
     @Override
@@ -295,13 +314,13 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
             mLogger.failure(exc.toString());
         } finally {
             clearMaps();
-            mStickmanStage.clearStage();
+            //mStickmanStage.clearStage();
         }
     }
 
     private void stopClientsAndServers() throws InterruptedException, IOException {
         stopClients();
-        marySelfServer.stopMaryServer();
+        //marySelfServer.stopMaryServer();
         mListener.abort();
         mListener.join();
         mLogger.message("Joining server thread");
@@ -356,9 +375,9 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         }
         //Clossing the mouth
         mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(actor, "face", "Mouth_Default", null, 300, wts), mProject.getAgentDevice(actor));
-        Animation stickmanAnimation = new Animation();
-        stickmanAnimation = AnimationLoader.getInstance().loadEventAnimation(mStickmanStage.getStickman(actor), "Speaking", 3000, false);
-        stickmanAnimation.mParameter = wts;
+        CommonAnimation stickmanAnimation;
+        stickmanAnimation = stickmanFactory.loadEventAnimation(stickmanStageC.getStickman(actor), "Speaking", 3000, false);
+        stickmanAnimation.setParameter(wts);
         executeAnimation(stickmanAnimation);
     }
 

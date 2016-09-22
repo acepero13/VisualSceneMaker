@@ -2,6 +2,7 @@ package de.dfki.vsm.xtension.baxter;
 
 import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
+import de.dfki.common.StageStickmanController;
 import de.dfki.stickman.StickmanStage;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.scenescript.ActionFeature;
@@ -11,6 +12,7 @@ import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.runtime.activity.executor.ActivityExecutor;
 import de.dfki.vsm.runtime.activity.scheduler.ActivityWorker;
 import de.dfki.vsm.runtime.project.RunTimeProject;
+import de.dfki.vsm.util.stickman.StickmanRepository;
 import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
@@ -57,11 +59,16 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private BaxterStickman baxterStickman;
 
+    private StageStickmanController stickmanStageC;
+    private StickmanRepository stickmanFactory;
+    private Thread stickmanLaunchThread;
+
     public BaxterExecutor(PluginConfig config, RunTimeProject project) {
         super(config, project);
         marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
-        baxterStickman = new BaxterStickman();
+        baxterStickman = new BaxterStickman(mConfig);
         baxterServerProcess = new BaxterServerProcess(mConfig.getProperty("server"));
+        stickmanFactory = new StickmanRepository(config);
 
     }
 
@@ -361,11 +368,19 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void launchStickmanClient(){
-        final String host = mConfig.getProperty("smhost");
-        final String port = mConfig.getProperty("smport");
         mLogger.message("Starting StickmanStage Client Application ...");
-        mStickmanStage =  new StickmanStage(host, Integer.parseInt(port));
-        baxterStickman.setStage(mStickmanStage);
+        stickmanStageC = stickmanFactory.createStickman();
+        stickmanLaunchThread = new Thread() {
+            public void run() {
+                try {
+                    stickmanStageC.launchStickmanStage(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        stickmanLaunchThread.start();
         // mStickmanStage.getNetworkInstances(host, Integer.parseInt(port));
     }
 
@@ -380,7 +395,7 @@ public class BaxterExecutor extends ActivityExecutor {
         unloadServer();
         unloadBaxterStickman();
         mActivityWorkerMap.clear();
-        unloadMary();
+       // unloadMary();
     }
 
     private void unloadMary() {
@@ -409,7 +424,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private void unloadBaxterStickman() {
         if(mStickmanStage != null) {
-            mStickmanStage.clearStage();
+           // mStickmanStage.clearStage();
         }
     }
 
