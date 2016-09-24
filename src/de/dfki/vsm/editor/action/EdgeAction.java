@@ -150,7 +150,7 @@ public abstract class EdgeAction extends EditorAction {
             }
         }
 
-        // mSourceGUINode.update();
+        // mSourceGUINode.notifyAll();
         EditorInstance.getInstance().refresh();
         mWorkSpace.add(mGUIEdge);
         mWorkSpace.revalidate();
@@ -463,7 +463,7 @@ public abstract class EdgeAction extends EditorAction {
         }
 
         // Remove the GUI-AbstractEdge from the workspace and
-        // update the source node appearance
+        // notifyAll the source node appearance
         EditorInstance.getInstance().refresh();
         mWorkSpace.remove(mGUIEdge);
         mWorkSpace.revalidate();

@@ -232,7 +232,7 @@
     </target>    
     <!--- Version -->
     <target name="version">
-        <!-- update build details -->
+        <!-- notifyAll build details -->
         <propertyfile file="prj/version.ini">
             <entry key="build.version" value="3.0"/>
             <entry key="build.number" type="int" operation="+" default="00000" pattern="00000"/>

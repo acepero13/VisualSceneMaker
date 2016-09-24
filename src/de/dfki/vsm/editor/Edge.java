@@ -247,7 +247,7 @@ public class Edge extends JComponent implements EventListener, Observer, MouseLi
     public void update(Observable o, Object obj)
     {
 
-        // mLogger.message("AbstractEdge.update(" + obj + ")");
+        // mLogger.message("AbstractEdge.notifyAll(" + obj + ")");
         update();
     }
 

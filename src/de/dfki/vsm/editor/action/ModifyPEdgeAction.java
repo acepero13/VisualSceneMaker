@@ -56,7 +56,7 @@ public class ModifyPEdgeAction extends ModifyEdgeAction {
                 mSourceGUINode.getDataNode().getPEdgeList().get(i).setProbability(mOldProbList.get(i));
             }
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mWorkSpace.revalidate();
             mWorkSpace.repaint();
         }
@@ -67,7 +67,7 @@ public class ModifyPEdgeAction extends ModifyEdgeAction {
                 mSourceGUINode.getDataNode().getPEdgeList().get(i).setProbability(mNewProbList.get(i));
             }
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mWorkSpace.revalidate();
             mWorkSpace.repaint();
         }

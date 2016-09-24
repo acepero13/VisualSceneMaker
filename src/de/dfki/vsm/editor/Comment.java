@@ -210,7 +210,7 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
         setBounds(r);
         setSize(r.width, r.height);
 
-        // update data
+        // notifyAll data
         Rectangle r2 = getBounds();
 
         mDataComment.getGraphics().setRectangle(new CommentBoundary(r2.x, r2.y, r2.width, r2.height));
@@ -355,7 +355,7 @@ public class Comment extends JComponent implements EventListener, Observer, Mous
 
         setLocation(finalLocation);
 
-        // update data
+        // notifyAll data
         Rectangle r = getBounds();
 
         mDataComment.getGraphics().setRectangle(new CommentBoundary(r.x, r.y, r.width, r.height));

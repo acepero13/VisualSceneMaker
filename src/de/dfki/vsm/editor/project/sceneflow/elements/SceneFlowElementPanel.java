@@ -182,7 +182,7 @@ class ElementTree extends JTree implements ActionListener, TreeSelectionListener
             if (parentPath.getLastPathComponent().equals(mFunctionsEntry)) {
                 //mScriptEditorPanel.getTabPane().setSelectedIndex(1);
                 // TODO: This is total bullshit cyclic dependencies and crossing the hiererchy
-                // Realize that with the update event mechanism!!!!!
+                // Realize that with the notifyAll event mechanism!!!!!
                 //mScriptEditorPanel.getmParentPE().showSceneDocEditor();
 
                 FunDef selectedDef = (FunDef) ((TreeEntry) path.getLastPathComponent()).getData();

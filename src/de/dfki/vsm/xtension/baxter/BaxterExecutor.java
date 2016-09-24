@@ -3,7 +3,6 @@ package de.dfki.vsm.xtension.baxter;
 import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.common.StageStickmanController;
-import de.dfki.stickman.StickmanStage;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.scenescript.ActionFeature;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
@@ -15,18 +14,17 @@ import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.util.stickman.StickmanRepository;
 import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
-import de.dfki.vsm.util.tts.marytts.MaryTTsSpeaker;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.xtension.baxter.action.BaxterStickman;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.xtension.baxter.action.TimeMarkActivity;
-import de.dfki.vsm.xtension.baxter.utils.BaxterCommandSender;
-import de.dfki.vsm.xtension.baxter.utils.BaxterCommandServerWrapper;
-import de.dfki.vsm.xtension.baxter.utils.BaxterServerProcess;
+import de.dfki.vsm.xtension.baxter.utils.communication.BaxterCommandSender;
+import de.dfki.vsm.xtension.baxter.utils.communication.BaxterCommandServerWrapper;
+import de.dfki.vsm.xtension.baxter.utils.communication.BaxterServerProcess;
+import de.dfki.vsm.xtension.baxter.utils.messagehandlers.BaxterMessageHandler;
+import de.dfki.vsm.xtension.baxter.utils.messagehandlers.VAD.VAD;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
-import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +33,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by alvaro on 5/16/16.
@@ -43,16 +42,14 @@ public class BaxterExecutor extends ActivityExecutor {
     public static final String PYTHON_SERVER_BAXTER = "pythonServerBaxter";
     public static java.lang.String sExecutionId = "baxtermary_";
     private final HashMap<String, Process> mProcessMap = new HashMap();
+    private BaxterMessageHandler baxterMessageHandler ;
     private int maryExecutionId=0;
     private MaryTTsProcess marySelfServer;
     private BaxterServerProcess baxterServerProcess;
-    final private String language = "en"; //TODO: Put in config file
-    final private VoiceName voice = new VoiceName("dfki-spike");;
     private final HashMap<String, BaxterHandler> mClientMap = new HashMap();
-    private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
+    private final Map<String, ActivityWorker> mActivityWorkerMap = new HashMap();
     private HashMap<String, SpeakerActivity> speechActivities = new HashMap<>();
     private HashMap<String, WordTimeMarkSequence> wtsMap= new HashMap<>();
-    private StickmanStage mStickmanStage ;
     private BaxterListener mListener;
     private BaxterListener speechListener;
     private BaxterHandler baxterServerHandler;
@@ -69,6 +66,10 @@ public class BaxterExecutor extends ActivityExecutor {
         baxterStickman = new BaxterStickman(mConfig);
         baxterServerProcess = new BaxterServerProcess(mConfig.getProperty("server"));
         stickmanFactory = new StickmanRepository(config);
+        baxterMessageHandler = new BaxterMessageHandler(mActivityWorkerMap, project);
+        VAD.setBaxterMessageHandler(baxterMessageHandler);
+        VAD.setProject(project);
+        VAD.setBaxterExecutor(this);
 
     }
 
@@ -93,6 +94,7 @@ public class BaxterExecutor extends ActivityExecutor {
         if (activity instanceof SpeechActivity) {
             actionExecuteSpeech(activity);
         } else if (activity instanceof ActionActivity || activity instanceof ActionMouthActivity) {
+            System.out.println("*************************************************Action*******************************");
             actionLoadAnimation(activity);
         }else if(activity instanceof TimeMarkActivity){
             actionExecuteActionTimeMark((TimeMarkActivity) activity);
@@ -121,10 +123,8 @@ public class BaxterExecutor extends ActivityExecutor {
 
     protected void handleClusterActions(ArrayList<Entry> cluster) {
         if (WordTimeMarkSequence.getClusterType(cluster) == Entry.TYPE.TIMEMARK) {
-            // here we have to spread the word that a specific timemark has been reached
-            // the interface is the runActionAtTimemark method in the EventActionPlayer
             for (Entry e : cluster) {
-                handleAction(e.mContent);
+                baxterMessageHandler.handle(e.mContent);
             }
         }
     }
@@ -142,12 +142,15 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void actionLoadAnimation(AbstractActivity activity) {
-        int animationDuration = 500;
+        int animationDuration = 50;
         if (activity instanceof ActionMouthActivity) {
             animationDuration = ((ActionMouthActivity) activity).getDuration();
         }
-        if (baxterStickman != null) {
+        if (baxterStickman != null && activity instanceof ActionMouthActivity) {
             baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
+            executeAnimation();
+        }else if(baxterStickman != null){
+            baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }
     }
@@ -206,63 +209,9 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     public void handle(String message, final BaxterHandler client){
-        if (message.contains("#AUDIO#end#")) {
-            handleAudio(message);
-        } else if (message.contains("$")) {
-            handleAction(message);
-        } else if (message.contains("#ANIM#end#")) {
-            handleAnimation(message);
-        }else if(message.contains("#DETECTEDSPEECH#end#")){
-            System.out.println("DETECTED SPEECH!!!!!!---------------------------");
-            mProject.setVariable("HumanSpeaking", true);
-        }else if(message.contains("#NONDETECTEDSPEECH#end#")){
-            mProject.setVariable("HumanSpeaking", false);
-        } else if(message.contains("#FACECENTERED#")){
-            mProject.setVariable("LookingAtFace", true);
-        }else if(message.contains("#FACENONCENTERED#")){
-            mProject.setVariable("LookingAtFace", false);
-            int pos_start = StringUtils.ordinalIndexOf(message, "#", 2);
-            int pos_end = StringUtils.ordinalIndexOf(message, "#", 3);
-            if(pos_start > 0 && pos_end > 0) {
-                String movement = message.substring(pos_start + 1, pos_end);
-                try {
-                    Float.parseFloat(movement);
-                    BaxterCommandSender.BaxterLookFace(movement);
-                }catch (NumberFormatException e){
-
-                }
-            }
-        }
-
+        baxterMessageHandler.handle(message);
     }
 
-    private void  handleAudio(String message){
-        int start = message.lastIndexOf("#") + 1;
-        String event_id = message.substring(start);
-        System.out.println("Message");
-        synchronized (mActivityWorkerMap){
-            mActivityWorkerMap.remove(event_id);
-            mActivityWorkerMap.notifyAll();
-        }
-    }
-
-    private void handleAction(String message) {
-        synchronized (mActivityWorkerMap) {
-            mActivityWorkerMap.notifyAll();
-            mProject.getRunTimePlayer().getActivityScheduler().handle(message);
-        }
-    }
-
-    private void handleAnimation(String message){
-        int start = message.lastIndexOf("#") + 1;
-        String animId = message.substring(start);
-        if (mActivityWorkerMap.containsKey(animId)) {
-            mActivityWorkerMap.remove(animId);
-        }
-        synchronized (mActivityWorkerMap) {
-            mActivityWorkerMap.notifyAll();
-        }
-    }
 
     public SpeechActivity scheduleSpeech(String executionId){//TODO: Refactorizar
         SpeakerActivity speakerActivity = (SpeakerActivity) speechActivities.remove(executionId);
@@ -393,7 +342,6 @@ public class BaxterExecutor extends ActivityExecutor {
             e.printStackTrace();
         }
         unloadServer();
-        unloadBaxterStickman();
         mActivityWorkerMap.clear();
        // unloadMary();
     }
@@ -422,11 +370,6 @@ public class BaxterExecutor extends ActivityExecutor {
         }
     }
 
-    private void unloadBaxterStickman() {
-        if(mStickmanStage != null) {
-           // mStickmanStage.clearStage();
-        }
-    }
 
     private void unloadClients() throws InterruptedException {
         for (final BaxterHandler client : mClientMap.values()) {

@@ -49,7 +49,7 @@ public final class Interruptor {
                     if (((BooleanValue) value).getValue()) {
                         // Request the interruption of the process
                         state.getThread().requestInterruption(iedge);
-                        // Stop update loop if an edge has been found
+                        // Stop notifyAll loop if an edge has been found
                         break;
                     }
                 } catch (final InterpreterError exc) {

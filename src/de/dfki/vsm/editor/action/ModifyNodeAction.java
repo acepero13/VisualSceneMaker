@@ -61,7 +61,7 @@ package de.dfki.vsm.editor.action;
 //        mNewDataNode = dialog.run();
 //        // Repaint the GUI-Node to show the changes
 //        if (mGuiNode != null) {
-//          mGuiNode.update();
+//          mGuiNode.notifyAll();
 //        }
 //      }
 //    };

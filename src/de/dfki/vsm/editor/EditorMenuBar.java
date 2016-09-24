@@ -220,7 +220,7 @@ public final class EditorMenuBar extends JMenuBar {
                 mEditorInstance.saveAs();
             }
 
-            // TODO Check if Projekt is new Project, then update recent file menu list.
+            // TODO Check if Projekt is new Project, then notifyAll recent file menu list.
         });
         mSaveAllMenuItem = new JMenuItem("Save All");
         mSaveAllMenuItem.setIcon(new ImageIcon("data/img/saveall.png"));

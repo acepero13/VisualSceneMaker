@@ -80,10 +80,10 @@ package de.dfki.vsm.editor;
 //       // addTab("Gesticon Editor", new ImageIcon("data/img/gesticon.png"), mGesticonEditor, "Edit the gesticon document");
 //    }
 //
-//    public void update(Event event) {
+//    public void notifyAll(Event event) {
 //    }
 //
-//    public void update(java.util.Observable o, Object arg) {
+//    public void notifyAll(java.util.Observable o, Object arg) {
 //        mObservable.propagateToObservers(arg);
 //    }
 //

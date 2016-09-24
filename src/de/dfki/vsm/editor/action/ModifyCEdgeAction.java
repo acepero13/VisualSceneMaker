@@ -56,7 +56,7 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
         CEdge             cedge  = dialog.run();
 
         // If the condition was successfully modified then
-        // remember the new condition and update the undomanager
+        // remember the new condition and notifyAll the undomanager
         if (cedge != null) {
             mNewCondition = cedge.getCondition();
             mUndoManager.addEdit(new Edit());
@@ -70,7 +70,7 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
         public void undo() throws CannotUndoException {
             ((CEdge) mDataEdge).setCondition(mOldCondition);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 
@@ -78,7 +78,7 @@ public class ModifyCEdgeAction extends ModifyEdgeAction {
         public void redo() throws CannotRedoException {
             ((CEdge) mDataEdge).setCondition(mNewCondition);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 

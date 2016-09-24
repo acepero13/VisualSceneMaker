@@ -548,7 +548,7 @@ public class Process extends java.lang.Thread {
 					checkStatus();
 
 					/**
-					 * Execute the command and update the history
+					 * Execute the command and notifyAll the history
 					 */
 					mEvaluator.execute(cmd, mEnvironment);
 					mSystemHistory.get(mCurrentNode).addCmd(cmd);
@@ -691,7 +691,7 @@ public class Process extends java.lang.Thread {
 
 					handleForkTermination();
 
-					/* *Wake up the parent thread so that the parent thread can update its child list */
+					/* *Wake up the parent thread so that the parent thread can notifyAll its child list */
 					mParentThread.interrupt();
 
 					/**

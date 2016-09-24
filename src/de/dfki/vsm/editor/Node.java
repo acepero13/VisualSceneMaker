@@ -158,7 +158,7 @@ public final class Node extends JComponent implements EventListener, Observer {
             addAltStartSign();
         }
 
-        // update
+        // notifyAll
         update();
     }
 
@@ -205,7 +205,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     @Override
     public void update(Observable o, Object obj) {
 
-        // mLogger.message("BasicNode.update(" + obj + ")");
+        // mLogger.message("BasicNode.notifyAll(" + obj + ")");
         update();
     }
 
@@ -226,7 +226,7 @@ public final class Node extends JComponent implements EventListener, Observer {
         }
 
         /////////////////////////////////////font
-        // mLogger.message("BasicNode.update()");
+        // mLogger.message("BasicNode.notifyAll()");
         mIsEndNode = (!mDataNode.hasEdge())
                      ? true
                      : false;
@@ -834,7 +834,7 @@ public final class Node extends JComponent implements EventListener, Observer {
     public void paintComponent(Graphics graphics) {
         final Graphics2D graphics2D = (Graphics2D) graphics;
 
-        // TODO move to update
+        // TODO move to notifyAll
         // Compute the font metrics and the correction offsets
         final FontMetrics fontMetrics = getFontMetrics(getFont());
         final int         hOffset     = (fontMetrics.getAscent() - fontMetrics.getDescent()) / 2;

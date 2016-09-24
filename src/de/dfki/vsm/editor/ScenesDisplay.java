@@ -102,7 +102,7 @@
 //    }
 //
 //    @Override
-//    public void update(Observable obs, java.lang.Object obj) {
+//    public void notifyAll(Observable obs, java.lang.Object obj) {
 //        System.err.println("Updating Scenes");
 //
 //        if (obj instanceof EditorProject) {

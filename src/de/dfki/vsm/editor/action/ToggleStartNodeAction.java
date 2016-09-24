@@ -67,7 +67,7 @@ public class ToggleStartNodeAction extends NodeAction {
 //              mIsStartNode = true;
 //              mGUINode.addStartSign();
 //          }
-//          Editor.getInstance().update();
+//          Editor.getInstance().notifyAll();
 //      }
 //
 //      @Override
@@ -82,7 +82,7 @@ public class ToggleStartNodeAction extends NodeAction {
 //              mGUINode.addStartSign();
 //
 //          }
-//          Editor.getInstance().update();
+//          Editor.getInstance().notifyAll();
 //      }
 //
 //      @Override

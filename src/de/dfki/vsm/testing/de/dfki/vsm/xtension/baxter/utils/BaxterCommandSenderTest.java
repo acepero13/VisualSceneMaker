@@ -1,17 +1,16 @@
 package de.dfki.vsm.xtension.baxter.utils;
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLUtilities;
 import de.dfki.vsm.xtension.baxter.command.BaxterCommand;
+import de.dfki.vsm.xtension.baxter.utils.communication.BaxterCommandServerWrapper;
 import org.junit.Before;
 import org.junit.Test;
-import java.io.ByteArrayOutputStream;
+
 import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 /**
  * Created by alvaro on 8/27/16.
  */
-public class BaxterCommandSenderTest extends BaxterCommandServerWrapper{
+public class BaxterCommandSenderTest extends BaxterCommandServerWrapper {
     private BaxterCommandServerWrapper sender;
 
     public BaxterCommandSenderTest(){

@@ -1,4 +1,4 @@
-package de.dfki.vsm.xtension.baxter.utils;
+package de.dfki.vsm.xtension.baxter.utils.communication;
 
 import de.dfki.vsm.xtension.baxter.BaxterHandler;
 

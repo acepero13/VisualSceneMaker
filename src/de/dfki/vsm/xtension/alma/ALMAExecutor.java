@@ -148,7 +148,7 @@ public class ALMAExecutor extends ActivityExecutor implements AffectUpdateListen
                 }
             }
         } catch (Exception e) {
-            mLogger.failure("Exception during affect update");
+            mLogger.failure("Exception during affect notifyAll");
         }
     }
     // get the value of a feature (added PG) - quick and dirty

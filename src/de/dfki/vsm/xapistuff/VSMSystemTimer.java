@@ -46,7 +46,7 @@ package de.dfki.vsm.xapistuff;
 //        mLogger.message("Starting VSM System Timer");
 //        // Set the player start time
 //        mPlayer.setStartupTime(System.currentTimeMillis());
-//        // Then update the player time
+//        // Then notifyAll the player time
 //        while (!mDone) {
 //            // Sleep for some very short time
 //            try {

@@ -194,7 +194,7 @@ public class ProjectConfigWrapper {
         }
         //Node firstChild = doc.getFirstChild();
         Node tag = doc.getElementsByTagName(tagName).item(0);
-        // update node attribute
+        // notifyAll node attribute
         NamedNodeMap attrs = tag.getAttributes();
         Node nodeAttr = attrs.getNamedItem(attr);
         if(nodeAttr!= null && nodeAttr.getNodeValue().equals(oldValue)) {

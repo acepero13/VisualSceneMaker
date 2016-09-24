@@ -54,7 +54,7 @@ public abstract class NodeAction extends EditorAction {
         // Remove the data node from the sceneflow, which means that we
         // remove the node from the from the parent nodes list of child
         // nodes and set the parent node of the node to null. Additionally
-        // we have to update the start node status of the node.
+        // we have to notifyAll the start node status of the node.
         if (mGUINodeType == BasicNode) {
             mParentDataNode.removeNode(mDataNode);
         } else if (mGUINodeType == SuperNode) {

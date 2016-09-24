@@ -362,7 +362,7 @@ public class DockingManager {
                 // use most left dockpoint as startsign dockpoint
                 if (hasDockpoint(dpName)) {
 
-                    // update dockpoint
+                    // notifyAll dockpoint
                     DockPoint dp = getDockpointByName(dpName);
 
                     dp.mPos.x = (int) dockXPos;
@@ -375,7 +375,7 @@ public class DockingManager {
             } else {
                 if (hasDockpoint(dpName)) {
 
-                    // update dockpoint
+                    // notifyAll dockpoint
                     DockPoint dp = getDockpointByName(dpName);
 
                     dp.mPos.x = (int) dockXPos;
@@ -423,7 +423,7 @@ public class DockingManager {
                 // use most left dockpoint as startsign dockpoint
                 if (hasDockpoint(dpName)) {
 
-                    // update dockpoint
+                    // notifyAll dockpoint
                     DockPoint dp = getDockpointByName(dpName);
 
                     dp.mPos.x = (int) dockXPos;
@@ -436,7 +436,7 @@ public class DockingManager {
             } else {
                 if (hasDockpoint(dpName)) {
 
-                    // update dockpoint
+                    // notifyAll dockpoint
                     DockPoint dp = getDockpointByName(dpName);
 
                     dp.mPos.x = (int) dockXPos;

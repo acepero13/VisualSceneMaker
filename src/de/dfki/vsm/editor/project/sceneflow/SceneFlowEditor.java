@@ -447,7 +447,7 @@ public final class SceneFlowEditor extends JPanel implements EventListener
 //   */
 //  private class Observable extends java.util.Observable {
 //
-//      public void update(Object obj) {
+//      public void notifyAll(Object obj) {
 //          setChanged();
 //          notifyObservers(obj);
 //      }

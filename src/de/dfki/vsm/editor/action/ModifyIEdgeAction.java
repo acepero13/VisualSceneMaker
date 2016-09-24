@@ -37,7 +37,7 @@ public class ModifyIEdgeAction extends ModifyEdgeAction {
         IEdge             iedge  = dialog.run();
 
         // If the condition was successfully modified then
-        // remember the new condition and update the undomanager
+        // remember the new condition and notifyAll the undomanager
         if (iedge != null) {
             mNewCondition = iedge.getCondition();
             mUndoManager.addEdit(new Edit());
@@ -51,7 +51,7 @@ public class ModifyIEdgeAction extends ModifyEdgeAction {
         public void undo() throws CannotUndoException {
             ((IEdge) mDataEdge).setCondition(mOldCondition);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 
@@ -59,7 +59,7 @@ public class ModifyIEdgeAction extends ModifyEdgeAction {
         public void redo() throws CannotRedoException {
             ((IEdge) mDataEdge).setCondition(mNewCondition);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 

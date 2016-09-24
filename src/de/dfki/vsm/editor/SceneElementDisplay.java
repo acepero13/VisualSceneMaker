@@ -62,10 +62,10 @@ public final class SceneElementDisplay extends JScrollPane implements EventListe
     }
 
 //    @Override
-//    public void update(final java.util.Observable obs, final Object obj) {
+//    public void notifyAll(final java.util.Observable obs, final Object obj) {
 //
-//        // mLogger.message("SceneElementDisplay.update(" + obj + ")");
-//        mObservable.update(obj);
+//        // mLogger.message("SceneElementDisplay.notifyAll(" + obj + ")");
+//        mObservable.notifyAll(obj);
 //    }
     @Override
     public void update(final EventObject event) {
@@ -73,7 +73,7 @@ public final class SceneElementDisplay extends JScrollPane implements EventListe
 //
 //    private class Observable extends java.util.Observable {
 //
-//        public void update(Object obj) {
+//        public void notifyAll(Object obj) {
 //            setChanged();
 //            notifyObservers(obj);
 //        }
@@ -188,9 +188,9 @@ public final class SceneElementDisplay extends JScrollPane implements EventListe
         }
 
 //        @Override
-//        public void update(java.util.Observable obs, Object obj) {
+//        public void notifyAll(java.util.Observable obs, Object obj) {
 //
-//        // mLogger.message("SceneElementTree.update(" + obj + ")");
+//        // mLogger.message("SceneElementTree.notifyAll(" + obj + ")");
 //            //if (obj instanceof EditorProject) {
 //            //EditorProject p = (EditorProject) obj;
 //          

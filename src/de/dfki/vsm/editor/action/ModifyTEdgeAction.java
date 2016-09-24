@@ -35,7 +35,7 @@ public class ModifyTEdgeAction extends ModifyEdgeAction {
         TEdge             tedge  = dialog.run();
 
         // If the condition was successfully modified then
-        // remember the new condition and update the undomanager
+        // remember the new condition and notifyAll the undomanager
         if (tedge != null) {
             mNewTimeout = tedge.getTimeout();
             mUndoManager.addEdit(new Edit());
@@ -49,7 +49,7 @@ public class ModifyTEdgeAction extends ModifyEdgeAction {
         public void undo() throws CannotUndoException {
             ((TEdge) mDataEdge).setTimeout(mOldTimeout);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 
@@ -57,7 +57,7 @@ public class ModifyTEdgeAction extends ModifyEdgeAction {
         public void redo() throws CannotRedoException {
             ((TEdge) mDataEdge).setTimeout(mNewTimeout);
 
-            // mGUIEdge.update();
+            // mGUIEdge.notifyAll();
             mGUIEdge.repaint();
         }
 

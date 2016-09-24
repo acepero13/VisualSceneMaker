@@ -1,11 +1,7 @@
-package de.dfki.vsm.xtension.baxter.utils;
+package de.dfki.vsm.xtension.baxter.utils.communication;
 
-import de.dfki.vsm.util.ios.IOSIndentWriter;
-import de.dfki.vsm.util.xml.XMLUtilities;
-import de.dfki.vsm.xtension.baxter.BaxterHandler;
 import de.dfki.vsm.xtension.baxter.command.BaxterCommand;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**

@@ -210,7 +210,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
     public void refresh() {
         // Print some information
         // mLogger.message("Refreshing '" + this + "'");
-        // mLogger.message("WorkSpace.update(" + obj + ")");
+        // mLogger.message("WorkSpace.notifyAll(" + obj + ")");
         mObservable.update(null);
 
         // rebuild node position
@@ -440,7 +440,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
                                 mEventCaster.convey(new NodeSelectedEvent(this, node.getDataNode()));
 
-                                // c.update();
+                                // c.notifyAll();
                             } else {
                                 mSceneFlowEditor.setMessageLabelText("");
                             }
@@ -452,7 +452,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                                 dtde.acceptDrop(mAcceptableActions);
                                 dtde.getDropTargetContext().dropComplete(true);
 
-                                // c.update();
+                                // c.notifyAll();
                             } else {
                                 mSceneFlowEditor.setMessageLabelText("");
                             }
@@ -479,7 +479,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 
                                 mEventCaster.convey(new NodeSelectedEvent(this, node.getDataNode()));
 
-                                // c.update();
+                                // c.notifyAll();
                             } else {
                                 mSceneFlowEditor.setMessageLabelText("");
                             }
@@ -1479,9 +1479,9 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                 add(edge);
             }
 
-            // Additionally update the appearance of the source c, which means
-            // that we update the color and the end c markings of the c.
-            // Editor.getInstance().update();
+            // Additionally notifyAll the appearance of the source c, which means
+            // that we notifyAll the color and the end c markings of the c.
+            // Editor.getInstance().notifyAll();
         }
     }
 
@@ -2031,7 +2031,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                     node.resetLocation(mGridManager.getNodeLocation(p));
                 }
 
-                // update workspace area - if dragged beyond current borders
+                // notifyAll workspace area - if dragged beyond current borders
                 // sWorkSpaceDrawArea = getSize();
                 node.mouseReleased(event);
                 repaint();
@@ -2077,7 +2077,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
                 // Update sceneflow with new node position
                 mSelectedNode.getDataNode().getGraphics().setPosition(mSelectedNode.getX(), mSelectedNode.getY());
 
-                   // update workspace area - if dragged beyond current borders
+                   // notifyAll workspace area - if dragged beyond current borders
                 // sWorkSpaceDrawArea = getSize();
             }
             //mSceneFlowEditor.setViewPosition(new Point(event.getX(), event.getY()));
@@ -2099,7 +2099,7 @@ public final class WorkSpacePanel extends JPanel implements EventListener, Mouse
 //                    // Update sceneflow with new node position
 //                    mSelectedNode.getDataNode().getGraphics().setPosition(mSelectedNode.getX(), mSelectedNode.getY());
 //
-//                    // update workspace area - if dragged beyond current borders
+//                    // notifyAll workspace area - if dragged beyond current borders
 //                    // sWorkSpaceDrawArea = getSize();
 //                }
 //

@@ -45,9 +45,9 @@ public class AddVariableAction extends EditorAction {
             RedoAction.getInstance().refreshRedoState();
             mCurrentSuperNode.addVarDef(varDef);
             //varDefsList.add(varDef);
-            // launch event to update element editor
+            // launch event to notifyAll element editor
             EventDispatcher.getInstance().convey(new NodeSelectedEvent(this,mCurrentSuperNode));
-            // update workspace
+            // notifyAll workspace
             EditorInstance.getInstance().refresh();
         }
     }

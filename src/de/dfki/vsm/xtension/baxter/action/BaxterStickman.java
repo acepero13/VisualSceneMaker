@@ -1,5 +1,6 @@
 package de.dfki.vsm.xtension.baxter.action;
 
+import com.objectplanet.image.PngEncoder;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.common.CommonAnimation;
 import de.dfki.common.CommonStickman;
@@ -21,6 +22,7 @@ import sun.misc.BASE64Encoder;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,11 +67,18 @@ public class BaxterStickman {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String imageString = "";
         try {
-            ImageIO.write(head, "png", baos);
+            long startTime = System.currentTimeMillis();
+            PngEncoder encoderPng = new PngEncoder();
+            encoderPng.encode(head, baos);
             byte[] imageBytes = baos.toByteArray();
+
             BASE64Encoder encoder = new BASE64Encoder();
             imageString = encoder.encode(imageBytes);
             baos.close();
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            System.out.println("**********************************************************"+elapsedTime+"********************************");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,7 +103,7 @@ public class BaxterStickman {
 
     public void loadNonBlockingAnimation(String animationName, int animationDuration){
         CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, false);
-        mBaxterStickman.doAnimation(animationName, 500, false);
+        mBaxterStickman.doAnimation(animationName, animationDuration, false);
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration){

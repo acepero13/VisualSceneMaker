@@ -88,7 +88,7 @@ public final class EditorInstance extends JFrame implements EventListener, Chang
     public void stateChanged(ChangeEvent e) {
         if (getSelectedProjectEditor().getEditorProject() != null) {
             getSelectedProjectEditor().refresh();
-            //mObservable.update(getSelectedProjectEditor().getEditorProject());
+            //mObservable.notifyAll(getSelectedProjectEditor().getEditorProject());
         }
 
         // copy and paste of nodes between the different projects

@@ -411,21 +411,21 @@ public final class OLDSceneScriptEditor extends JPanel implements DocumentListen
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // React to a change update of the document listener
+    // React to a change notifyAll of the document listener
     @Override
     public final void changedUpdate(final DocumentEvent event) {
         // Parse the scenescript whenever a change happened
         // parse(event);
     }
 
-    // React to an insert update of the document listener
+    // React to an insert notifyAll of the document listener
     @Override
     public final void insertUpdate(final DocumentEvent event) {
         // Parse the scenescript whenever an insert happened
         parse(event);
     }
 
-    // React to a remove update of the document listener
+    // React to a remove notifyAll of the document listener
     @Override
     public final void removeUpdate(final DocumentEvent event) {
         // Parse the scenescript whenever a remove happened
@@ -539,7 +539,7 @@ public final class OLDSceneScriptEditor extends JPanel implements DocumentListen
 
     // Notify all observers
 //    @Override
-//    public void update(final java.util.Observable obs, final Object obj) {
+//    public void notifyAll(final java.util.Observable obs, final Object obj) {
 //        mObservable.notify(obj);
 //    }
     // Refresh the visual appearance

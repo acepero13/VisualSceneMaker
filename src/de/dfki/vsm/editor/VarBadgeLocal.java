@@ -247,7 +247,7 @@ public class VarBadgeLocal extends JComponent implements EventListener, ActionLi
         @Override
     public void update(Observable o, Object obj) {
 
-        // mLogger.message("VarBadge.update(" + obj + ")");
+        // mLogger.message("VarBadge.notifyAll(" + obj + ")");
         // Clear the entry list
         mEntryList.clear();
 
@@ -266,7 +266,7 @@ public class VarBadgeLocal extends JComponent implements EventListener, ActionLi
         if (event instanceof VariableChangedEvent) {
             updateVariable(((VariableChangedEvent) event).getVarValue());
 
-            // Editor.getInstance().update();
+            // Editor.getInstance().notifyAll();
             revalidate();
             repaint();
         }

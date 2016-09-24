@@ -74,8 +74,8 @@ public class StartSign extends JComponent implements Observer {
 
     public void update(Observable o, Object obj) {
 
-        // mLogger.message("StartSign.update(" + obj + ")");
-//      update();
+        // mLogger.message("StartSign.notifyAll(" + obj + ")");
+//      notifyAll();
     }
 
     public void update() {

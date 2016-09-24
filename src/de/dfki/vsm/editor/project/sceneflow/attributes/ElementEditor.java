@@ -566,12 +566,12 @@ public class ElementEditor extends JScrollPane implements EventListener {
         if (event instanceof NodeSelectedEvent) {
 
             // Update the node of the node editor
-            // mNodeEditor.update(((NodeSelectedEvent) event).getNode());
+            // mNodeEditor.notifyAll(((NodeSelectedEvent) event).getNode());
             setViewportView(mNodeEditor);
         } else if (event instanceof EdgeSelectedEvent) {
 
             // Update the edge of the edge editor
-            // mEdgeEditor.update(((EdgeSelectedEvent) event).getEdge());
+            // mEdgeEditor.notifyAll(((EdgeSelectedEvent) event).getEdge());
             setViewportView(mEdgeEditor);
         } else {
 
