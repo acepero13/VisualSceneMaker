@@ -10,6 +10,8 @@ import de.dfki.stickman.Stickman;
 import de.dfki.stickman.StickmanStage;
 import de.dfki.stickman.animationlogic.Animation;
 import de.dfki.stickman.animationlogic.AnimationLoader;
+import de.dfki.stickmanfx.animationlogic.AnimationLoaderFX;
+import de.dfki.stickmanfx.animationlogic.EventAnimationFX;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.ActionActivity;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
@@ -108,16 +110,20 @@ public class BaxterStickman {
 
     public void loadBlockingAnimation(String animationName, int animationDuration){
         CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
-        mBaxterStickman.doAnimation(animationName, animationDuration, false);
+        mBaxterStickman.doAnimation(animationName, animationDuration, true);
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
         CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
-        mBaxterStickman.doAnimation(animationName, animationDuration, wts, false);
+        mBaxterStickman.doAnimation(animationName, animationDuration, wts, true);
     }
 
-    public void loadEventAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
-        //AnimationLoader.getInstance().loadEventAnimation(mBaxterStickman, animationName, animationDuration, true);
+    public CommonAnimation loadEventAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
+        CommonAnimation stickmanAnimation = AnimationLoaderFX.getInstance().loadEventAnimation(mBaxterStickman, animationName, animationDuration, false);
+        stickmanAnimation.setParameter( wts);
+        //loadNonBlockingAnimation(animationName, animationDuration);
+        ((EventAnimationFX)stickmanAnimation).playEventAnimationPart();
+        return stickmanAnimation;
         //mBaxterStickman.doEventFeedbackAnimation(animationName, animationDuration, wts, false);
         //mBaxterStickman.doAnimation(animationName, animationDuration, wts, false);
     }

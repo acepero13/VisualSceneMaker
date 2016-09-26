@@ -15,9 +15,11 @@ public class BaxterCommandSender {
     }
 
     public static void BaxterLookLeft(){
+        System.out.println("lookLEFTtart");
         checkIfBaxterIsRunning();
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_left", new ArrayList<String>());
         baxterServer.sendToServer(command);
+        System.out.println("lookLEFTStart");
     }
 
     public static void BaxterLookRight(){
@@ -47,9 +49,11 @@ public class BaxterCommandSender {
     }
 
     public static void BaxterLookCenter(){
+        System.out.println("lookCenterStart");
         checkIfBaxterIsRunning();
-        BaxterCommand command = baxterServer.BaxterBuildCommand("set_neutral", new ArrayList<String>());
+        BaxterCommand command = baxterServer.BaxterBuildCommand("look_center", new ArrayList<String>());
         baxterServer.sendToServer(command);
+        System.out.println("lookCenterEnd");
     }
 
     private static void checkIfBaxterIsRunning() {
