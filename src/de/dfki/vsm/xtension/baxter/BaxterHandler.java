@@ -84,7 +84,7 @@ public class BaxterHandler extends Thread implements EventListener {
             // Receive The Next Line
             String message = mInStream.readLine();
             // Debug Some Information
-            mLogger.message("Receiving '" + message + "'");
+            mLogger.message("Receiving '" +     message + "'");
             // Return Received Data
             return message;
         } catch (final IOException exc) {

@@ -56,10 +56,38 @@ public class BaxterCommandSender {
         System.out.println("lookCenterEnd");
     }
 
+    public static void BaxterWave(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("wave", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterConversationHands(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("move_conversations_hands", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterConversationInterrogationHands(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("move_interrogation_hands", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
     private static void checkIfBaxterIsRunning() {
         if(baxterServer == null){
             throw new ExceptionInInitializerError("No handler specified");
         }
+    }
+
+    public static void BaxterRotateHead(float degrees, float speed){
+        checkIfBaxterIsRunning();
+        ArrayList params = new ArrayList<String>();
+        float radians = (float) Math.toRadians(degrees);
+        params.add(String.valueOf(radians));
+        params.add(String.valueOf(speed));
+        BaxterCommand command = baxterServer.BaxterBuildCommand("rotate_head", params);
+        baxterServer.sendToServer(command);
     }
 
 }

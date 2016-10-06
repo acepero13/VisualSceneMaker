@@ -35,7 +35,7 @@ public class VAD {
 
     public static void waitForSpeech(){
         if(VAD.canCall()){
-            baxterExecutor.broadcastToSpecificServer("STARTDETECTSPPECH#Baxter", BaxterExecutor.PYTHON_SERVER_BAXTER);
+            baxterExecutor.broadcastToSpecificServer("STARTDETECTSPPECH#END", BaxterExecutor.PYTHON_SERVER_BAXTER);
             waitForSpeech = new WaitForSpeech(project, "HumanSpeaking", baxterMessageHandler);
             waitForSpeech.startListening();
         }
@@ -49,7 +49,7 @@ public class VAD {
     public static void speechFinished(){
         if(VAD.canCall()){
             waitForSpeech.stopListening();
-            baxterExecutor.broadcastToSpecificServer("STOPDETECTSPPECH#Baxter", BaxterExecutor.PYTHON_SERVER_BAXTER);
+            baxterExecutor.broadcastToSpecificServer("STOPDETECTSPPECH#END", BaxterExecutor.PYTHON_SERVER_BAXTER);
         }
     }
 
