@@ -94,24 +94,26 @@ public class BaxterExecutor extends ActivityExecutor {
         if (activity instanceof SpeechActivity) {
             actionExecuteSpeech(activity);
         } else if (activity instanceof ActionActivity || activity instanceof ActionMouthActivity) {
-            System.out.println("*************************************************Action*******************************");
-            actionLoadAnimation(activity);
+            if(activity.getName().equals("Baxter")){
+                if(activity.getFeatureList() != null) {
+                    for (ActionFeature feat : activity.getFeatureList()) {
+                        try {
+                            Method method = BaxterCommandSender.class.getMethod(feat.getVal());
+                            method.invoke(null);
+                        } catch (NoSuchMethodException e) {
+                            continue;
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }else{
+                actionLoadAnimation(activity);
+            }
         }else if(activity instanceof TimeMarkActivity){
             actionExecuteActionTimeMark((TimeMarkActivity) activity);
-        }else if(activity instanceof ActionActivity){
-            //TODO: Send to the Server
-            for (ActionFeature feat : activity.getFeatureList()) {
-                try {
-                    Method method = BaxterCommandSender.class.getMethod(feat.getKey());
-                    method.invoke(null);
-                } catch (NoSuchMethodException e) {
-                    continue;
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -142,15 +144,15 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void actionLoadAnimation(AbstractActivity activity) {
-        int animationDuration = 50;
+        int animationDuration =200;
         if (activity instanceof ActionMouthActivity) {
             animationDuration = ((ActionMouthActivity) activity).getDuration();
         }
         if (baxterStickman != null && activity instanceof ActionMouthActivity) {
-            baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
+            baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }else if(baxterStickman != null){
-            baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
+            baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }
     }
@@ -223,6 +225,7 @@ public class BaxterExecutor extends ActivityExecutor {
         LinkedList blocks = ttsSpeak.getSpeechActivityTextBlocs();
         int wordIndex = 0;
         int totalTime = 0;
+        int timeC= 0;
         WordTimeMarkSequence wts = ttsSpeak.getWordTimeSequence();
         for (final Object item : blocks) {
             if (!item.toString().contains("$")) {
@@ -234,12 +237,17 @@ public class BaxterExecutor extends ActivityExecutor {
                     mScheduler.schedule((int) p.getmStart(), null, new ActionMouthActivity(activity.getActor(), "face",
                             "Mouth_" + p.getLipPosition(), null, (int) (p.getmEnd() - p.getmStart()), wts), mProject.getAgentDevice(activity.getActor()));
                     totalTime+= (int) (p.getmEnd() - p.getmStart());
+                    timeC = (int) p.getmStart();
                 }
                 wordIndex++;
+            }else{
+                mScheduler.schedule(timeC + 100, null, new TimeMarkActivity(activity.getActor(), "", "HandleTimeMark", wts), mProject.getAgentDevice(activity.getActor()));
             }
         }
 
-        mScheduler.schedule(totalTime, null, new TimeMarkActivity(activity.getActor(), "", "HandleTimeMark", wts), mProject.getAgentDevice(activity.getActor()));
+
+
+        //mScheduler.schedule(totalTime, null, new TimeMarkActivity(activity.getActor(), "", "HandleTimeMark", wts), mProject.getAgentDevice(activity.getActor()));
         return  activity;
     }
 
@@ -263,7 +271,7 @@ public class BaxterExecutor extends ActivityExecutor {
         try {
             launchMary();
             launchBaxter();
-            launchStickmanClient();
+           // launchStickmanClient();
             waitForClients();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -284,7 +292,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
         mListener = new BaxterListener(8001, this);
         mListener.start();
-        BaxterCommandSender.BaxterLookCenter();//default position
+       BaxterCommandSender.BaxterLookCenter();//default position
 
 
     }
@@ -329,7 +337,7 @@ public class BaxterExecutor extends ActivityExecutor {
             }
         };
 
-        stickmanLaunchThread.start();
+        //stickmanLaunchThread.start();
         // mStickmanStage.getNetworkInstances(host, Integer.parseInt(port));
     }
 

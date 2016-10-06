@@ -42,7 +42,7 @@ public class BaxterMessageHandler implements MessageObservable{
     @Override
     public void unregister(MessageObserver o) {
         if(observers.contains(o)){
-            observers.remove(0);
+            observers.remove(o);
         }
     }
 
