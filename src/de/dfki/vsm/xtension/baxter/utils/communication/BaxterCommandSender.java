@@ -80,6 +80,25 @@ public class BaxterCommandSender {
         }
     }
 
+    public static void BaxterStartConversationHands(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("start_move_conversations_hands", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterStopConversationHands(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("stop_move_conversations_hands", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+    public static void BaxterStartIdle(){
+        checkIfBaxterIsRunning();
+        BaxterCommand command = baxterServer.BaxterBuildCommand("move_random_body", new ArrayList<String>());
+        baxterServer.sendToServer(command);
+    }
+
+
     public static void BaxterRotateHead(float degrees, float speed){
         checkIfBaxterIsRunning();
         ArrayList params = new ArrayList<String>();
