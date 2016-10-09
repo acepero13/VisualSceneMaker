@@ -19,6 +19,8 @@ public class ScottishPhoneme extends Phoneme {
         lipMap.put("uu", "SEVEN");
         lipMap.put("w", "SEVEN");
         lipMap.put("ii", "ONE");//SIX
+        lipMap.put("@", "ONE");
+        lipMap.put("@@", "FIVE");
 
 
         lipMap.put("a", "ONE");
@@ -63,6 +65,7 @@ public class ScottishPhoneme extends Phoneme {
         lipMap.put("ng", "THREE"); //TWENTY
         lipMap.put("r", "FIVE"); //THIRTEEN
         lipMap.put("w", "SEVEN");
-        //lipMap.put("j", "FIVE"); //FOURTEEN
+        lipMap.put("h", "ONE");
+        lipMap.put("y", "FIVE"); //FOURTEEN
     }
 }
