@@ -6,17 +6,11 @@
     </target>
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://netbeans.org/kb/articles/freeform-config.html#profilej2se) -->
-    <target depends="-profile-check" if="profiler.configured" name="profile-nb">
-        <java classname="de.dfki.vsm.DefaultEditor" fork="true">
-            <classpath refid="clspath"/>
-            <jvmarg line="${agent.jvmargs}"/>
-        </java>
-    </target>
+    
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
-   
     <!-- TODO: edit the following target according to your needs -->
     <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#debugj2se) -->
     <target name="debug-nb">
@@ -29,6 +23,16 @@
             <classpath refid="clspath"/>
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+        </java>
+    </target>
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://netbeans.org/kb/articles/freeform-config.html#profilej2se) -->
+    <target depends="-profile-check" if="profiler.configured" name="profile-nb">
+        <java classname="de.dfki.vsm.SceneMaker3" fork="true">
+            <!-- <arg line="runtime res/prj/testing"/> -->
+            <!-- <arg line="editor res/prj/testing"/> -->
+            <classpath refid="clspath"/>
+            <jvmarg line="${agent.jvmargs}"/>
         </java>
     </target>
 </project>

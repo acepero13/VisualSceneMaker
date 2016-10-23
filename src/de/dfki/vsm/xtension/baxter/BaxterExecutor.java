@@ -144,15 +144,16 @@ public class BaxterExecutor extends ActivityExecutor {
     }
 
     private void actionLoadAnimation(AbstractActivity activity) {
-        int animationDuration =200;
+        int animationDuration =30;
         if (activity instanceof ActionMouthActivity) {
             animationDuration = ((ActionMouthActivity) activity).getDuration();
         }
+        //animationDuration =30;
         if (baxterStickman != null && activity instanceof ActionMouthActivity) {
             baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }else if(baxterStickman != null){
-            baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
+            baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
             executeAnimation();
         }
     }
