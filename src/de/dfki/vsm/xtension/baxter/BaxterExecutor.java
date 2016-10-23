@@ -63,7 +63,7 @@ public class BaxterExecutor extends ActivityExecutor {
     public BaxterExecutor(PluginConfig config, RunTimeProject project) {
         super(config, project);
         marySelfServer = MaryTTsProcess.getsInstance(mConfig.getProperty("mary.base"));
-        baxterStickman = new BaxterStickman(mConfig);
+        baxterStickman = new BaxterStickman(mConfig, this);
         baxterServerProcess = new BaxterServerProcess(mConfig.getProperty("server"));
         stickmanFactory = new StickmanRepository(config);
         baxterMessageHandler = new BaxterMessageHandler(mActivityWorkerMap, project);
@@ -148,12 +148,13 @@ public class BaxterExecutor extends ActivityExecutor {
         if (activity instanceof ActionMouthActivity) {
             animationDuration = ((ActionMouthActivity) activity).getDuration();
         }
+        animationDuration =30;
         if (baxterStickman != null && activity instanceof ActionMouthActivity) {
             baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
-            executeAnimation();
+            //executeAnimation();
         }else if(baxterStickman != null){
-            baxterStickman.loadBlockingAnimation(activity.getName(), animationDuration);
-            executeAnimation();
+            baxterStickman.loadNonBlockingAnimation(activity.getName(), animationDuration);
+            //executeAnimation();
         }
     }
 

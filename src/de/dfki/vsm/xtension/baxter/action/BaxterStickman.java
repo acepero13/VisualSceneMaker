@@ -10,14 +10,18 @@ import de.dfki.stickman.Stickman;
 import de.dfki.stickman.StickmanStage;
 import de.dfki.stickman.animationlogic.Animation;
 import de.dfki.stickman.animationlogic.AnimationLoader;
+import de.dfki.stickmanfx.StickmanFX;
 import de.dfki.stickmanfx.animationlogic.AnimationLoaderFX;
+import de.dfki.stickmanfx.animationlogic.AnimatorFX;
 import de.dfki.stickmanfx.animationlogic.EventAnimationFX;
+import de.dfki.util.observers.AnimationObserver;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.ActionActivity;
 import de.dfki.vsm.util.ios.IOSIndentWriter;
 import de.dfki.vsm.util.stickman.StickmanAbstractFactory;
 import de.dfki.vsm.util.stickman.StickmanFxFactory;
 import de.dfki.vsm.util.xml.XMLUtilities;
+import de.dfki.vsm.xtension.baxter.BaxterExecutor;
 import de.dfki.vsm.xtension.baxter.command.BaxterCommand;
 import sun.misc.BASE64Encoder;
 
@@ -32,25 +36,28 @@ import java.util.ArrayList;
 /**
  * Created by alvaro on 6/1/16.
  */
-public class BaxterStickman {
+public class BaxterStickman implements AnimationObserver {
 
     private StickmanAbstractFactory factory ;
     StageStickmanController baxterStage;
     private final String name = "Baxter";
     CommonStickman mBaxterStickman;
+    private BaxterExecutor executor;
     //final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 5.0f, new Dimension(1024, 600), false);
 
-    public  BaxterStickman(PluginConfig mConfig){
+    public  BaxterStickman(PluginConfig mConfig, BaxterExecutor executor){
         factory  = new StickmanFxFactory(mConfig);
         baxterStage = factory.getStickman();
         baxterStage.addStickman(name, true);
         mBaxterStickman = baxterStage.getStickman(name);
         baxterStage.launchStickmanStage(false);
-        try {
+        this.executor = executor;
+        AnimatorFX.register(this);
+        /*try {
             baxterStage.getStageAsImage();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private String getImageHeadFromStickmanAnimation() {
@@ -65,7 +72,7 @@ public class BaxterStickman {
         return headAsString;
     }
 
-    private String transformStickmanToImage(BufferedImage head) {
+    public String transformStickmanToImage(BufferedImage head) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String imageString = "";
         try {
@@ -97,6 +104,12 @@ public class BaxterStickman {
         return toSend;
     }
 
+    protected void sendAnimation(String headAsString) {
+        ArrayList<String> params = new ArrayList<>();
+        params.add(headAsString);
+        String baxterXMLCommand = buildBaxterCommand(params);
+        executor.broadcastToSpecificServer(baxterXMLCommand, BaxterExecutor.PYTHON_SERVER_BAXTER);
+    }
 
 
     public String getAnimationImage() {
@@ -105,12 +118,16 @@ public class BaxterStickman {
 
     public void loadNonBlockingAnimation(String animationName, int animationDuration){
         CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, false);
-        mBaxterStickman.doAnimation(animationName, animationDuration, false);
+        //mBaxterStickman.doAnimation(animationName, animationDuration, false);
+        ((StickmanFX)mBaxterStickman).doAnimationAsImage(animationName, animationDuration, false,this );
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration){
-        CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
-        mBaxterStickman.doAnimation(animationName, animationDuration, true);
+        //CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
+        //mBaxterStickman.doAnimation(animationName, animationDuration, true);
+        //CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
+        //mBaxterStickman.doAnimation(animationName, animationDuration, false);
+        ((StickmanFX)mBaxterStickman).doAnimationAsImage(animationName, animationDuration, true,this );
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
@@ -125,9 +142,14 @@ public class BaxterStickman {
         ((EventAnimationFX)stickmanAnimation).playEventAnimationPart();
         return stickmanAnimation;
         //mBaxterStickman.doEventFeedbackAnimation(animationName, animationDuration, wts, false);
-        //mBaxterStickman.doAnimation(animationName, animationDuration, wts, false);
+        //mBaxterStickman.doAnimation(ani   mationName, animationDuration, wts, false);
     }
 
 
-
+    @Override
+    public void update(Object obj) {
+        BufferedImage image = (BufferedImage) obj;
+        String headAsString = transformStickmanToImage(image);
+        sendAnimation(headAsString);
+    }
 }

@@ -3,6 +3,7 @@ package de.dfki.vsm.util.tts.cereproc.audioplayer;
 import com.cereproc.cerevoice_eng.SWIGTYPE_p_CPRC_abuf;
 import com.cereproc.cerevoice_eng.cerevoice_eng;
 
+import javax.annotation.processing.SupportedOptions;
 import javax.sound.sampled.SourceDataLine;
 
 /**
@@ -38,5 +39,20 @@ public class LinePlayer implements Audioplayer {
             b[i * 2 + 1] = (byte) (s & 0x00ff);
         }
         return b;
+    }
+
+    @Override
+    public void increaseVolume() {
+        throw  new UnsupportedOperationException("The line method does not allow volume manipulation");
+    }
+
+    @Override
+    public void decreaseVolume() {
+        throw  new UnsupportedOperationException("The line method does not allow volume manipulation");
+    }
+
+    @Override
+    public void setVolumen(float value) {
+        throw  new UnsupportedOperationException("The line method does not allow volume manipulation");
     }
 }

@@ -6,4 +6,7 @@ package de.dfki.vsm.util.tts.cereproc.audioplayer;
 public interface Audioplayer {
     void play() throws Exception;
     byte[] createWavAudio(int size);
+    void increaseVolume();
+    void decreaseVolume();
+    void setVolumen(float value);
 }

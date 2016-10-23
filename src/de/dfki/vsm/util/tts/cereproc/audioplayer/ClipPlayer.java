@@ -1,6 +1,8 @@
 package de.dfki.vsm.util.tts.cereproc.audioplayer;
+
 import com.cereproc.cerevoice_eng.SWIGTYPE_p_CPRC_abuf;
 import com.cereproc.cerevoice_eng.cerevoice_eng;
+
 import javax.sound.sampled.*;
 import javax.sound.sampled.Mixer.Info;
 import java.io.ByteArrayInputStream;
@@ -17,6 +19,8 @@ public class ClipPlayer implements Audioplayer {
     public static final int MONO = 1;
     public static final int BYTES_PER_SAMPLE = 2;
     public static final int HEADER_SIZE = 36;
+    public static final float VOLUME_STEP = 10;
+    public static float currentVolume = 0;
 
     //This uses Little Endian
 
@@ -57,6 +61,37 @@ public class ClipPlayer implements Audioplayer {
         return audioBuffer;
     }
 
+    @Override
+    public void increaseVolume() {
+        sIncreaseVolume();
+    }
+
+    @Override
+    public void decreaseVolume() {
+        sDecreaseVolume();
+    }
+
+    @Override
+    public void setVolumen(float value) {
+        sSetVolumen(value);
+    }
+
+
+
+    public static void sIncreaseVolume() {
+        currentVolume+= VOLUME_STEP;
+    }
+
+
+    public static void sDecreaseVolume() {
+        currentVolume-=VOLUME_STEP;
+    }
+
+    public static void sSetVolumen(float value) {
+        currentVolume = value;
+    }
+
+
 
     private byte[] wavHeader(int size){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -71,7 +106,7 @@ public class ClipPlayer implements Audioplayer {
             outputStream.write(intToByteArray((int) format.getSampleRate()), 0, 4);		                        // 24 - samples per second (numbers per second)
             outputStream.write(intToByteArray((int) format.getSampleRate() * BYTES_PER_SAMPLE), 0, 4);		    // 28 - bytes per second
             outputStream.write(shortToByteArray((short) BYTES_PER_SAMPLE), 0, 2);	                            // 32 - # of bytes in one sample, for all channels
-            outputStream.write(shortToByteArray((short)format.getSampleSizeInBits()), 0, 2);	    // 34 - how many bits in a sample(number)?  usually 16 or 24
+            outputStream.write(shortToByteArray((short)format.getSampleSizeInBits()), 0, 2);	                // 34 - how many bits in a sample(number)?  usually 16 or 24
             outputStream.write("data".getBytes());
             outputStream.write(intToByteArray(size), 0, 4);
 
@@ -97,16 +132,28 @@ public class ClipPlayer implements Audioplayer {
     private void playClipAudio(final AudioInputStream inputStream, Info info) throws LineUnavailableException, IOException, InterruptedException {
         Clip clip = AudioSystem.getClip(info);
         clip.open(inputStream);
+        adjustVolume(clip);
         clip.start();
         waitPlayToEnd(clip);
         clip.close();
     }
 
+    private void adjustVolume(Clip clip){
+        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+
+        float value = gainControl.getValue();
+        float minimum = gainControl.getMinimum();
+        float maximum = gainControl.getMaximum();
+        if(currentVolume != value && currentVolume > minimum && currentVolume < maximum){
+            gainControl.setValue(currentVolume);
+        }
+    }
+
     private void waitPlayToEnd(Clip clip) throws InterruptedException {
-        while (!clip.isRunning()){
+        while (!clip.isRunning()){//Wait for clip to start
             Thread.sleep(50);
         }
-        while (clip.isRunning()){
+        while (clip.isRunning()){ //Wait clip to end
             Thread.sleep(100);
         }
     }
