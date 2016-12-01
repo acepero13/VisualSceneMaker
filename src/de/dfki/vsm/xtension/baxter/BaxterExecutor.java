@@ -95,25 +95,33 @@ public class BaxterExecutor extends ActivityExecutor {
             actionExecuteSpeech(activity);
         } else if (activity instanceof ActionActivity || activity instanceof ActionMouthActivity) {
             if(activity.getName().equals("Baxter")){
-                if(activity.getFeatureList() != null) {
-                    for (ActionFeature feat : activity.getFeatureList()) {
-                        try {
-                            Method method = BaxterCommandSender.class.getMethod(feat.getVal());
-                            method.invoke(null);
-                        } catch (NoSuchMethodException e) {
-                            continue;
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                callBaxterAction(activity);
+            } else{
+                if(activity.getName().equals("LeaveTurn") && mProject.hasVariable("BaxterWantsLeaveTurn")){
+                    mProject.setVariable("BaxterWantsLeaveTurn", true);
+                }else {
+                    actionLoadAnimation(activity);
                 }
-            }else{
-                actionLoadAnimation(activity);
             }
         }else if(activity instanceof TimeMarkActivity){
             actionExecuteActionTimeMark((TimeMarkActivity) activity);
+        }
+    }
+
+    protected void callBaxterAction(AbstractActivity activity) {
+        if(activity.getFeatureList() != null) {
+            for (ActionFeature feat : activity.getFeatureList()) {
+                try {
+                    Method method = BaxterCommandSender.class.getMethod(feat.getVal());
+                    method.invoke(null);
+                } catch (NoSuchMethodException e) {
+                    continue;
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -323,6 +331,7 @@ public class BaxterExecutor extends ActivityExecutor {
         mClientMap.put(PYTHON_SERVER_BAXTER, baxterServerHandler);
         BaxterCommandServerWrapper wrapper = new BaxterCommandServerWrapper(baxterServerHandler);
         BaxterCommandSender.setCommandServer(wrapper);
+        BaxterCommandSender.setProject(mProject);
     }
 
     private void launchStickmanClient(){

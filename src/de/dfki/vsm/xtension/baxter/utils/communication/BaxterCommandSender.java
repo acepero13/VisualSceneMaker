@@ -1,5 +1,6 @@
 package de.dfki.vsm.xtension.baxter.utils.communication;
 
+import de.dfki.vsm.runtime.project.RunTimeProject;
 import de.dfki.vsm.xtension.baxter.command.BaxterCommand;
 
 import java.util.ArrayList;
@@ -10,22 +11,37 @@ import java.util.ArrayList;
 public class BaxterCommandSender {
 
     private static BaxterCommandServerWrapper baxterServer;
+    private static RunTimeProject project;
     public static void setCommandServer(BaxterCommandServerWrapper wrapper){
         baxterServer = wrapper;
     }
 
     public static void BaxterLookLeft(){
-        System.out.println("lookLEFTtart");
         checkIfBaxterIsRunning();
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_left", new ArrayList<String>());
         baxterServer.sendToServer(command);
-        System.out.println("lookLEFTStart");
+        setLookingLeftVariable();
+
+
+    }
+
+    private static void setLookingLeftVariable() {
+        if(project.hasVariable("BaxterIsLookingLeft")){
+            project.setVariable("BaxterIsLookingLeft", true);
+        }
+    }
+
+    private static void unsetLookingLeftVariable() {
+        if(project.hasVariable("BaxterIsLookingLeft")){
+            project.setVariable("BaxterIsLookingLeft", false);
+        }
     }
 
     public static void BaxterLookRight(){
         checkIfBaxterIsRunning();
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_right", new ArrayList<String>());
         baxterServer.sendToServer(command);
+        unsetLookingLeftVariable();
     }
 
     public static void BaxterLookFace(String movement){
@@ -34,6 +50,7 @@ public class BaxterCommandSender {
         params.add(movement);
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_at", params);
         baxterServer.sendToServer(command);
+        unsetLookingLeftVariable();
     }
 
     public static void BaxterSayYes(){
@@ -54,6 +71,7 @@ public class BaxterCommandSender {
         BaxterCommand command = baxterServer.BaxterBuildCommand("look_center", new ArrayList<String>());
         baxterServer.sendToServer(command);
         System.out.println("lookCenterEnd");
+        unsetLookingLeftVariable();
     }
 
     public static void BaxterWave(){
@@ -109,4 +127,7 @@ public class BaxterCommandSender {
         baxterServer.sendToServer(command);
     }
 
+    public static void setProject(RunTimeProject project) {
+        BaxterCommandSender.project = project;
+    }
 }

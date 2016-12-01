@@ -364,6 +364,21 @@ public class IDManager {
                         }
                     }
 
+                    // check possible default edges
+                    if (node.hasDEdge()) {
+
+                        // DEBUG System.out.println("+ default edge");
+                        String teID = relationOldNewIDRef.get(node.getDedge().getTarget());
+
+                        if (teID != null) {
+                            node.getDedge().setTarget(teID);
+                        } else {
+
+                            // DEBUG System.err.println("unvalid tedge (no target) - removing edge.");
+                            node.removeDEdge();
+                        }
+                    }
+
                     break;
 
                 case TNODE :
