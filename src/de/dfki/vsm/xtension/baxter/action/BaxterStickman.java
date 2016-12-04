@@ -2,18 +2,14 @@ package de.dfki.vsm.xtension.baxter.action;
 
 import com.objectplanet.image.PngEncoder;
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.common.CommonAnimation;
-import de.dfki.common.CommonStickman;
-import de.dfki.common.CommonStickmanStage;
-import de.dfki.common.StageStickmanController;
-import de.dfki.stickman.Stickman;
-import de.dfki.stickman.StickmanStage;
-import de.dfki.stickman.animationlogic.Animation;
-import de.dfki.stickman.animationlogic.AnimationLoader;
-import de.dfki.stickmanfx.StickmanFX;
-import de.dfki.stickmanfx.animationlogic.AnimationLoaderFX;
-import de.dfki.stickmanfx.animationlogic.AnimatorFX;
-import de.dfki.stickmanfx.animationlogic.EventAnimationFX;
+
+import de.dfki.common.interfaces.Animation;
+import de.dfki.common.interfaces.StageRoom;
+import de.dfki.common.interfaces.Stickman;
+import de.dfki.stickmanFX.StickmanFX;
+import de.dfki.stickmanFX.animationlogic.AnimationLoaderFX;
+import de.dfki.stickmanFX.animationlogic.AnimatorFX;
+import de.dfki.stickmanFX.animationlogic.EventAnimationFX;
 import de.dfki.util.observers.AnimationObserver;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.runtime.activity.ActionActivity;
@@ -39,11 +35,11 @@ import java.util.ArrayList;
 public class BaxterStickman implements AnimationObserver {
 
     private StickmanAbstractFactory factory ;
-    StageStickmanController baxterStage;
+    StageRoom baxterStage;
     private final String name = "Baxter";
-    CommonStickman mBaxterStickman;
+    Stickman mBaxterStickman;
     private BaxterExecutor executor;
-    //final private Stickman mBaxterStickman = new Stickman("Baxter", Stickman.TYPE.MALE, 5.0f, new Dimension(1024, 600), false);
+    //final private Stickman mBaxterStickman = new Stickman("Baxter", Gender.TYPE.MALE, 5.0f, new Dimension(1024, 600), false);
 
     public  BaxterStickman(PluginConfig mConfig, BaxterExecutor executor){
         factory  = new StickmanFxFactory(mConfig);
@@ -117,26 +113,26 @@ public class BaxterStickman implements AnimationObserver {
     }
 
     public void loadNonBlockingAnimation(String animationName, int animationDuration){
-        CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, false);
+        Animation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, false);
         //mBaxterStickman.doAnimation(animationName, animationDuration, false);
         ((StickmanFX)mBaxterStickman).doAnimationAsImage(animationName, animationDuration, false,this );
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration){
-        //CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
+        //Animation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
         //mBaxterStickman.doAnimation(animationName, animationDuration, true);
-        //CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
+        //Animation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
         //mBaxterStickman.doAnimation(animationName, animationDuration, false);
         ((StickmanFX)mBaxterStickman).doAnimationAsImage(animationName, animationDuration, true,this );
     }
 
     public void loadBlockingAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
-        CommonAnimation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
+        Animation animation = factory.loadAnimation(mBaxterStickman, animationName, animationDuration, true);
         mBaxterStickman.doAnimation(animationName, animationDuration, wts, true);
     }
 
-    public CommonAnimation loadEventAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
-        CommonAnimation stickmanAnimation = AnimationLoaderFX.getInstance().loadEventAnimation(mBaxterStickman, animationName, animationDuration, false);
+    public Animation loadEventAnimation(String animationName, int animationDuration, WordTimeMarkSequence wts){
+        Animation stickmanAnimation = AnimationLoaderFX.getInstance().loadEventAnimation(mBaxterStickman, animationName, animationDuration, false);
         stickmanAnimation.setParameter( wts);
         //loadNonBlockingAnimation(animationName, animationDuration);
         ((EventAnimationFX)stickmanAnimation).playEventAnimationPart();

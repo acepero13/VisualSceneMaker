@@ -1,8 +1,8 @@
 package de.dfki.vsm.util.stickman;
 
-import de.dfki.common.CommonAnimation;
-import de.dfki.common.CommonStickman;
-import de.dfki.common.StageStickmanController;
+import de.dfki.common.interfaces.Animation;
+import de.dfki.common.interfaces.StageRoom;
+import de.dfki.common.interfaces.Stickman;
 import de.dfki.vsm.model.project.PluginConfig;
 
 public class StickmanRepository {
@@ -12,23 +12,26 @@ public class StickmanRepository {
         this.config = config;
     }
 
-    public StageStickmanController createStickman() {
-        if (config.getProperty("stickman")!= null && config.getProperty("stickman").equals("StickmanFX")) {
-            factory = new StickmanFxFactory(config);
-        } else {
+    public StageRoom createStickman() {
+        if (config.getProperty("stickman")!= null && config.getProperty("stickman").equals("StickmanLegacy")) {
             factory = new StickmanFactory(config);
+
+        } else if(config.getProperty("stickman")!= null && config.getProperty("stickman").equals("Pinocchio")){
+            factory = new Stickman3DFactory(config);
+        } else {
+            factory = new StickmanFxFactory(config);
         }
         return factory.getStickman();
     }
 
-    public CommonAnimation getAnimation(String actor){
+    public Animation getAnimation(String actor){
         return factory.getAnimation(actor);
     }
 
-    public CommonAnimation loadEventAnimation(CommonStickman sm, String name, int duration, boolean block){
+    public Animation loadEventAnimation(Stickman sm, String name, int duration, boolean block){
         return factory.loadEventAnimation(sm, name, duration, block);
     }
-    public CommonAnimation loadAnimation(CommonStickman sm, String name, int duration, boolean block){
+    public Animation loadAnimation(Stickman sm, String name, int duration, boolean block){
         return factory.loadAnimation(sm, name, duration, block);
     }
 }

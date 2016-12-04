@@ -8,10 +8,9 @@ package de.dfki.vsm.xtension.stickman;
 import de.dfki.action.sequence.TimeMark;
 import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.common.CommonAnimation;
-import de.dfki.common.CommonStickmanStage;
-import de.dfki.common.StageStickman;
-import de.dfki.common.StageStickmanController;
+
+import de.dfki.common.interfaces.Animation;
+import de.dfki.common.interfaces.StageRoom;
 import de.dfki.util.ios.IOSIndentWriter;
 import de.dfki.util.xml.XMLUtilities;
 import de.dfki.vsm.model.project.AgentConfig;
@@ -37,22 +36,16 @@ import java.util.LinkedList;
  */
 public class StickmanExecutor extends ActivityExecutor {
 
-    // The stickman stage window
-    private static StageStickman mStickmanStage;
-
-    private CommonStickmanStage stickmanStage;
     // The singelton logger instance
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
     // The tworld listener
     private StickmanListener mListener;
-    // The map of processes
-    private final HashMap<String, Process> mProcessMap = new HashMap();
     // The client thread list
     private final HashMap<String, StickmanHandler> mClientMap = new HashMap();
     // The map of activity worker
     private final HashMap<String, ActivityWorker> mActivityWorkerMap = new HashMap();
-    private  Thread stickmanLaunchThread;
-    private StageStickmanController stickmanStageC;
+    private Thread stickmanLaunchThread;
+    private StageRoom stickmanStageC;
     private StickmanRepository stickmanFactory;
 
     // Construct the executor
@@ -60,7 +53,6 @@ public class StickmanExecutor extends ActivityExecutor {
         // Initialize the plugin
         super(config, project);
         stickmanFactory = new StickmanRepository(config);
-
 
     }
 
@@ -90,7 +82,7 @@ public class StickmanExecutor extends ActivityExecutor {
         final String name = activity.getName();
         final LinkedList<ActionFeature> features = activity.getFeatureList();
 
-        CommonAnimation stickmanAnimation ;
+        Animation stickmanAnimation;
 
         if (activity instanceof SpeechActivity) {
             SpeechActivity sa = (SpeechActivity) activity;
@@ -110,17 +102,22 @@ public class StickmanExecutor extends ActivityExecutor {
             mScheduler.schedule(20, null, new ActionActivity(actor, "face", "Mouth_O", null, null), mProject.getAgentDevice(actor));
             mScheduler.schedule(200, null, new ActionActivity(actor, "face", "Mouth_Default", null, null), mProject.getAgentDevice(actor));
             stickmanAnimation = stickmanFactory.loadEventAnimation(stickmanStageC.getStickman(actor), "Speaking", 3000, false);
-            stickmanAnimation.setParameter( wts);
+            stickmanAnimation.setParameter(wts);
             executeAnimationAndWait(activity, stickmanAnimation);
         } else if (activity instanceof ActionActivity) {
             stickmanAnimation = stickmanFactory.loadAnimation(stickmanStageC.getStickman(actor), name, 500, false); // TODO: with regard to get a "good" timing, consult the gesticon
             if (stickmanAnimation != null) {
+                if (features != null && !(features.isEmpty())) {
+                    for (final ActionFeature feature : features) {
+                        stickmanAnimation.setParameter(feature.getVal());
+                    }
+                }
                 executeAnimation(stickmanAnimation);
             }
         }
     }
 
-    private void executeAnimation(CommonAnimation stickmanAnimation) {
+    private void executeAnimation(Animation stickmanAnimation) {
         // executeAnimation command to platform
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOSIndentWriter iosw = new IOSIndentWriter(out);
@@ -128,7 +125,7 @@ public class StickmanExecutor extends ActivityExecutor {
         broadcast(out.toString().replace("\n", " "));
     }
 
-    private void executeAnimationAndWait(AbstractActivity activity, CommonAnimation stickmanAnimation) {
+    private void executeAnimationAndWait(AbstractActivity activity, Animation stickmanAnimation) {
         // executeAnimation command to platform
         synchronized (mActivityWorkerMap) {
             // executeAnimation command to platform
@@ -169,10 +166,7 @@ public class StickmanExecutor extends ActivityExecutor {
 
         // Start the StickmanStage client application
         mLogger.message("Starting StickmanStage Client Application ...");
-
         stickmanStageC = stickmanFactory.createStickman();
-
-
         // Get Stickman agents configuration
         for (String name : mProject.getAgentNames()) {
             AgentConfig ac = mProject.getAgentConfig(name);
@@ -191,7 +185,6 @@ public class StickmanExecutor extends ActivityExecutor {
                 }
             }
         };
-
 
         stickmanLaunchThread.start();
 

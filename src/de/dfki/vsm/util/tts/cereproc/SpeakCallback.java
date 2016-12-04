@@ -1,7 +1,7 @@
 package de.dfki.vsm.util.tts.cereproc;
 
 import com.cereproc.cerevoice_eng.*;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.SourceDataLine;
 import java.util.LinkedList;

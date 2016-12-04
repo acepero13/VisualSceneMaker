@@ -1,10 +1,10 @@
 package de.dfki.vsm.util.tts.marytts;
 
-import de.dfki.stickman.Stickman;
+import de.dfki.common.Gender;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.VoiceName;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 
 import java.util.LinkedList;
 
@@ -101,11 +101,11 @@ public class MaryTTsSpeaker extends SpeakerTts {
     }
 
 
-    private Stickman.TYPE getGenderTypeFromString(){
-        if(gender == Stickman.TYPE.MALE.toString()){
-            return Stickman.TYPE.MALE;
+    private Gender.TYPE getGenderTypeFromString(){
+        if(gender == Gender.TYPE.MALE.toString()){
+            return Gender.TYPE.MALE;
         }
-        return Stickman.TYPE.FEMALE;
+        return Gender.TYPE.FEMALE;
     }
 
 

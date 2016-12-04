@@ -6,11 +6,11 @@
 package de.dfki.vsm.xtension.stickmanmarytts;
 
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.common.CommonAnimation;
-import de.dfki.common.StageStickmanController;
-import de.dfki.stickman.StickmanStage;
-import de.dfki.stickman.animationlogic.Animation;
-import de.dfki.stickman.animationlogic.AnimationLoader;
+
+import de.dfki.common.interfaces.Animation;
+import de.dfki.common.interfaces.StageRoom;
+import de.dfki.common.interfaces.StickmanStage;
+
 import de.dfki.util.xml.XMLUtilities;
 import de.dfki.util.ios.IOSIndentWriter;
 import de.dfki.vsm.editor.dialog.WaitingDialog;
@@ -31,7 +31,7 @@ import de.dfki.vsm.util.tts.TTSFactory;
 import de.dfki.vsm.util.tts.marytts.MaryTTsProcess;
 import de.dfki.vsm.util.tts.VoiceName;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
 
 import java.io.*;
@@ -58,7 +58,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     public static String sExecutionId = "stickmanmary_";
     private String mDeviceName;
     private  Thread stickmanLaunchThread;
-    private StageStickmanController stickmanStageC;
+    private StageRoom stickmanStageC;
     private StickmanRepository stickmanFactory;
 
     private int maryId;
@@ -128,7 +128,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
     }
 
     private void actionLoadAnimation(AbstractActivity activity, String actor, String name) {
-        CommonAnimation stickmanAnimation ;
+        Animation stickmanAnimation ;
         int duration = 500;
         if (activity instanceof ActionMouthActivity) {
             duration = ((ActionMouthActivity) activity).getDuration();
@@ -168,7 +168,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         return langVoince;
     }
 
-    protected void executeAnimation(CommonAnimation stickmanAnimation) {
+    protected void executeAnimation(Animation stickmanAnimation) {
         // executeAnimation command to platform
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IOSIndentWriter iosw = new IOSIndentWriter(out);
@@ -375,7 +375,7 @@ public class StickmanMaryttsExecutor extends ActivityExecutor {
         }
         //Clossing the mouth
         mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(actor, "face", "Mouth_Default", null, 300, wts), mProject.getAgentDevice(actor));
-        CommonAnimation stickmanAnimation;
+        Animation stickmanAnimation;
         stickmanAnimation = stickmanFactory.loadEventAnimation(stickmanStageC.getStickman(actor), "Speaking", 3000, false);
         stickmanAnimation.setParameter(wts);
         executeAnimation(stickmanAnimation);

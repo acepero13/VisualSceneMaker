@@ -4,7 +4,7 @@ import de.dfki.action.sequence.TimeMark;
 import de.dfki.action.sequence.Word;
 import de.dfki.action.sequence.WordTimeMarkSequence;
 import de.dfki.vsm.runtime.activity.SpeechActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 
 import java.util.HashMap;
 import java.util.LinkedList;

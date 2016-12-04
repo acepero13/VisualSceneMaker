@@ -5,13 +5,12 @@ import com.cereproc.cerevoice_eng.TtsEngineCallback;
 import com.cereproc.cerevoice_eng.*;
 import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.tts.SpeechClient;
-import de.dfki.vsm.util.tts.cereproc.audioplayer.Audioplayer;
-import de.dfki.vsm.util.tts.cereproc.audioplayer.ClipPlayer;
-import de.dfki.vsm.util.tts.cereproc.audioplayer.LinePlayer;
+
 import de.dfki.vsm.util.tts.cereproc.util.Audioline;
 import de.dfki.vsm.util.tts.cereproc.util.CereprocLoader;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.events.LineStop;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
+
 
 import java.io.File;
 import java.io.IOException;

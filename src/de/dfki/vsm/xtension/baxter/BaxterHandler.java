@@ -4,8 +4,9 @@ import de.dfki.vsm.util.evt.EventDispatcher;
 import de.dfki.vsm.util.evt.EventListener;
 import de.dfki.vsm.util.evt.EventObject;
 import de.dfki.vsm.util.log.LOGConsoleLogger;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
+import de.dfki.vsm.xtension.stickmantts.util.tts.events.LineStart;
+import de.dfki.vsm.xtension.stickmantts.util.tts.events.LineStop;
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

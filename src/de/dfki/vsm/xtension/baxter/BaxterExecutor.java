@@ -2,7 +2,7 @@ package de.dfki.vsm.xtension.baxter;
 
 import de.dfki.action.sequence.Entry;
 import de.dfki.action.sequence.WordTimeMarkSequence;
-import de.dfki.common.StageStickmanController;
+import de.dfki.common.interfaces.StageRoom;
 import de.dfki.vsm.model.project.PluginConfig;
 import de.dfki.vsm.model.scenescript.ActionFeature;
 import de.dfki.vsm.runtime.activity.AbstractActivity;
@@ -24,7 +24,7 @@ import de.dfki.vsm.xtension.baxter.utils.communication.BaxterServerProcess;
 import de.dfki.vsm.xtension.baxter.utils.messagehandlers.BaxterMessageHandler;
 import de.dfki.vsm.xtension.baxter.utils.messagehandlers.VAD.VAD;
 import de.dfki.vsm.xtension.stickmanmarytts.action.ActionMouthActivity;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -56,7 +56,7 @@ public class BaxterExecutor extends ActivityExecutor {
 
     private BaxterStickman baxterStickman;
 
-    private StageStickmanController stickmanStageC;
+    private StageRoom stickmanStageC;
     private StickmanRepository stickmanFactory;
     private Thread stickmanLaunchThread;
 

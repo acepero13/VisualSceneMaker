@@ -2,7 +2,8 @@ package de.dfki.vsm.util.tts.cereproc;
 
 import de.dfki.vsm.runtime.activity.SpeechActivity;
 import de.dfki.vsm.util.tts.SpeakerTts;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
+
 
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;

@@ -15,7 +15,7 @@ import de.dfki.vsm.util.tts.SpeakerTts;
 import de.dfki.vsm.util.tts.cereproc.CereProgTTsSpeaker;
 import de.dfki.vsm.xtension.baxter.action.SpeakerActivity;
 import de.dfki.vsm.util.tts.VoiceName;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStop;
+import de.dfki.vsm.xtension.stickmantts.util.tts.events.LineStop;
 
 import java.io.IOException;
 import java.util.HashMap;

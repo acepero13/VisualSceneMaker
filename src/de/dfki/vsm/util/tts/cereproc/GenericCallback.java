@@ -6,8 +6,8 @@ import de.dfki.vsm.util.tts.cereproc.audioplayer.Audioplayer;
 import de.dfki.vsm.util.tts.cereproc.audioplayer.ClipPlayer;
 import de.dfki.vsm.util.tts.cereproc.audioplayer.LinePlayer;
 import de.dfki.vsm.util.tts.cereproc.phonemes.ScottishPhoneme;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.events.LineStart;
-import de.dfki.vsm.xtension.stickmanmarytts.util.tts.sequence.Phoneme;
+import de.dfki.vsm.xtension.stickmantts.util.tts.events.LineStart;
+import de.dfki.vsm.xtension.stickmantts.util.tts.sequence.Phoneme;
 
 import javax.sound.sampled.*;
 import java.io.*;
