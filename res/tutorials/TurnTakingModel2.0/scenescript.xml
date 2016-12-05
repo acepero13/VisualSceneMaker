@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SceneScript lower="0" upper="0">
+  <SceneObject lower="0" upper="179" language="en" identifier="BaxterIntro">
+    <SceneTurn lower="22" upper="77" speaker="Baxter">
+      <SceneUttr lower="30" upper="54" punct=",">
+        <SceneWord lower="30" upper="35" text="Hello"/>
+        <SceneWord lower="36" upper="38" text="my"/>
+        <SceneWord lower="39" upper="43" text="name"/>
+        <SceneWord lower="44" upper="46" text="is"/>
+        <SceneWord lower="47" upper="53" text="Baxter"/>
+      </SceneUttr>
+      <SceneUttr lower="55" upper="77" punct="?">
+        <SceneWord lower="55" upper="59" text="what"/>
+        <SceneWord lower="60" upper="63" text="can"/>
+        <SceneWord lower="64" upper="65" text="i"/>
+        <SceneWord lower="66" upper="68" text="do"/>
+        <SceneWord lower="69" upper="72" text="for"/>
+        <SceneWord lower="73" upper="76" text="you"/>
+      </SceneUttr>
+    </SceneTurn><SceneTurn lower="78" upper="179" speaker="Stickman">
+      <SceneUttr lower="88" upper="93" punct=",">
+        <SceneWord lower="88" upper="92" text="Well"/>
+      </SceneUttr>
+      <SceneUttr lower="94" upper="179" punct=".">
+        <SceneAbbrev lower="94" upper="97" first="I" second="m"/>
+        <SceneWord lower="98" upper="101" text="new"/>
+        <SceneWord lower="102" upper="104" text="in"/>
+        <SceneWord lower="105" upper="109" text="town"/>
+        <SceneWord lower="110" upper="113" text="and"/>
+        <SceneWord lower="114" upper="115" text="i"/>
+        <SceneWord lower="116" upper="121" text="would"/>
+        <SceneWord lower="122" upper="126" text="like"/>
+        <SceneWord lower="127" upper="129" text="to"/>
+        <SceneWord lower="130" upper="134" text="know"/>
+        <SceneWord lower="135" upper="137" text="if"/>
+        <SceneWord lower="138" upper="141" text="you"/>
+        <SceneWord lower="142" upper="146" text="guys"/>
+        <SceneWord lower="147" upper="151" text="know"/>
+        <SceneWord lower="152" upper="160" text="anything"/>
+        <SceneWord lower="161" upper="166" text="about"/>
+        <SceneWord lower="167" upper="178" text="Saarbrucken"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="181" upper="223" language="en" identifier="StickmanAgree">
+    <SceneTurn lower="205" upper="223" speaker="Stickman">
+      <SceneUttr lower="215" upper="223" punct=".">
+        <SceneWord lower="215" upper="216" text="I"/>
+        <SceneWord lower="217" upper="222" text="agree"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="225" upper="282" language="en" identifier="StickmanInteresting">
+    <SceneTurn lower="255" upper="282" speaker="Stickman">
+      <SceneUttr lower="265" upper="282" punct=".">
+        <SceneWord lower="265" upper="269" text="very"/>
+        <SceneWord lower="270" upper="281" text="interesting"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="284" upper="322" language="en" identifier="StickmanYes">
+    <SceneTurn lower="306" upper="322" speaker="Stickman">
+      <SceneUttr lower="316" upper="322" punct=".">
+        <SceneWord lower="316" upper="317" text="I"/>
+        <SceneWord lower="318" upper="321" text="see"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="324" upper="524" language="en" identifier="SaarIntro1">
+    <SceneTurn lower="345" upper="524" speaker="Baxter">
+      <SceneUttr lower="353" upper="380" punct=",">
+        <SceneWord lower="353" upper="364" text="Saarbrucken"/>
+        <SceneWord lower="365" upper="367" text="is"/>
+        <SceneWord lower="368" upper="371" text="the"/>
+        <SceneWord lower="372" upper="379" text="capital"/>
+      </SceneUttr>
+      <SceneUttr lower="381" upper="431" punct=".">
+        <SceneWord lower="381" upper="384" text="and"/>
+        <SceneWord lower="385" upper="392" text="largest"/>
+        <SceneWord lower="393" upper="397" text="city"/>
+        <SceneWord lower="398" upper="400" text="of"/>
+        <SceneWord lower="401" upper="404" text="the"/>
+        <SceneWord lower="405" upper="410" text="state"/>
+        <SceneWord lower="411" upper="413" text="of"/>
+        <SceneWord lower="414" upper="422" text="Saarland"/>
+        <SceneWord lower="423" upper="430" text="Germany"/>
+      </SceneUttr>
+      <SceneUttr lower="432" upper="473" punct=",">
+        <SceneWord lower="432" upper="434" text="It"/>
+        <SceneWord lower="435" upper="437" text="is"/>
+        <SceneWord lower="438" upper="446" text="situated"/>
+        <SceneWord lower="447" upper="451" text="next"/>
+        <SceneWord lower="452" upper="454" text="to"/>
+        <SceneWord lower="455" upper="458" text="the"/>
+        <SceneWord lower="459" upper="465" text="French"/>
+        <SceneWord lower="466" upper="472" text="border"/>
+      </SceneUttr>
+      <SceneUttr lower="474" upper="524" punct=".">
+        <SceneWord lower="474" upper="476" text="at"/>
+        <SceneWord lower="477" upper="480" text="the"/>
+        <SceneWord lower="481" upper="486" text="heart"/>
+        <SceneWord lower="487" upper="489" text="of"/>
+        <SceneWord lower="490" upper="493" text="the"/>
+        <SceneWord lower="494" upper="506" text="metropolitan"/>
+        <SceneWord lower="507" upper="511" text="area"/>
+        <SceneWord lower="512" upper="514" text="of"/>
+        <SceneWord lower="515" upper="523" text="Saarland"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="526" upper="915" language="en" identifier="SarIntro2">
+    <SceneTurn lower="546" upper="664" speaker="Baxter">
+      <SceneUttr lower="554" upper="586" punct=",">
+        <SceneWord lower="554" upper="565" text="Saarbrucken"/>
+        <SceneWord lower="566" upper="569" text="was"/>
+        <SceneWord lower="570" upper="577" text="created"/>
+        <SceneWord lower="578" upper="580" text="in"/>
+        <SceneWord lower="581" upper="585" text="1909"/>
+      </SceneUttr>
+      <SceneUttr lower="587" upper="616" punct=",">
+        <SceneWord lower="587" upper="589" text="by"/>
+        <SceneWord lower="590" upper="593" text="the"/>
+        <SceneWord lower="594" upper="600" text="merger"/>
+        <SceneWord lower="601" upper="603" text="of"/>
+        <SceneWord lower="604" upper="609" text="three"/>
+        <SceneWord lower="610" upper="615" text="towns"/>
+      </SceneUttr>
+      <SceneUttr lower="617" upper="642" punct=",">
+        <SceneWord lower="617" upper="628" text="Saarbrücken"/>
+        <SceneWord lower="629" upper="634" text="Saint"/>
+        <SceneWord lower="635" upper="641" text="Johann"/>
+      </SceneUttr>
+      <SceneUttr lower="643" upper="664" punct=".">
+        <SceneWord lower="643" upper="646" text="and"/>
+        <SceneWord lower="647" upper="655" text="Malstatt"/>
+        <SceneWord lower="656" upper="663" text="Burbach"/>
+      </SceneUttr>
+    </SceneTurn><SceneTurn lower="665" upper="875" speaker="Baxter">
+      <SceneUttr lower="673" upper="702" punct=",">
+        <SceneWord lower="673" upper="675" text="It"/>
+        <SceneWord lower="676" upper="680" text="used"/>
+        <SceneWord lower="681" upper="683" text="to"/>
+        <SceneWord lower="684" upper="686" text="be"/>
+        <SceneWord lower="687" upper="690" text="the"/>
+        <SceneWord lower="691" upper="701" text="industrial"/>
+      </SceneUttr>
+      <SceneUttr lower="703" upper="747" punct=".">
+        <SceneWord lower="703" upper="706" text="and"/>
+        <SceneWord lower="707" upper="716" text="transport"/>
+        <SceneWord lower="717" upper="723" text="centre"/>
+        <SceneWord lower="724" upper="726" text="of"/>
+        <SceneWord lower="727" upper="730" text="the"/>
+        <SceneWord lower="731" upper="735" text="Saar"/>
+        <SceneWord lower="736" upper="740" text="coal"/>
+        <SceneWord lower="741" upper="746" text="basin"/>
+      </SceneUttr>
+      <SceneUttr lower="748" upper="793" punct=",">
+        <SceneWord lower="748" upper="756" text="Products"/>
+        <ActionObject lower="757" upper="768" actor="" mode="" name="LeaveTurn" >
+        </ActionObject>
+        <SceneWord lower="769" upper="777" text="included"/>
+        <SceneWord lower="778" upper="782" text="iron"/>
+        <SceneWord lower="783" upper="786" text="and"/>
+        <SceneWord lower="787" upper="792" text="steel"/>
+      </SceneUttr>
+      <SceneUttr lower="794" upper="800" punct=",">
+        <SceneWord lower="794" upper="799" text="sugar"/>
+      </SceneUttr>
+      <SceneUttr lower="801" upper="806" punct=",">
+        <SceneWord lower="801" upper="805" text="beer"/>
+      </SceneUttr>
+      <SceneUttr lower="807" upper="815" punct=",">
+        <SceneWord lower="807" upper="814" text="pottery"/>
+      </SceneUttr>
+      <SceneUttr lower="816" upper="836" punct=",">
+        <SceneWord lower="816" upper="823" text="optical"/>
+        <SceneWord lower="824" upper="835" text="instruments"/>
+      </SceneUttr>
+      <SceneUttr lower="837" upper="847" punct=",">
+        <SceneWord lower="837" upper="846" text="machinery"/>
+      </SceneUttr>
+      <SceneUttr lower="848" upper="875" punct=".">
+        <SceneWord lower="848" upper="851" text="and"/>
+        <SceneWord lower="852" upper="864" text="construction"/>
+        <SceneWord lower="865" upper="874" text="materials"/>
+      </SceneUttr>
+    </SceneTurn><SceneTurn lower="876" upper="915" speaker="Baxter">
+      <SceneUttr lower="884" upper="915" punct="?">
+        <SceneWord lower="884" upper="886" text="Am"/>
+        <SceneWord lower="887" upper="888" text="I"/>
+        <SceneWord lower="889" upper="896" text="missing"/>
+        <SceneWord lower="897" upper="906" text="something"/>
+        <SceneWord lower="907" upper="914" text="Patrick"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="917" upper="1044" language="en" identifier="StickmanInterested">
+    <SceneTurn lower="946" upper="1044" speaker="Stickman">
+      <SceneUttr lower="956" upper="976" punct=".">
+        <SceneWord lower="956" upper="958" text="Oh"/>
+        <SceneWord lower="959" upper="963" text="very"/>
+        <SceneWord lower="964" upper="975" text="interesting"/>
+      </SceneUttr>
+      <SceneUttr lower="977" upper="1044" punct=".">
+        <SceneWord lower="977" upper="978" text="I"/>
+        <SceneWord lower="979" upper="984" text="heard"/>
+        <SceneWord lower="985" upper="989" text="also"/>
+        <SceneWord lower="990" upper="994" text="that"/>
+        <SceneWord lower="995" upper="998" text="the"/>
+        <SceneWord lower="999" upper="1003" text="city"/>
+        <SceneWord lower="1004" upper="1007" text="was"/>
+        <SceneWord lower="1008" upper="1015" text="severly"/>
+        <SceneWord lower="1016" upper="1022" text="bombed"/>
+        <SceneWord lower="1023" upper="1029" text="during"/>
+        <SceneWord lower="1030" upper="1035" text="World"/>
+        <SceneWord lower="1036" upper="1039" text="War"/>
+        <SceneWord lower="1040" upper="1043" text="two"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="1046" upper="1346" language="en" identifier="BaxterWW">
+    <SceneTurn lower="1065" upper="1346" speaker="Baxter">
+      <SceneUttr lower="1073" upper="1121" punct=",">
+        <SceneWord lower="1073" upper="1084" text="Saarbrücken"/>
+        <SceneWord lower="1085" upper="1088" text="was"/>
+        <SceneWord lower="1089" upper="1096" text="heavily"/>
+        <SceneWord lower="1097" upper="1103" text="bombed"/>
+        <SceneWord lower="1104" upper="1106" text="in"/>
+        <SceneWord lower="1107" upper="1112" text="World"/>
+        <SceneWord lower="1113" upper="1116" text="War"/>
+        <SceneWord lower="1117" upper="1120" text="two"/>
+      </SceneUttr>
+      <SceneUttr lower="1122" upper="1175" punct=",">
+        <SceneWord lower="1122" upper="1124" text="In"/>
+        <SceneWord lower="1125" upper="1130" text="total"/>
+        <SceneWord lower="1131" upper="1134" text="one"/>
+        <SceneWord lower="1135" upper="1143" text="thousand"/>
+        <SceneWord lower="1144" upper="1147" text="two"/>
+        <SceneWord lower="1148" upper="1155" text="hundred"/>
+        <SceneWord lower="1156" upper="1162" text="thirty"/>
+        <SceneWord lower="1163" upper="1167" text="four"/>
+        <SceneWord lower="1168" upper="1174" text="people"/>
+      </SceneUttr>
+      <SceneUttr lower="1176" upper="1256" punct=",">
+        <SceneWord lower="1176" upper="1177" text="1"/>
+        <SceneWord lower="1178" upper="1183" text="point"/>
+        <SceneWord lower="1184" upper="1185" text="1"/>
+        <SceneWord lower="1186" upper="1193" text="percent"/>
+        <SceneWord lower="1194" upper="1196" text="of"/>
+        <SceneWord lower="1197" upper="1200" text="the"/>
+        <SceneWord lower="1201" upper="1211" text="population"/>
+        <SceneWord lower="1212" upper="1214" text="in"/>
+        <SceneWord lower="1215" upper="1226" text="Saarbrücken"/>
+        <SceneWord lower="1227" upper="1231" text="were"/>
+        <SceneWord lower="1232" upper="1238" text="killed"/>
+        <SceneWord lower="1239" upper="1241" text="in"/>
+        <SceneWord lower="1242" upper="1249" text="bombing"/>
+        <SceneWord lower="1250" upper="1255" text="raids"/>
+      </SceneUttr>
+      <SceneUttr lower="1257" upper="1294" punct=",">
+        <SceneWord lower="1257" upper="1263" text="eleven"/>
+        <SceneWord lower="1264" upper="1272" text="thousand"/>
+        <SceneWord lower="1273" upper="1278" text="homes"/>
+        <SceneWord lower="1279" upper="1283" text="were"/>
+        <SceneWord lower="1284" upper="1293" text="destroyed"/>
+      </SceneUttr>
+      <SceneUttr lower="1295" upper="1346" punct=".">
+        <SceneWord lower="1295" upper="1298" text="and"/>
+        <SceneWord lower="1299" upper="1306" text="seventy"/>
+        <SceneWord lower="1307" upper="1311" text="five"/>
+        <SceneWord lower="1312" upper="1319" text="percent"/>
+        <SceneWord lower="1320" upper="1322" text="of"/>
+        <SceneWord lower="1323" upper="1326" text="the"/>
+        <SceneWord lower="1327" upper="1331" text="city"/>
+        <SceneWord lower="1332" upper="1336" text="left"/>
+        <SceneWord lower="1337" upper="1339" text="in"/>
+        <SceneWord lower="1340" upper="1345" text="ruins"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="1348" upper="1666" language="en" identifier="BaxterWW2">
+    <SceneTurn lower="1368" upper="1666" speaker="Baxter">
+      <SceneUttr lower="1376" upper="1445" punct=".">
+        <SceneWord lower="1376" upper="1387" text="Saarbrücken"/>
+        <SceneWord lower="1388" upper="1399" text="temporarily"/>
+        <SceneWord lower="1400" upper="1406" text="became"/>
+        <SceneWord lower="1407" upper="1411" text="part"/>
+        <SceneWord lower="1412" upper="1414" text="of"/>
+        <SceneWord lower="1415" upper="1418" text="the"/>
+        <SceneWord lower="1419" upper="1425" text="French"/>
+        <SceneWord lower="1426" upper="1430" text="Zone"/>
+        <SceneWord lower="1431" upper="1433" text="of"/>
+        <SceneWord lower="1434" upper="1444" text="Occupation"/>
+      </SceneUttr>
+      <SceneUttr lower="1446" upper="1517" punct=",">
+        <SceneWord lower="1446" upper="1452" text="France"/>
+        <SceneWord lower="1453" upper="1460" text="created"/>
+        <SceneWord lower="1461" upper="1464" text="the"/>
+        <SceneWord lower="1465" upper="1474" text="nominally"/>
+        <SceneWord lower="1475" upper="1486" text="politically"/>
+        <SceneWord lower="1487" upper="1498" text="independent"/>
+        <SceneWord lower="1499" upper="1503" text="Saar"/>
+        <SceneWord lower="1504" upper="1516" text="Protectorate"/>
+      </SceneUttr>
+      <SceneUttr lower="1518" upper="1607" punct=",">
+        <SceneWord lower="1518" upper="1521" text="and"/>
+        <SceneWord lower="1522" upper="1528" text="merged"/>
+        <SceneWord lower="1529" upper="1531" text="it"/>
+        <SceneWord lower="1532" upper="1544" text="economically"/>
+        <SceneWord lower="1545" upper="1549" text="with"/>
+        <SceneWord lower="1550" upper="1556" text="France"/>
+        <SceneWord lower="1557" upper="1559" text="in"/>
+        <SceneWord lower="1560" upper="1565" text="order"/>
+        <SceneWord lower="1566" upper="1568" text="to"/>
+        <SceneWord lower="1569" upper="1576" text="exploit"/>
+        <SceneWord lower="1577" upper="1580" text="the"/>
+        <SceneAbbrev lower="1581" upper="1587" first="area" second="s"/>
+        <SceneWord lower="1588" upper="1592" text="vast"/>
+        <SceneWord lower="1593" upper="1597" text="coal"/>
+        <SceneWord lower="1598" upper="1606" text="reserves"/>
+      </SceneUttr>
+      <SceneUttr lower="1608" upper="1666" punct=".">
+        <SceneWord lower="1608" upper="1611" text="and"/>
+        <SceneWord lower="1612" upper="1616" text="then"/>
+        <SceneWord lower="1617" upper="1628" text="Saarbrücken"/>
+        <SceneWord lower="1629" upper="1635" text="became"/>
+        <SceneWord lower="1636" upper="1643" text="capital"/>
+        <SceneWord lower="1644" upper="1646" text="of"/>
+        <SceneWord lower="1647" upper="1650" text="the"/>
+        <SceneWord lower="1651" upper="1654" text="new"/>
+        <SceneWord lower="1655" upper="1659" text="Saar"/>
+        <SceneWord lower="1660" upper="1665" text="state"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+  <SceneObject lower="1668" upper="1810" language="en" identifier="StickmanInterrupt">
+    <SceneTurn lower="1696" upper="1810" speaker="Stickman">
+      <SceneUttr lower="1706" upper="1727" punct="!">
+        <SceneWord lower="1706" upper="1712" text="Enough"/>
+        <SceneWord lower="1713" upper="1718" text="about"/>
+        <SceneWord lower="1719" upper="1726" text="history"/>
+      </SceneUttr>
+      <SceneUttr lower="1728" upper="1747" punct="?">
+        <SceneWord lower="1728" upper="1733" text="Where"/>
+        <SceneWord lower="1734" upper="1736" text="is"/>
+        <SceneWord lower="1737" upper="1740" text="the"/>
+        <SceneWord lower="1741" upper="1746" text="party"/>
+      </SceneUttr>
+      <SceneUttr lower="1748" upper="1755" punct=",">
+        <SceneWord lower="1748" upper="1749" text="I"/>
+        <SceneWord lower="1750" upper="1754" text="mean"/>
+      </SceneUttr>
+      <SceneUttr lower="1756" upper="1810" punct="?">
+        <SceneWord lower="1756" upper="1758" text="do"/>
+        <SceneWord lower="1759" upper="1762" text="you"/>
+        <SceneWord lower="1763" upper="1767" text="have"/>
+        <SceneWord lower="1768" upper="1771" text="any"/>
+        <SceneWord lower="1772" upper="1787" text="recommendations"/>
+        <SceneWord lower="1788" upper="1793" text="about"/>
+        <SceneWord lower="1794" upper="1799" text="night"/>
+        <SceneWord lower="1800" upper="1804" text="life"/>
+        <SceneWord lower="1805" upper="1809" text="here"/>
+      </SceneUttr>
+    </SceneTurn>
+  </SceneObject>
+</SceneScript>

@@ -158,6 +158,13 @@ public class StickmanTtsExecutor extends ActivityExecutor {
         final String name = activity.getName();
         Animation stickmanAnimation ;
         int duration = 500;
+        try {
+            ActionFeature feature = findFeature(activity, "frequency");
+            duration = Integer.parseInt(feature.getVal());
+        } catch (Exception e) {
+            duration = 500;
+        }
+
         if (activity instanceof ActionMouthActivity) {
             duration = ((ActionMouthActivity) activity).getDuration();
         }
@@ -178,6 +185,17 @@ public class StickmanTtsExecutor extends ActivityExecutor {
                 languageAgentMap.put(agent.getAgentName(), feat.getVal());
             }
         }
+    }
+
+    private ActionFeature findFeature(AbstractActivity activity, String name) throws Exception {
+        final String actor = activity.getActor();
+        AgentConfig agent = mProject.getAgentConfig(actor);
+        for (ActionFeature feat : activity.getFeatureList()) {
+            if (feat.getKey().equalsIgnoreCase(name)) {
+                return feat;
+            }
+        }
+        throw new Exception("No feature found");
     }
 
     private void handleEmptyTextActivity(SpeechActivity sa) {

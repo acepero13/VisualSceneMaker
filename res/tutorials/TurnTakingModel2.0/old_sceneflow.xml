@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SceneFlow id="" name="Stickman" comment="" hideLocalVar="false" hideGlobalVar="false" modifDate="sáb, 3 dic 2016 12:24:02" start="S20;S30;S22;N115;S115;" context="" package="" xmlns="xml.sceneflow.dfki.de" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="xml.sceneflow.dfki.de res/xsd/sceneflow.xsd">
+  <Define>
+  </Define>
+  <Declare>
+    <Variable type="Bool" name ="StickmanSpeaking">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="HumanSpeaking">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="FloorIsFree">
+      <Bool value="true"/>
+    </Variable>
+    <Variable type="String" name ="SpeechType">
+      <String><![CDATA[Speech]]></String>
+    </Variable>
+    <Variable type="String" name ="AnswerTo">
+      <String><![CDATA[]]></String>
+    </Variable>
+    <Variable type="String" name ="BaxterPoliteness">
+      <String><![CDATA[polite]]></String>
+    </Variable>
+    <Variable type="String" name ="StickmanPoliteness">
+      <String><![CDATA[polite]]></String>
+    </Variable>
+    <Variable type="Bool" name ="StickmanIsLookingLeft">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="BaxterIsLookingLeft">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="StickmanGazeInterlocutor">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="BaxterGazeInterlocutor">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="BaxterSpeaking">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="String" name ="AskTo">
+      <String><![CDATA[]]></String>
+    </Variable>
+    <Variable type="String" name ="LastAskTo">
+      <String><![CDATA[]]></String>
+    </Variable>
+    <Variable type="Bool" name ="BaxterWantsToSpeak">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="StickmanWantsToSpeak">
+      <Bool value="false"/>
+    </Variable>
+    <Variable type="Bool" name ="BaxterWantsLeaveTurn">
+      <Bool value="false"/>
+    </Variable>
+  </Declare>
+  <Commands>
+  </Commands>
+  <LocalVariableBadge>
+    <Position xPos="10" yPos="129"/>
+  </LocalVariableBadge>
+  <GlobalVariableBadge>
+    <Position xPos="10" yPos="10"/>
+  </GlobalVariableBadge>
+  <Node id="N115" name="StartNode" history="false">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+    </Commands>
+    <TEdge target="N116" start="" timeout="1000">
+    <Graphics>
+      <Connection>
+        <ControlPoint xPos="390" yPos="75" ctrlXPos="502" ctrlYPos="75"/>
+        <ControlPoint xPos="660" yPos="75" ctrlXPos="547" ctrlYPos="75"/>
+      </Connection>
+    </Graphics>
+    </TEdge>
+    <Graphics>
+      <Position xPos="300" yPos="30"/>
+    </Graphics>
+  </Node>
+  <Node id="N116" name="N116" history="false">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+      <PlaySceneGroup>
+        <String><![CDATA[BaxterIntro]]></String>
+      </PlaySceneGroup>
+      <Assign>
+        <Variable name="AnswerTo"/>
+        <Expression>
+          <String><![CDATA[Stickman]]></String>
+        </Expression>
+      </Assign>
+      <Assign>
+        <Variable name="BaxterWantsToSpeak"/>
+        <Expression>
+          <Bool value="true"/>
+        </Expression>
+      </Assign>
+    </Commands>
+    <TEdge target="S5" start="" timeout="1000">
+    <Graphics>
+      <Connection>
+        <ControlPoint xPos="705" yPos="120" ctrlXPos="705" ctrlYPos="142"/>
+        <ControlPoint xPos="705" yPos="210" ctrlXPos="705" ctrlYPos="187"/>
+      </Connection>
+    </Graphics>
+    </TEdge>
+    <Graphics>
+      <Position xPos="660" yPos="30"/>
+    </Graphics>
+  </Node>
+  <Node id="N45" name="N45" history="false">
+    <Define>
+    </Define>
+    <Declare>
+    </Declare>
+    <Commands>
+      <Assign>
+        <Variable name="StickmanPoliteness"/>
+        <Expression>
+          <String><![CDATA[semipolite]]></String>
+        </Expression>
+      </Assign>
+    </Commands>
+    <TEdge target="N115" start="" timeout="1000">
+    <Graphics>
+      <Connection>
+        <ControlPoint xPos="345" yPos="390" ctrlXPos="345" ctrlYPos="277"/>
+        <ControlPoint xPos="345" yPos="120" ctrlXPos="345" ctrlYPos="232"/>
+      </Connection>
+    </Graphics>
+    </TEdge>
+    <Graphics>
+      <Position xPos="300" yPos="390"/>
+    </Graphics>
+  </Node>
+  <SuperNode id="S20" name="FloorAssigner" comment="" hideLocalVar="false" hideGlobalVar="false" start="N12;">
+    <Define>
+    </Define>
+    <Declare>
+      <Variable type="Int" name ="silenceCounter">
+        <Int value="0"/>
+      </Variable>
+    </Declare>
+    <Commands>
+    </Commands>
+    <Graphics>
+      <Position xPos="1110" yPos="30"/>
+    </Graphics>
+    <LocalVariableBadge>
+      <Position xPos="22" yPos="125"/>
+    </LocalVariableBadge>
+    <GlobalVariableBadge>
+      <Position xPos="10" yPos="10"/>
+    </GlobalVariableBadge>
+    <Comment>
+      <Graphics>
+        <Boundary xPos="459" yPos="18" width="156" height="64"/>
+      </Graphics>
+      <Text style="color:blue">
