@@ -38,14 +38,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -80,7 +77,7 @@ import javax.xml.xpath.XPathFactory;
 import org.xml.sax.SAXException;
 
 
-public class I4GMaryClient extends SpeechClient {
+    public class I4GMaryClient extends SpeechClient {
 
     private MaryClient maryClient = null;
 
@@ -111,6 +108,22 @@ public class I4GMaryClient extends SpeechClient {
     private final LOGConsoleLogger mLogger = LOGConsoleLogger.getInstance();
     private String speak_text = "";
     private HashMap<String, Language> languageMap = new HashMap<>();
+
+    public static final float VOLUME_STEP = 10;
+    public static float currentVolume = 0F;
+
+    public static void sIncreaseVolume() {
+        currentVolume+= VOLUME_STEP;
+    }
+
+    public static void sDecreaseVolume() {
+        currentVolume-=VOLUME_STEP;
+    }
+
+    public static void sSetVolumen(float value) {
+        currentVolume = value;
+    }
+
 
 
     private I4GMaryClient() throws IOException{
@@ -171,6 +184,10 @@ public class I4GMaryClient extends SpeechClient {
                     mEventCaster.convey(new LineStop(this, executionId));
                     mLogger.message("Audio stopped playing.");
                 } else if (event.getType() == LineEvent.Type.OPEN) {
+                    adjustVolume(event);
+                    mLogger.message("Audio opened Line.");
+                    mEventCaster.convey(new LineStart(this,  executionId));
+
                     mLogger.message("Audio opened Line.");
                     mEventCaster.convey(new LineStart(this,  executionId));
                     //mEventCaster.convey(new AudioOpened(this));
@@ -180,10 +197,16 @@ public class I4GMaryClient extends SpeechClient {
             }
         };
         AudioPlayer ap = new AudioPlayer(ais, lineListener);
+
         ap.start();
     }
 
-    public void playAudio(AudioInputStream ais) {
+        private  void adjustVolume(LineEvent event) {
+            FloatControl gainControl = (FloatControl) event.getLine().getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(currentVolume);
+        }
+
+        public void playAudio(AudioInputStream ais) {
         LineListener lineListener = new LineListener() {
 
             public void update(LineEvent event) {

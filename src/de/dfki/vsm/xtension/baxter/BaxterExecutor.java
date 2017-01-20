@@ -254,7 +254,7 @@ public class BaxterExecutor extends ActivityExecutor {
             }
         }
 
-
+        mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(activity.getActor(), "face", "Mouth_Default" , null,  100, wts), mProject.getAgentDevice(activity.getActor()));
 
         //mScheduler.schedule(totalTime, null, new TimeMarkActivity(activity.getActor(), "", "HandleTimeMark", wts), mProject.getAgentDevice(activity.getActor()));
         return  activity;

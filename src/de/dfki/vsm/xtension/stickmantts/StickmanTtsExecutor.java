@@ -427,8 +427,9 @@ public class StickmanTtsExecutor extends ActivityExecutor {
                 wordIndex++;
             }
         }
+        mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(actor, "face", "Mouth_Default" , null, 100, wts), mProject.getAgentDevice(actor));
         //Clossing the mouth
-        /*mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(actor, "face", "Mouth_Default", null, 300, wts), mProject.getAgentDevice(actor));
+       /* mScheduler.schedule(totalTime + 100, null, new ActionMouthActivity(actor, "face", "Mouth_Default", null, 300, wts), mProject.getAgentDevice(actor));
         AnimationFX stickmanAnimation = new AnimationFX();
         stickmanAnimation = AnimationLoaderFX.getInstance().loadEventAnimation(mStickmanStage.getStickmanFX(actor), "Speaking", 3000, false);
         stickmanAnimation.mParameter = wts;

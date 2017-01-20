@@ -76,12 +76,7 @@ public class ClipPlayer implements Audioplayer {
         sSetVolumen(value);
     }
 
-
-
-    public static void sIncreaseVolume() {
-        currentVolume+= VOLUME_STEP;
-    }
-
+    public static void sIncreaseVolume() { currentVolume+= VOLUME_STEP;  }
 
     public static void sDecreaseVolume() {
         currentVolume-=VOLUME_STEP;
