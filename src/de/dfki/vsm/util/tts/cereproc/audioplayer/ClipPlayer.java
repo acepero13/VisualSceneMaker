@@ -86,6 +86,11 @@ public class ClipPlayer implements Audioplayer {
         currentVolume = value;
     }
 
+    public void stop(Clip clip){
+        clip.stop();
+        clip.close();
+    }
+
 
 
     private byte[] wavHeader(int size){
